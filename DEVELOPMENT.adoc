@@ -22,4 +22,4 @@
 * Open any terminal (e.g. "Terminal" view in IntelliJ IDEA)
 * Launch sbt via `sbt` command (WARNING: will download Scala compiler and dependencies when launched for the first time)
 * Inside sbt: `~fastOptJS` (continuously compiles all Scala sources and generates JavaScript)
-* Open `index-dev.html` through a web server (IntelliJ: Context menu > Open in Browser)
+* Open `index.html` through a web server (IntelliJ: Context menu > Open in Browser)
