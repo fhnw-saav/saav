@@ -1,15 +1,11 @@
 lazy val root = (project in file(".")).
-  enablePlugins(ScalaJSPlugin).
   settings(
     name := "SAAV",
-    scalaVersion := "2.11.8",
-    version := "0.1-SNAPSHOT"
+    scalaVersion := Settings.versions.scala,
+    version := Settings.versions.saav,
+    libraryDependencies ++= Settings.libraryDependencies.value
   )
-
-libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.0",
-  "com.lihaoyi" %%% "scalatags" % "0.5.4"
-)
+  .enablePlugins(ScalaJSPlugin)
 
 persistLauncher in Compile := true
 
