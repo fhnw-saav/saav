@@ -1,0 +1,25 @@
+# Prerequisites
+
+* http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Java SE Development Kit 8]
+* Integrated development environment (IDE)
+** https://www.jetbrains.com/idea/[IntelliJ IDEA] with Scala Plugin (Preferences > Plugins > Install JetBrains plugin...), or
+** http://scala-ide.org/[Scala IDE for Eclipse]
+* http://www.scala-sbt.org/0.13/docs/Setup.html[sbt] (>= 0.13), the build tool for Scala
+** OSX: `brew install sbt`
+* NOTE: No need to install a Scala compiler (will be managed by sbt)
+
+# Import
+
+## IntelliJ IDEA
+
+* File > New > Project from Existing Sources...
+* Select "saav" project folder
+* Import project from external model > SBT
+* Finish
+
+# Launch
+
+* Open any terminal (e.g. "Terminal" view in IntelliJ IDEA)
+* Launch sbt via `sbt` command (WARNING: will download Scala compiler and dependencies when launched for the first time)
+* Inside sbt: `~fastOptJS` (continuously compiles all Scala sources and generates JavaScript)
+* Open `index-dev.html` through a web server (IntelliJ: Context menu > Open in Browser)
