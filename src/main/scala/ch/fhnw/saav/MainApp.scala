@@ -50,11 +50,11 @@ object MainApp extends js.JSApp {
   // base layout for all pages
   def layout(ctl: RouterCtl[Location], r: Resolution[Location]) = {
 
-    // globally declared CSS classes
-    val css = GlobalStyles.cssClassNames
+    // globally defined CSS styles
+    val css = GlobalStyles
 
     // helper method to control activity of bootstrap tabs
-    def activeIf(loc: Location) = if (r.page == loc) css.active else ""
+    def activeIf(loc: Location) = if (r.page == loc) css.className.active else ""
 
     // create one bootstrap tab for each location
     val tabs = for (loc <- Location.values) yield
@@ -62,15 +62,13 @@ object MainApp extends js.JSApp {
         <.a(^.href := "#/" + loc.link, loc.displayName))
 
     // our main container, containing...
-    <.div(^.className := css.container,
+    <.div(css.container,
 
       // a tab navigation...
-      <.ul(^.className := css.tabs,
-        tabs
-      ),
+      <.ul(css.tabbedNavigation, tabs),
 
       // .. and the contents of the currently active tab (as determined by the router)
-      <.div(^.className := css.tabContents, r.render())
+      <.div(css.mainTab, r.render())
     )
   }
 
