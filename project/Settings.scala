@@ -18,6 +18,7 @@ object Settings {
 
     // libraryDependencies
     val scalaJsReact = "0.11.1"
+    val scalaCSS = "0.4.1"
 
     // jsDependencies
     val react = "15.0.2"
@@ -27,7 +28,8 @@ object Settings {
 
   val libraryDependencies = Def.setting(Seq(
     // using 'extra' instead of 'core' to get routing functionality
-    "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalaJsReact
+    "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalaJsReact,
+    "com.github.japgolly.scalacss" %%% "ext-react" % versions.scalaCSS
   ))
 
   val jsDependencies = Def.setting(Seq(

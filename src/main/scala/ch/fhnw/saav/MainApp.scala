@@ -1,11 +1,14 @@
 package ch.fhnw.saav
 
 import ch.fhnw.saav.components.CTodo
-import japgolly.scalajs.react.{ReactDOM, _}
+import ch.fhnw.saav.styles.GlobalStyles
 import japgolly.scalajs.react.extra.router.{Resolution, Router, _}
 import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.{ReactDOM, _}
 import org.scalajs.dom
 import org.scalajs.dom._
+import scalacss.Defaults._
+import scalacss.ScalaCssReact._
 
 import scala.scalajs.js
 
@@ -47,31 +50,35 @@ object MainApp extends js.JSApp {
   // base layout for all pages
   def layout(ctl: RouterCtl[Location], r: Resolution[Location]) = {
 
+    // globally declared CSS classes
+    val css = GlobalStyles.cssClassNames
+
     // helper method to control activity of bootstrap tabs
-    def activeIf(loc: Location) = if (r.page == loc) "active" else ""
+    def activeIf(loc: Location) = if (r.page == loc) css.active else ""
 
     // create one bootstrap tab for each location
     val tabs = for (loc <- Location.values) yield
-      <.li(^.role := "presentation", ^.className := activeIf(loc), <.a(^.href := "#/" + loc.link, loc.displayName))
+      <.li(^.className := activeIf(loc),
+        <.a(^.href := "#/" + loc.link, loc.displayName))
 
     // our main container, containing...
-    <.div(^.className := "container",
+    <.div(^.className := css.container,
 
-      // a navigation...
-      <.ul(^.className := "nav nav-tabs",
+      // a tab navigation...
+      <.ul(^.className := css.tabs,
         tabs
       ),
 
-      // .. and the contents of the tab (as determined by the router)
-      <.div(^.className := "container tab-contents",r.render())
+      // .. and the contents of the currently active tab (as determined by the router)
+      <.div(^.className := css.tabContents, r.render())
     )
   }
 
-  // the router is itself a component -> it knows what to render based on defined rules (see routerConfig above)
-  val router: ReactComponentU[Unit, Resolution[Location], Any, TopNode] =
-    Router(baseUrl, routerConfig.logToConsole)()
-
   def main() = {
+    // create stylesheet
+    GlobalStyles.addToDocument()
+    // create the router component (which knows what to render based on defined rules > see routerConfig above)
+    val router = Router(baseUrl, routerConfig.logToConsole)()
     // actually render the router component
     ReactDOM.render(router, document.getElementById("root"))
   }
