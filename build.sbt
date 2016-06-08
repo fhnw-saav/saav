@@ -1,14 +1,24 @@
-lazy val root = (project in file(".")).
-  settings(
-    name := "SAAV",
-    scalaVersion := Settings.versions.scala,
-    version := Settings.versions.saav,
-    libraryDependencies ++= Settings.libraryDependencies.value
-  )
+lazy val root = (project in file("."))
   .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := Settings.name,
+    version := Settings.versions.saav,
+    scalaVersion := Settings.versions.scala,
+    scalacOptions ++= Settings.scalacOptions
+  )
 
-persistLauncher in Compile := true
+// dependencies needed by Scala.js
+libraryDependencies ++= Settings.libraryDependencies.value
 
+// JS dependencies needed at runtime
+jsDependencies ++= Settings.jsDependencies.value
+
+// yes, we want to package JS dependencies
+skip in packageJSDependencies := false
+
+// use launcher code to start the client app (see launcher.js in index.html)
+persistLauncher := true
 persistLauncher in Test := false
 
-mainClass in Compile := Some("ch.fhnw.saav.MainApp")
+// make the referenced paths on source maps relative to target path
+relativeSourceMaps := true
