@@ -41,7 +41,7 @@ object model {
 
   case class Review(name: String)
 
-  abstract class Entity(name: String)
+  sealed abstract class Entity(name: String)
 
   object Entity {
 
