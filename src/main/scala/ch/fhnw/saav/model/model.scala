@@ -15,19 +15,25 @@ object model {
 
     def reviews: Seq[Review]
 
-    def value(e: E, indicator: Indicator, review: Review): Option[Double]
+    def value(entity: E, indicator: Indicator, review: Review): Option[Double]
 
-    def groupedValue(e: E, indicator: Indicator): Option[Double]
+    def groupedValue(entity: E, indicator: Indicator): Option[Double]
 
-    def groupedValue(e: E, subCategory: SubCategory): Option[Double]
+    def groupedValue(entity: E, subCategory: SubCategory): Option[Double]
 
-    def groupedValue(e: E, category: Category): Option[Double]
+    def groupedValue(entity: E, category: Category): Option[Double]
 
   }
 
-  case class Category(name: String, subCategories: Seq[SubCategory])
+  trait Category {
+    def name: String
+    def subCategories: Seq[SubCategory]
+  }
 
-  case class SubCategory(name: String, indicators: Seq[Indicator])
+  trait SubCategory {
+    def name: String
+    def indicators: Seq[Indicator]
+  }
 
   trait Indicator {
     def name: String
@@ -57,42 +63,66 @@ object model {
 
   case class AnalysisBuilder[E <: Entity]() {
 
-    private val categoryScopes: ListBuffer[CategoryScopeImpl] = ListBuffer()
+    private val categories: ListBuffer[MutableCategoryScope] = ListBuffer()
 
-    trait CategoryScope {
-      def name: String
+    def category(categoryName: String): CategoryScope = {
+      val existingCategory = categories.find(_.name == categoryName)
+      existingCategory match {
+        case Some(c) => c
+        case None =>
+          val category = new MutableCategoryScope(categoryName)
+          categories.append(category)
+          category
+      }
+    }
 
+    def build(): Analysis[E] = {
+
+      val valuesByIndicator: Map[Indicator, Map[(E, Review), Double]] = (for {
+        category <- categories
+        subCategory <- category.subCategories
+        indicator <- subCategory.indicators
+      } yield {
+        indicator -> indicator.values.toMap
+      }).toMap
+
+      // gather unique entities/reviews used throughout complete analysis
+      val uniqueEntities = valuesByIndicator.values.flatMap(valueMap => valueMap.keys.map(_._1)).toSet.toSeq
+      val uniqueReviews = valuesByIndicator.values.flatMap(valueMap => valueMap.keys.map(_._2)).toSet.toSeq
+
+      new AnalysisImpl[E](categories, uniqueEntities, uniqueReviews, valuesByIndicator)
+    }
+
+    trait CategoryScope extends Category {
       def subCategory(name: String): SubCategoryScope
     }
 
-    private class CategoryScopeImpl(val name: String, val subCategoryScopes: ListBuffer[SubCategoryScopeImpl] = ListBuffer()) extends CategoryScope {
+    private class MutableCategoryScope(val name: String, val subCategories: ListBuffer[MutableSubCategoryScope] = ListBuffer()) extends CategoryScope {
       override def subCategory(subCategoryName: String): SubCategoryScope = {
-        val existingSubCategory = subCategoryScopes.find(_.name == subCategoryName)
+        val existingSubCategory = subCategories.find(_.name == subCategoryName)
         existingSubCategory match {
           case Some(c) => c
           case None =>
-            val subCategoryScope = new SubCategoryScopeImpl(subCategoryName)
-            subCategoryScopes.append(subCategoryScope)
-            subCategoryScope
+            val subCategory = new MutableSubCategoryScope(subCategoryName)
+            subCategories.append(subCategory)
+            subCategory
         }
       }
     }
 
-    trait SubCategoryScope {
-      def name: String
-
+    trait SubCategoryScope extends SubCategory {
       def indicator(name: String): IndicatorScope
     }
 
-    private class SubCategoryScopeImpl(val name: String, val indicatorScopes: ListBuffer[IndicatorScopeImpl] = ListBuffer()) extends SubCategoryScope {
+    private class MutableSubCategoryScope(val name: String, val indicators: ListBuffer[MutableIndicatorScope] = ListBuffer()) extends SubCategoryScope {
       override def indicator(indicatorName: String): IndicatorScope = {
-        val existingIndicator = indicatorScopes.find(_.name == indicatorName)
+        val existingIndicator = indicators.find(_.name == indicatorName)
         existingIndicator match {
           case Some(i) => i
           case None =>
-            val indicatorScope = new IndicatorScopeImpl(indicatorName)
-            indicatorScopes.append(indicatorScope)
-            indicatorScope
+            val indicator = new MutableIndicatorScope(indicatorName)
+            indicators.append(indicator)
+            indicator
         }
       }
     }
@@ -101,65 +131,23 @@ object model {
       def addValue(entity: E, review: Review, value: Double): AnalysisBuilder[E]
     }
 
-    private class IndicatorScopeImpl(val name: String, val values: mutable.LinkedHashMap[(E, Review), Double] = mutable.LinkedHashMap()) extends IndicatorScope {
+    private class MutableIndicatorScope(val name: String, val values: mutable.LinkedHashMap[(E, Review), Double] = mutable.LinkedHashMap()) extends IndicatorScope {
       override def addValue(entity: E, review: Review, value: Double): AnalysisBuilder[E] = {
         values.put((entity, review), value)
         AnalysisBuilder.this
       }
     }
 
-    def category(categoryName: String): CategoryScope = {
-      val existingCategory = categoryScopes.find(_.name == categoryName)
-      existingCategory match {
-        case Some(c) => c
-        case None =>
-          val categoryScope = new CategoryScopeImpl(categoryName)
-          categoryScopes.append(categoryScope)
-          categoryScope
-      }
-    }
-
-    def build(): Analysis[E] = {
-
-      // TODO: First draft -> needs massive simplification...
-
-      val categories = categoryScopes.map(c => {
-        val subCategories = c.subCategoryScopes.map(s => {
-          SubCategory(s.name, s.indicatorScopes)
-        })
-        Category(c.name, subCategories)
-      })
-
-      val (entities, reviews) = (for {
-        categoryScope <- categoryScopes
-        subCategoryScope <- categoryScope.subCategoryScopes
-        indicatorScope <- subCategoryScope.indicatorScopes
-      } yield indicatorScope.values.keys).flatten.unzip
-
-      val uniqueEntities = entities.toSet.toSeq
-      val uniqueReviews = reviews.toSet.toSeq
-
-      // convert from indicator-specific value maps to one big map (where indicator is part of key)
-      val valueMap: mutable.HashMap[(E, Indicator, Review), Double] = mutable.HashMap[(E, Indicator, Review), Double]()
-      for {
-        categoryScope <- categoryScopes
-        subCategoryScope <- categoryScope.subCategoryScopes
-        indicatorScope <- subCategoryScope.indicatorScopes
-        valueEntry <- indicatorScope.values
-      } {
-        val (entity, review) = valueEntry._1
-        val value = valueEntry._2
-        valueMap.put((entity, indicatorScope, review), value)
-      }
-
-      new AnalysisImpl[E](categories, uniqueEntities, uniqueReviews, valueMap.toMap)
-    }
-
   }
 
-  private class AnalysisImpl[E <: Entity](val categories: Seq[Category], val entities: Seq[E], val reviews: Seq[Review], private val values: Map[(E, Indicator, Review), Double]) extends Analysis[E] {
+  private class AnalysisImpl[E <: Entity](val categories: Seq[Category], val entities: Seq[E], val reviews: Seq[Review], private val valuesByIndicator: Map[Indicator, Map[(E, Review), Double]]) extends Analysis[E] {
 
-    override def value(e: E, indicator: Indicator, review: Review): Option[Double] = values.get((e, indicator, review))
+    override def value(entity: E, indicator: Indicator, review: Review): Option[Double] = {
+      valuesByIndicator.get(indicator) match {
+        case None => None
+        case Some(values) => values.get((entity, review))
+      }
+    }
 
     override def groupedValue(e: E, indicator: Indicator): Option[Double] = ???
 
