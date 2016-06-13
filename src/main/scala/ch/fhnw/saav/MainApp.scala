@@ -1,7 +1,7 @@
 package ch.fhnw.saav
 
-import ch.fhnw.saav.components.{CChart, CTodo}
-import ch.fhnw.saav.styles.GlobalStyles
+import ch.fhnw.saav.component.{CChart, CTodo}
+import ch.fhnw.saav.style.GlobalStyles
 import japgolly.scalajs.react.extra.router.{Resolution, Router, _}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactDOM, _}

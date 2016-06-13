@@ -1,4 +1,4 @@
-package ch.fhnw.saav.styles
+package ch.fhnw.saav.style
 
 import scalacss.Defaults._
 
