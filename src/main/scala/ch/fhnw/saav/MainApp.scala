@@ -1,15 +1,15 @@
 package ch.fhnw.saav
 
-import ch.fhnw.saav.components.CTodo
+import ch.fhnw.saav.components.{CChart, CTodo}
 import ch.fhnw.saav.styles.GlobalStyles
 import japgolly.scalajs.react.extra.router.{Resolution, Router, _}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactDOM, _}
 import org.scalajs.dom
 import org.scalajs.dom._
+
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
-
 import scala.scalajs.js
 
 object MainApp extends js.JSApp {
@@ -37,7 +37,13 @@ object MainApp extends js.JSApp {
     // defines how a location is mapped to a rendered component
     def filterRoute(loc: Location): Rule = staticRoute("#/" + loc.link, loc) ~> renderR(ctl => {
       // create a placeholder component until we have useful UIs
-      CTodo(loc.displayName)
+      val c = ReactComponentB[Unit]("All")
+        .render($ => <.div(
+          CTodo(loc.displayName),
+          CChart()
+        ))
+        .build
+      c()
     })
 
     // establish filter routes for all known locations
