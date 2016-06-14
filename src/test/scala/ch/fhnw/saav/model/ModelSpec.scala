@@ -100,7 +100,25 @@ class ModelSpec extends FlatSpec {
 
   }
 
-  it should "be easy to build and query" in {
+  it should "group by indicator using median" in {
+    val builder = new AnalysisBuilder[Project]
+    val indicator = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
+    val project = Project("Project")
+
+    // empty values
+    assert(builder.build().groupedValue(project, indicator) == Option.empty)
+
+    // even number of values
+    indicator.addValue(project, Review("Review 2"), 2)
+    indicator.addValue(project, Review("Review 1"), 1)
+    assert(builder.build().groupedValue(project, indicator) == Option(1.5))
+
+    // odd number of values
+    indicator.addValue(project, Review("Review 3"), 42)
+    assert(builder.build().groupedValue(project, indicator) == Option(2))
+  }
+
+  it should "allow for simple building and querying of analyses" in {
 
     val builder = AnalysisBuilder.projectAnalysisBuilder
 

@@ -149,11 +149,29 @@ object model {
       }
     }
 
-    override def groupedValue(e: E, indicator: Indicator): Option[Double] = ???
+    override def groupedValue(entity: E, indicator: Indicator): Option[Double] = {
+      valuesByIndicator.get(indicator) match {
+        case None => None
+        case Some(valueMap) =>
+          val values = reviews.flatMap(review => valueMap.get((entity, review)))
+          median(values)
+      }
+    }
 
     override def groupedValue(e: E, subCategory: SubCategory): Option[Double] = ???
 
     override def groupedValue(e: E, category: Category): Option[Double] = ???
+
+    private def median(values: Seq[Double]) = {
+      val sortedValues = values.sorted
+      sortedValues.size match {
+        case 0 => None
+        case length if length % 2 == 0 =>
+          val i = (length - 1) / 2
+          Some((sortedValues(i) + sortedValues(i + 1)) / 2)
+        case length => Some(sortedValues(length / 2))
+      }
+    }
   }
 
 }
