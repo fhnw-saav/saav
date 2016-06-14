@@ -9,9 +9,9 @@ import scalacss.ScalaCssReact._
 // A simple placeholder component for contents that are not yet implemented
 object CTodo {
 
-  val css = GlobalStyles
+  private val css = GlobalStyles
 
-  val component = ReactComponentB[String]("Todo")
+  private val component = ReactComponentB[String](CTodo.getClass.getSimpleName)
     .render_P(msg => <.div(css.infoBox, s"TODO: $msg"))
     .build
 

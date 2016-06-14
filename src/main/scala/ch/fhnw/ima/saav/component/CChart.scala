@@ -20,7 +20,7 @@ import org.scalajs.dom.raw.HTMLCanvasElement
   */
 object CChart {
 
-  val component = ReactComponentB[Unit]("Chart")
+  private val component = ReactComponentB[Unit](CChart.getClass.getSimpleName)
     .render($ => <.canvas())
     .domType[HTMLCanvasElement]
     .componentDidMount(scope => Callback {
