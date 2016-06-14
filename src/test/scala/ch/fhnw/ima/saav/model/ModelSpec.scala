@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
 import org.scalatest.FlatSpec
 
 class ModelSpec extends FlatSpec {
@@ -72,7 +72,7 @@ class ModelSpec extends FlatSpec {
 
   it should "add values" in {
     val builder = new AnalysisBuilder[Project]
-    val indicator = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
+    val indicatorScope = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
 
     val entityOne = Project("Project 1")
     val entityTwo = Project("Project 2")
@@ -81,16 +81,18 @@ class ModelSpec extends FlatSpec {
     val reviewOne = Review("Review 1")
     val reviewTwo = Review("Review 2")
 
-    indicator.addValue(entityOne, reviewOne, 11)
-    indicator.addValue(entityOne, reviewTwo, 12)
-    indicator.addValue(entityThree, reviewOne, 31)
-    indicator.addValue(entityTwo, reviewOne, 21)
-    indicator.addValue(entityThree, reviewTwo, 32)
+    indicatorScope.addValue(entityOne, reviewOne, 11)
+    indicatorScope.addValue(entityOne, reviewTwo, 12)
+    indicatorScope.addValue(entityThree, reviewOne, 31)
+    indicatorScope.addValue(entityTwo, reviewOne, 21)
+    indicatorScope.addValue(entityThree, reviewTwo, 32)
 
     val analysis = builder.build()
 
     assert(analysis.entities.size == 3)
     assert(analysis.reviews.size == 2)
+
+    val indicator = indicatorScope.toIndicator
 
     assert(analysis.value(entityOne, indicator, reviewOne) == Option(11))
     assert(analysis.value(entityOne, indicator, reviewTwo) == Option(12))
@@ -100,48 +102,75 @@ class ModelSpec extends FlatSpec {
 
   }
 
-  it should "group by indicator/sub-category/category using median" in {
-    val builder = new AnalysisBuilder[Project]
+  "An analysis" should "group values by indicator/sub-category/category using median" in {
 
-    val category = builder.category("Category")
-    val subCategoryOne = category.subCategory("Sub-Category 1")
-    val indicatorOneOne = subCategoryOne.indicator("Indicator 11")
+    // build a hierarchy with some test values
+
+    val builder = new AnalysisBuilder[Project]
 
     val project = Project("Project")
 
     val reviewOne = Review("Review 1")
     val reviewTwo = Review("Review 2")
 
+    val categoryScope1 = builder.category("Category 1")
+    val categoryScope2 = builder.category("Category 2")
+
+    val subCategoryScope1 = categoryScope1.subCategory("Sub-Category 1")
+    val indicatorScope11 = subCategoryScope1.indicator("Indicator 11")
+    indicatorScope11.addValue(project, reviewOne, 1)
+    indicatorScope11.addValue(project, reviewTwo, 2)
+
+    val indicatorScope12 = subCategoryScope1.indicator("Indicator 12")
+    indicatorScope12.addValue(project, reviewTwo, 3)
+
+    // actually create analysis
+
+    val analysis = builder.build()
+
+    val category1 = analysis.categories(0)
+    val category2 = analysis.categories(1)
+
+    val subCategory1 = category1.subCategories(0)
+    val indicator11 = subCategory1.indicators(0)
+    val indicator12 = subCategory1.indicators(1)
+
     // grouping by indicator
-
-    assert(builder.build().groupedValue(project, indicatorOneOne) == Option.empty, "Grouping by indicator: No values")
-
-    indicatorOneOne.addValue(project, reviewTwo, 2)
-    indicatorOneOne.addValue(project, reviewOne, 1)
-    assert(builder.build().groupedValue(project, indicatorOneOne) == Option(1.5), "Grouping by indicator: Even number of values")
-
-    indicatorOneOne.addValue(project, reviewTwo, 3)
-    assert(builder.build().groupedValue(project, indicatorOneOne) == Option(2), "Grouping by indicator: Odd number of values")
+    assert(analysis.groupedValue(project, indicator11) == Option(1.5), "Grouping by indicator: Even number of values")
+    assert(analysis.groupedValue(project, indicator12) == Option(3), "Grouping by indicator: Odd number of values")
 
     // grouping by sub-category
-
-    assert(builder.build().groupedValue(project, subCategoryOne) == Option(2), "Grouping by sub-category (single indicator)")
-
-    val indicatorOneTwo = subCategoryOne.indicator("Indicator 12")
-
-    indicatorOneTwo.addValue(project, reviewOne, 3)
-    indicatorOneTwo.addValue(project, reviewTwo, 3)
-
-    assert(builder.build().groupedValue(project, subCategoryOne) == Option(2.5), "Grouping by sub-category (multiple indicators)")
+    assert(analysis.groupedValue(project, subCategory1) == Option(2.25), "Grouping by sub-category")
 
     // grouping by category
+    assert(analysis.groupedValue(project, category1) == Option(2.25), "Grouping by category")
+    assert(analysis.groupedValue(project, category2) == Option.empty, "Grouping by category with no values")
+  }
 
-    assert(builder.build().groupedValue(project, category) == Option(2.5), "Grouping by sub-category (single sub-category)")
+  it should "be truly immutable" in {
+    val builder = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = builder.build()
 
-    category.subCategory("Sub-Category 2").indicator("Indicator 21")
-      .addValue(project, reviewOne, 5)
-      .addValue(project, reviewTwo, 7)
-    assert(builder.build().groupedValue(project, category) == Option(4.25), "Grouping by sub-category (multiple sub-categories)")
+    builder.category("Category")
+
+    assert(analysis.categories.isEmpty)
+  }
+
+  it should "contain entities in insertion order" in {
+
+    val project1 = Project("Project 1")
+    val project2 = Project("Project 2")
+    val project3 = Project("Project 3")
+
+    val review = Review("Review")
+
+    val builder = AnalysisBuilder.projectAnalysisBuilder
+    builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
+      .addValue(project3, review, 3)
+      .addValue(project1, review, 1)
+      .addValue(project2, review, 3)
+
+    assert(builder.build().entities == Seq(project3, project1, project2))
   }
 
 }
