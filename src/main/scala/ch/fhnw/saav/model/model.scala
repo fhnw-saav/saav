@@ -158,9 +158,15 @@ object model {
       }
     }
 
-    override def groupedValue(e: E, subCategory: SubCategory): Option[Double] = ???
+    override def groupedValue(entity: E, subCategory: SubCategory): Option[Double] = {
+      val values = for (indicator <- subCategory.indicators) yield groupedValue(entity, indicator)
+      median(values.flatten)
+    }
 
-    override def groupedValue(e: E, category: Category): Option[Double] = ???
+    override def groupedValue(entity: E, category: Category): Option[Double] = {
+      val values = for (subCategory <- category.subCategories) yield groupedValue(entity, subCategory)
+      median(values.flatten)
+    }
 
     private def median(values: Seq[Double]) = {
       val sortedValues = values.sorted

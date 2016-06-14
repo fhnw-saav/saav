@@ -100,73 +100,48 @@ class ModelSpec extends FlatSpec {
 
   }
 
-  it should "group by indicator using median" in {
+  it should "group by indicator/sub-category/category using median" in {
     val builder = new AnalysisBuilder[Project]
-    val indicator = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
+
+    val category = builder.category("Category")
+    val subCategoryOne = category.subCategory("Sub-Category 1")
+    val indicatorOneOne = subCategoryOne.indicator("Indicator 11")
+
     val project = Project("Project")
 
-    // empty values
-    assert(builder.build().groupedValue(project, indicator) == Option.empty)
+    val reviewOne = Review("Review 1")
+    val reviewTwo = Review("Review 2")
 
-    // even number of values
-    indicator.addValue(project, Review("Review 2"), 2)
-    indicator.addValue(project, Review("Review 1"), 1)
-    assert(builder.build().groupedValue(project, indicator) == Option(1.5))
+    // grouping by indicator
 
-    // odd number of values
-    indicator.addValue(project, Review("Review 3"), 42)
-    assert(builder.build().groupedValue(project, indicator) == Option(2))
-  }
+    assert(builder.build().groupedValue(project, indicatorOneOne) == Option.empty, "Grouping by indicator: No values")
 
-  it should "allow for simple building and querying of analyses" in {
+    indicatorOneOne.addValue(project, reviewTwo, 2)
+    indicatorOneOne.addValue(project, reviewOne, 1)
+    assert(builder.build().groupedValue(project, indicatorOneOne) == Option(1.5), "Grouping by indicator: Even number of values")
 
-    val builder = AnalysisBuilder.projectAnalysisBuilder
+    indicatorOneOne.addValue(project, reviewTwo, 3)
+    assert(builder.build().groupedValue(project, indicatorOneOne) == Option(2), "Grouping by indicator: Odd number of values")
 
-    // setting up hierarchical structure
+    // grouping by sub-category
 
-    val animals = builder.category("Animals")
-    val animalsMammals = animals.subCategory("Mammals")
-    val animalsInsects = animals.subCategory("Insects")
-    val animalsMammalsLegCount = animalsMammals.indicator("Leg Count")
-    val animalsInsectsWingLength = animalsInsects.indicator("Wing Length")
+    assert(builder.build().groupedValue(project, subCategoryOne) == Option(2), "Grouping by sub-category (single indicator)")
 
-    // actual entities to be compared
+    val indicatorOneTwo = subCategoryOne.indicator("Indicator 12")
 
-    val mutantProject = Project("Mutants")
-    val normativeProject = Project("Heteronormatives")
+    indicatorOneTwo.addValue(project, reviewOne, 3)
+    indicatorOneTwo.addValue(project, reviewTwo, 3)
 
-    // identify different readings
+    assert(builder.build().groupedValue(project, subCategoryOne) == Option(2.5), "Grouping by sub-category (multiple indicators)")
 
-    val biologistReview = Review("Biologist Review")
-    val mathematicianReview = Review("Mathematician Review")
+    // grouping by category
 
-    // actual values are added on level of indicators
+    assert(builder.build().groupedValue(project, category) == Option(2.5), "Grouping by sub-category (single sub-category)")
 
-    animalsMammalsLegCount.addValue(normativeProject, biologistReview, 4)
-    animalsMammalsLegCount.addValue(normativeProject, mathematicianReview, 4.5)
-    animalsMammalsLegCount.addValue(mutantProject, biologistReview, 42)
-    animalsMammalsLegCount.addValue(mutantProject, mathematicianReview, 42.5)
-
-    animalsInsectsWingLength.addValue(normativeProject, biologistReview, 2.2)
-    animalsInsectsWingLength.addValue(normativeProject, mathematicianReview, 2.5)
-    animalsInsectsWingLength.addValue(mutantProject, biologistReview, 99)
-    animalsInsectsWingLength.addValue(mutantProject, mathematicianReview, 99.5)
-
-    val analysis = builder.build()
-
-    // accessing values (e.g. when plotting)
-
-    for {
-      category <- analysis.categories
-      subCategory <- category.subCategories
-      indicator <- subCategory.indicators
-      entity <- analysis.entities
-      review <- analysis.reviews
-      value <- analysis.value(entity, indicator, review)
-    } {
-      println(s"${category.name}, ${subCategory.name}, ${indicator.name}, ${entity.name}, ${review.name}, $value")
-    }
-
+    category.subCategory("Sub-Category 2").indicator("Indicator 21")
+      .addValue(project, reviewOne, 5)
+      .addValue(project, reviewTwo, 7)
+    assert(builder.build().groupedValue(project, category) == Option(4.25), "Grouping by sub-category (multiple sub-categories)")
   }
 
 }
