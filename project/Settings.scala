@@ -36,7 +36,9 @@ object Settings {
     "com.github.japgolly.scalacss" %%% "ext-react" % versions.scalaCSS,
 
     // test
-    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"
+    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
+    // JVM rather than JS dependency to use ScalaTest in an IDE (https://github.com/scalatest/scalatest/issues/911)
+    "org.scalatest" %% "scalatest" % versions.scalaTest % "test"
   ))
 
   val jsDependencies = Def.setting(Seq(
