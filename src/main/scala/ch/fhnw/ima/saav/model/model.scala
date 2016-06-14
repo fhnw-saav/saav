@@ -1,6 +1,6 @@
-package ch.fhnw.saav.model
+package ch.fhnw.ima.saav.model
 
-import ch.fhnw.saav.model.model.Entity.{Organisation, Person, Project}
+import ch.fhnw.ima.saav.model.model.Entity.{Organisation, Person, Project}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

@@ -1,6 +1,6 @@
-package ch.fhnw.saav.component
+package ch.fhnw.ima.saav.component
 
-import ch.fhnw.saav.style.GlobalStyles
+import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._

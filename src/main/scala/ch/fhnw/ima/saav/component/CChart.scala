@@ -1,4 +1,4 @@
-package ch.fhnw.saav.component
+package ch.fhnw.ima.saav.component
 
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, _}

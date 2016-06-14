@@ -1,7 +1,7 @@
-package ch.fhnw.saav.model
+package ch.fhnw.ima.saav.model
 
-import ch.fhnw.saav.model.model.{AnalysisBuilder, Review}
-import ch.fhnw.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.model.Entity.Project
 import org.scalatest.FlatSpec
 
 class ModelSpec extends FlatSpec {
