@@ -33,6 +33,15 @@ object GlobalStyles extends StyleSheet.Inline {
     addClassNames("alert", "alert-info")
   )
 
+  // our own custom styling for the file upload drop zone
+  val fileDropZone = style(
+    border(2.px, dashed, c"#bbb"),
+    borderRadius(5.px),
+    padding(25.px),
+    textAlign.center,
+    color(c"#bbb")
+  )
+
   // Simple constants to avoid literal CSS classes in code
   // TODO: Investigate whether scalacss DSL supports conditional classes
   object className {

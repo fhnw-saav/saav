@@ -19,6 +19,7 @@ object Settings {
     // libraryDependencies
     val scalaJsReact = "0.11.1"
     val scalaCSS = "0.4.1"
+    val scalaJsD3 = "0.3.3"
 
     // libraryDependencies (test)
     val scalaTest = "3.0.0-RC2"
@@ -34,6 +35,7 @@ object Settings {
     // using 'extra' instead of 'core' to get routing functionality
     "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalaJsReact,
     "com.github.japgolly.scalacss" %%% "ext-react" % versions.scalaCSS,
+    "org.singlespaced" %%% "scalajs-d3" % versions.scalaJsD3,
 
     // test
     "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
