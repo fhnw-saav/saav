@@ -128,13 +128,13 @@ object model {
     }
 
     trait IndicatorScope extends Indicator {
-      def addValue(entity: E, review: Review, value: Double): AnalysisBuilder[E]
+      def addValue(entity: E, review: Review, value: Double): IndicatorScope
     }
 
     private class MutableIndicatorScope(val name: String, val values: mutable.LinkedHashMap[(E, Review), Double] = mutable.LinkedHashMap()) extends IndicatorScope {
-      override def addValue(entity: E, review: Review, value: Double): AnalysisBuilder[E] = {
+      override def addValue(entity: E, review: Review, value: Double): IndicatorScope = {
         values.put((entity, review), value)
-        AnalysisBuilder.this
+        this
       }
     }
 
