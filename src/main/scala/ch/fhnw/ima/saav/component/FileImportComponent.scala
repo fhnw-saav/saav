@@ -13,7 +13,10 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 import scalacss.ScalaCssReact._
 
-object CFileImport {
+/**
+  * A component which accepts a CSV file via drag and drop and imports its contents.
+  */
+object FileImportComponent {
 
   private val css = GlobalStyles
 
@@ -92,7 +95,7 @@ object CFileImport {
 
   }
 
-  private val component = ReactComponentB[Unit](CFileImport.getClass.getSimpleName)
+  private val component = ReactComponentB[Unit](FileImportComponent.getClass.getSimpleName)
     .renderBackend[Backend]
     .build
 

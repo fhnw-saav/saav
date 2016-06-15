@@ -7,7 +7,7 @@ import org.scalajs.dom._
 import org.scalajs.dom.raw.HTMLCanvasElement
 
 /**
-  * Draws a chart onto an HTML canvas.
+  * A component to draw onto an HTML canvas.
   *
   * Accessing the canvas element with React is a bit problematic, since React builds a virtual DOM and
   * updates the real DOM behind the scenes. Therefore the real canvas element does not exist at the time of the `render`
@@ -18,9 +18,9 @@ import org.scalajs.dom.raw.HTMLCanvasElement
   * width/height to e.g. 100% would just cause the rendered area to be scaled (which would look blurry). In order to
   * get dynamic resizing, the canvas must thus get re-rendered whenever the browser window is resized.
   */
-object CChart {
+object CanvasComponent {
 
-  private val component = ReactComponentB[Unit](CChart.getClass.getSimpleName)
+  private val component = ReactComponentB[Unit](CanvasComponent.getClass.getSimpleName)
     .render($ => <.canvas())
     .domType[HTMLCanvasElement]
     .componentDidMount(scope => Callback {

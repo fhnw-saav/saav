@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.component.{CChart, CFileImport, CTodo}
+import ch.fhnw.ima.saav.component.{CanvasComponent, FileImportComponent, TodoComponent}
 import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.extra.router.{Resolution, Router, _}
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -39,8 +39,8 @@ object MainApp extends js.JSApp {
       // create a placeholder component until we have useful UIs
       val c = ReactComponentB[Unit]("All")
         .render($ => <.div(
-          CFileImport(),
-          CChart()
+          FileImportComponent(),
+          CanvasComponent()
         ))
         .build
       c()
