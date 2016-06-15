@@ -1,5 +1,6 @@
 package ch.fhnw.ima.saav.component
 
+import ch.fhnw.ima.saav.component.Pages.Page.ProjectAnalysisPage
 import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -63,7 +64,7 @@ object Pages {
   object ProjectAnalysisPageComponent {
 
     private val component = ReactComponentB[Unit](ProjectAnalysisPageComponent.getClass.getSimpleName)
-      .render(_ => FileImportComponent())
+      .render(_ => <.div(<.h1(ProjectAnalysisPage.displayName), FileImportComponent(), D3Component()))
       .build
 
     def apply() = component()
