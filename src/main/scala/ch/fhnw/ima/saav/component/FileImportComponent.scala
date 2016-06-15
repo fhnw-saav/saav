@@ -1,14 +1,15 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.style.GlobalStyles
-import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
 import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.{BackendScope, Callback, CallbackTo, ReactComponentB}
 import org.scalajs.dom
 import org.scalajs.dom.DragEvent
 import org.singlespaced.d3js.d3
 
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 import scalacss.ScalaCssReact._
@@ -18,13 +19,17 @@ import scalacss.ScalaCssReact._
   */
 object FileImportComponent {
 
+  type ModelAccepter = (Analysis[Project]) => Unit
+
+  case class Props(modelAccepter: ModelAccepter)
+
   private val css = GlobalStyles
 
   @JSName("URL")
   @js.native
   object URL extends dom.URL
 
-  class Backend($: BackendScope[Unit, Unit]) {
+  class Backend($: BackendScope[Props, Unit]) {
 
     def handleDragOver = (e: DragEvent) => Callback {
       e.stopPropagation()
@@ -34,7 +39,10 @@ object FileImportComponent {
 
     type Datum = js.Dictionary[String]
 
-    def parseCSV(url: String) = {
+    def parseModel(url: String): Future[Analysis[Project]] = {
+
+      val dataLoadedPromise: Promise[Analysis[Project]] = Promise()
+
       d3.csv(url, (data: js.Array[Datum]) => {
 
         val builder = AnalysisBuilder.projectAnalysisBuilder
@@ -51,30 +59,27 @@ object FileImportComponent {
           val value = row(keyIt.next()).toDouble
 
           builder
-              .category(category)
-              .subCategory(subCategory)
-              .indicator(indicator)
-              .addValue(project, review, value)
+            .category(category)
+            .subCategory(subCategory)
+            .indicator(indicator)
+            .addValue(project, review, value)
 
         })
 
         val analysis = builder.build
 
-        for {
-          project <- analysis.entities
-          review <- analysis.reviews
-          category <- analysis.categories
-          subCategory <- category.subCategories
-          indicator <- subCategory.indicators
-        } {
-          val value = analysis.value(project, indicator, review)
-          println(s"${project.name} | ${category.name} | ${subCategory.name} | ${indicator.name} | ${review.name} | $value")
-        }
-
+        // making compiler happy (must return Unit)
+        val done: Unit = dataLoadedPromise.success(analysis)
       })
+
+      dataLoadedPromise.future
+
     }
 
-    def handleFileDropped = (e: DragEvent) => Callback {
+    def handleFileDropped(modelAccepter: ModelAccepter)(e: DragEvent): Callback = {
+
+      import scala.concurrent.ExecutionContext.Implicits.global
+
       e.stopPropagation()
       e.preventDefault()
 
@@ -84,21 +89,26 @@ object FileImportComponent {
         val file = files(0)
         val url = URL.createObjectURL(file)
 
-        parseCSV(url)
+        // parsing the model happens asynchronously -> returns a future
+        val analysisFuture = parseModel(url)
+        // hand new model to modelAccepter as soon as future completes successfully
+        CallbackTo(analysisFuture.map(analysis => modelAccepter(analysis)))
+      } else {
+        Callback.log("No files to import")
       }
     }
 
-    def render() = <.div(css.fileDropZone, ^.onDragOver ==> handleDragOver, ^.onDrop ==> handleFileDropped,
-        <.h1("Drag and drop"),
-        <.p("To import data from CSV file")
-      )
+    def render(p: Props) = <.div(css.fileDropZone, ^.onDragOver ==> handleDragOver, ^.onDrop ==> handleFileDropped(p.modelAccepter),
+      <.h1("Drag and drop"),
+      <.p("To import data from CSV file")
+    )
 
   }
 
-  private val component = ReactComponentB[Unit](FileImportComponent.getClass.getSimpleName)
+  private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .renderBackend[Backend]
     .build
 
-  def apply() = component()
+  def apply(modelAccepter: ModelAccepter) = component(Props(modelAccepter))
 
 }

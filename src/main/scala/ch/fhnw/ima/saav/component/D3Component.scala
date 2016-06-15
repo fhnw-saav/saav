@@ -1,15 +1,16 @@
 package ch.fhnw.ima.saav.component
 
+import ch.fhnw.ima.saav.model.model.Analysis
+import ch.fhnw.ima.saav.model.model.Entity.Project
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{Callback, ReactComponentB}
+import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement
-import org.singlespaced.d3js.Ops._
 import org.singlespaced.d3js.d3
 
 import scala.scalajs.js
 
 /**
-  * A component which uses D3.js to append an SVG tree to a DOM element.
+  * A component which uses D3.js to append content to a DOM element.
   *
   * Accessing the DOM element with React is a bit problematic, since React builds a virtual DOM and
   * updates the real DOM behind the scenes. Therefore the real DOM element does not exist at the time of the `render`
@@ -18,41 +19,42 @@ import scala.scalajs.js
   */
 object D3Component {
 
-  private val component = ReactComponentB[Unit](D3Component.getClass.getSimpleName)
-    .render($ => <.div())
+  case class State(node: Option[HTMLDivElement])
+
+  case class Props(model: Option[Analysis[Project]])
+
+  class Backend($: BackendScope[Props, State]) {
+    def render() = <.div()
+  }
+
+  private val component = ReactComponentB[Props](D3Component.getClass.getSimpleName)
+    .initialState(State(None))
+    .renderBackend[Backend]
     .domType[HTMLDivElement]
-    .componentDidMount(scope => Callback {
+    .componentDidMount(scope => {
       val div = scope.getDOMNode()
-      appendBarChartTo(div)
+      scope.modState(s => State(Some(div)))
+    })
+    .shouldComponentUpdate(scope => {
+      scope.nextState.node match {
+        case Some(node) => scope.nextProps.model.foreach(appendContents(node, _))
+        case _ =>
+      }
+      false
     })
     .build
 
-  // https://github.com/spaced/scala-js-d3-example-app/blob/master/src/main/scala/example/ScalaJSExample.scala
-  def appendBarChartTo(node: HTMLDivElement): Unit = {
-    val graphHeight = 450
-    val barWidth = 80
-    val barSeparation = 10
-    val maxData = 50
-    val horizontalBarDistance = barWidth + barSeparation
-    val barHeightMultiplier = graphHeight / maxData
-    val c = d3.rgb("DarkSlateBlue")
+  def appendContents(node: HTMLDivElement, analysis: Analysis[Project]): Unit = {
+    val date = new js.Date()
+    val now = Seq(
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds()
+    ).mkString(":")
 
-    val rectXFun = (d: Int, i: Int) => i * horizontalBarDistance
-    val rectYFun = (d: Int) => graphHeight - d * barHeightMultiplier
-    val rectHeightFun = (d: Int) => d * barHeightMultiplier
-    val rectColorFun = (d: Int, i: Int) => c.brighter(i * 0.5).toString
-
-    val svg = d3.select(node).append("svg").attr("width", "100%").attr("height", "450px")
-    val sel = svg.selectAll("rect").data(js.Array(8, 22, 31, 36, 48, 17, 25))
-    sel.enter()
-      .append("rect")
-      .attr("x", rectXFun)
-      .attr("y", rectYFun)
-      .attr("width", barWidth)
-      .attr("height", rectHeightFun)
-      .style("fill", rectColorFun)
+    d3.select(node).text(s"Loaded ${analysis.entities.size} project(s) @ $now")
   }
 
-  def apply() = component()
+  def apply(model: Option[Analysis[Project]]) = component(Props(model))
 
 }

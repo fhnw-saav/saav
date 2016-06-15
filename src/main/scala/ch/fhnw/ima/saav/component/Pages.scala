@@ -1,9 +1,11 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.Pages.Page.ProjectAnalysisPage
+import ch.fhnw.ima.saav.model.model.Analysis
+import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.style.GlobalStyles
-import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
 import scalacss.ScalaCssReact._
 
@@ -63,8 +65,22 @@ object Pages {
 
   object ProjectAnalysisPageComponent {
 
+    case class State(model: Option[Analysis[Project]])
+
+    class Backend($: BackendScope[Unit, State]) {
+
+      def update = (model: Analysis[Project]) =>
+        $.setState(State(Some(model))).runNow()
+
+      def render(s: State) = {
+        <.div(<.h1(ProjectAnalysisPage.displayName), FileImportComponent(update), D3Component(s.model))
+      }
+
+    }
+
     private val component = ReactComponentB[Unit](ProjectAnalysisPageComponent.getClass.getSimpleName)
-      .render(_ => <.div(<.h1(ProjectAnalysisPage.displayName), FileImportComponent(), D3Component()))
+      .initialState(State(None))
+      .renderBackend[Backend]
       .build
 
     def apply() = component()
