@@ -7,66 +7,68 @@ import org.scalatest.FlatSpec
 class ModelSpec extends FlatSpec {
 
   "An analysis builder" should "add categories" in {
-    val builder = new AnalysisBuilder[Project]
-    builder.category("Category A")
-    builder.category("Category B")
-    val analysis = builder.build()
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+        .category("Category A").build
+        .category("Category B").build
+        .build
 
     assert(analysis.categories.size == 2)
   }
 
   it should "re-use existing categories" in {
-    val builder = new AnalysisBuilder[Project]
-    val name = "Category"
-    val first = builder.category(name)
-    val second = builder.category(name)
-    val analysis = builder.build()
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+        .category("Category").build
+        .category("Category").build
+        .build
 
-    assert(first === second)
     assert(analysis.categories.size == 1)
   }
 
   it should "add sub-categories" in {
-    val builder = new AnalysisBuilder[Project]
-    val categoryScope = builder.category("Category")
-    categoryScope.subCategory("Sub-Category A")
-    categoryScope.subCategory("Sub-Category B")
-    val analysis = builder.build()
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+        .category("Category")
+          .subCategory("Sub-Category A").build
+          .subCategory("Sub-Category B").build
+          .build
+        .build
 
     assert(analysis.categories.head.subCategories.size == 2)
   }
 
   it should "re-use existing sub-categories" in {
-    val builder = new AnalysisBuilder[Project]
-    val categoryScope = builder.category("Category")
-    val name = "Sub-Category"
-    val first = categoryScope.subCategory(name)
-    val second = categoryScope.subCategory(name)
-    val analysis = builder.build()
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+        .category("Category")
+          .subCategory("Sub-Category").build
+          .subCategory("Sub-Category").build
+          .build
+        .build
 
-    assert(first === second)
     assert(analysis.categories.head.subCategories.size == 1)
   }
 
   it should "add indicators" in {
-    val builder = new AnalysisBuilder[Project]
-    val subCategoryScope = builder.category("Category").subCategory("Sub-Category")
-    subCategoryScope.indicator("Indicator 1")
-    subCategoryScope.indicator("Indicator 2")
-    val analysis = builder.build()
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+        .category("Category")
+          .subCategory("Sub-Category")
+              .indicator("Indicator A").build
+              .indicator("Indicator B").build
+              .build
+          .build
+      .build
 
     assert(analysis.categories.head.subCategories.head.indicators.size == 2)
   }
 
   it should "re-use existing indicators" in {
-    val builder = new AnalysisBuilder[Project]
-    val subCategoryScope = builder.category("Category").subCategory("Sub-Category")
-    val name = "Indicator"
-    val first = subCategoryScope.indicator(name)
-    val second = subCategoryScope.indicator(name)
-    val analysis = builder.build()
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+        .category("Category")
+          .subCategory("Sub-Category")
+            .indicator("Indicator").build
+            .indicator("Indicator").build
+            .build
+          .build
+        .build
 
-    assert(first === second)
     assert(analysis.categories.head.subCategories.head.indicators.size == 1)
   }
 
@@ -87,7 +89,7 @@ class ModelSpec extends FlatSpec {
     indicatorScope.addValue(entityTwo, reviewOne, 21)
     indicatorScope.addValue(entityThree, reviewTwo, 32)
 
-    val analysis = builder.build()
+    val analysis = builder.build
 
     assert(analysis.entities.size == 3)
     assert(analysis.reviews.size == 2)
@@ -104,30 +106,28 @@ class ModelSpec extends FlatSpec {
 
   "An analysis" should "group values by indicator/sub-category/category using median" in {
 
-    // build a hierarchy with some test values
-
-    val builder = new AnalysisBuilder[Project]
-
     val project = Project("Project")
 
     val reviewOne = Review("Review 1")
     val reviewTwo = Review("Review 2")
 
-    val categoryScope1 = builder.category("Category 1")
-    val categoryScope2 = builder.category("Category 2")
+    // build a hierarchy with some test values
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+        .category("Category 1")
+            .subCategory("Sub-Category 11")
+              .indicator("Indicator 111")
+                .addValue(project, reviewOne, 1)
+                .addValue(project, reviewTwo, 2)
+                .build
+              .indicator("Indicator 112")
+                .addValue(project, reviewTwo, 3)
+                .build
+              .build
+            .build
+        .category("Category 2").build
+        .build
 
-    val subCategoryScope1 = categoryScope1.subCategory("Sub-Category 1")
-    val indicatorScope11 = subCategoryScope1.indicator("Indicator 11")
-    indicatorScope11.addValue(project, reviewOne, 1)
-    indicatorScope11.addValue(project, reviewTwo, 2)
-
-    val indicatorScope12 = subCategoryScope1.indicator("Indicator 12")
-    indicatorScope12.addValue(project, reviewTwo, 3)
-
-    // actually create analysis
-
-    val analysis = builder.build()
-
+    // retrieve entity references to look-up values
     val category1 = analysis.categories(0)
     val category2 = analysis.categories(1)
 
@@ -149,7 +149,7 @@ class ModelSpec extends FlatSpec {
 
   it should "be truly immutable" in {
     val builder = AnalysisBuilder.projectAnalysisBuilder
-    val analysis = builder.build()
+    val analysis = builder.build
 
     builder.category("Category")
 
@@ -164,13 +164,19 @@ class ModelSpec extends FlatSpec {
 
     val review = Review("Review")
 
-    val builder = AnalysisBuilder.projectAnalysisBuilder
-    builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
-      .addValue(project3, review, 3)
-      .addValue(project1, review, 1)
-      .addValue(project2, review, 3)
+    val analysis = AnalysisBuilder.projectAnalysisBuilder
+      .category("Category")
+        .subCategory("Sub-Category")
+          .indicator("Indicator")
+            .addValue(project3, review, 3)
+            .addValue(project1, review, 1)
+            .addValue(project2, review, 3)
+            .build
+          .build
+        .build
+      .build
 
-    assert(builder.build().entities == Seq(project3, project1, project2))
+    assert(analysis.entities == Seq(project3, project1, project2))
   }
 
 }

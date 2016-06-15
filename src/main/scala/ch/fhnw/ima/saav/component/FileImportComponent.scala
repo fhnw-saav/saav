@@ -58,7 +58,7 @@ object FileImportComponent {
 
         })
 
-        val analysis = builder.build()
+        val analysis = builder.build
 
         for {
           project <- analysis.entities
