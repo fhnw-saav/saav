@@ -131,16 +131,16 @@ class ModelSpec extends FlatSpec {
     val category1 = analysis.categories(0)
     val category2 = analysis.categories(1)
 
-    val subCategory1 = category1.subCategories(0)
-    val indicator11 = subCategory1.indicators(0)
-    val indicator12 = subCategory1.indicators(1)
+    val subCategory11 = category1.subCategories(0)
+    val indicator111 = subCategory11.indicators(0)
+    val indicator112 = subCategory11.indicators(1)
 
     // grouping by indicator
-    assert(analysis.groupedValue(project, indicator11) == Option(1.5), "Grouping by indicator: Even number of values")
-    assert(analysis.groupedValue(project, indicator12) == Option(3), "Grouping by indicator: Odd number of values")
+    assert(analysis.groupedValue(project, indicator111) == Option(1.5), "Grouping by indicator: Even number of values")
+    assert(analysis.groupedValue(project, indicator112) == Option(3), "Grouping by indicator: Odd number of values")
 
     // grouping by sub-category
-    assert(analysis.groupedValue(project, subCategory1) == Option(2.25), "Grouping by sub-category")
+    assert(analysis.groupedValue(project, subCategory11) == Option(2.25), "Grouping by sub-category")
 
     // grouping by category
     assert(analysis.groupedValue(project, category1) == Option(2.25), "Grouping by category")
