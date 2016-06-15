@@ -1,6 +1,7 @@
 package ch.fhnw.ima.saav.model
 
 import ch.fhnw.ima.saav.model.model.Entity.{Organisation, Person, Project}
+import scala.collection.immutable.Seq // Seq in Predef is mutable (http://bit.ly/261xOxR)
 
 object model {
 
@@ -23,13 +24,13 @@ object model {
     }
 
     def groupedValue(entity: E, subCategory: SubCategory): Option[Double] = {
-      val values = for (indicator <- subCategory.indicators) yield groupedValue(entity, indicator)
-      median(values.flatten)
+      val values = subCategory.indicators.flatMap(groupedValue(entity, _))
+      median(values)
     }
 
     def groupedValue(entity: E, category: Category): Option[Double] = {
-      val values = for (subCategory <- category.subCategories) yield groupedValue(entity, subCategory)
-      median(values.flatten)
+      val values = category.subCategories.flatMap(groupedValue(entity, _))
+      median(values)
     }
 
     private def median(values: Seq[Double]) = {
@@ -86,7 +87,7 @@ object model {
         case Some(c) => c
         case None =>
           val categoryScope = new CategoryScopeImpl(categoryName)
-          categoryScopes = categoryScopes :+ categoryScope
+          categoryScopes :+= categoryScope
           categoryScope
       }
     }
@@ -109,7 +110,7 @@ object model {
           case Some(c) => c
           case None =>
             val subCategoryScope = new SubCategoryScopeImpl(subCategoryName)
-            subCategoryScopes = subCategoryScopes :+ subCategoryScope
+            subCategoryScopes :+= subCategoryScope
             subCategoryScope
         }
       }
@@ -132,7 +133,7 @@ object model {
           case Some(i) => i
           case None =>
             val indicatorScope = new IndicatorScopeImpl(indicatorName)
-            indicatorScopes = indicatorScopes :+ indicatorScope
+            indicatorScopes :+= indicatorScope
             indicatorScope
         }
       }
@@ -157,8 +158,8 @@ object model {
       override def addValue(entity: E, review: Review, value: Double): IndicatorScope = {
         values += (entity, review) -> value
         // track entities and reviews in insertion order
-        entities = entities :+ entity
-        reviews = reviews :+ review
+        entities :+= entity
+        reviews :+= review
         this
       }
 
