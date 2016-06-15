@@ -18,14 +18,9 @@ object GlobalStyles extends StyleSheet.Inline {
     paddingTop(20.px)
   )
 
-  // bootstrap's tabbed navigation
-  val tabbedNavigation = style(
-    addClassNames("nav nav-tabs")
-  )
-
-  // our own custom styling for the main tabs
-  val mainTab = style(
-    paddingTop(20.px)
+  // bootstrap's button-style anchors
+  val mainLinkButton = style(
+    addClassNames("btn", "btn-primary", "btn-lg", "btn-block", "active")
   )
 
   // bootstrap's info-style alert box
@@ -41,11 +36,5 @@ object GlobalStyles extends StyleSheet.Inline {
     textAlign.center,
     color(c"#bbb")
   )
-
-  // Simple constants to avoid literal CSS classes in code
-  // TODO: Investigate whether scalacss DSL supports conditional classes
-  object className {
-    val active = "active"
-  }
 
 }
