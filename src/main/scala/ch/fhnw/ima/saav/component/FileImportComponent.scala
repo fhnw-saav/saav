@@ -4,12 +4,11 @@ import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, CallbackTo, ReactComponentB}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
 import org.scalajs.dom
 import org.scalajs.dom.DragEvent
 import org.singlespaced.d3js.d3
 
-import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 import scalacss.ScalaCssReact._
@@ -19,9 +18,7 @@ import scalacss.ScalaCssReact._
   */
 object FileImportComponent {
 
-  type ModelAccepter = (Analysis[Project]) => Unit
-
-  case class Props(modelAccepter: ModelAccepter)
+  case class Props(onModelReady: Analysis[Project] => Unit)
 
   private val css = GlobalStyles
 
@@ -37,11 +34,10 @@ object FileImportComponent {
       e.dataTransfer.dropEffect = "copy" // Explicitly show this is a copy.
     }
 
-    type Datum = js.Dictionary[String]
 
-    def parseModel(url: String): Future[Analysis[Project]] = {
+    def parseModel(url: String, onModelReady: Analysis[Project] => Unit): Unit = {
 
-      val dataLoadedPromise: Promise[Analysis[Project]] = Promise()
+      type Datum = js.Dictionary[String]
 
       d3.csv(url, (data: js.Array[Datum]) => {
 
@@ -68,17 +64,12 @@ object FileImportComponent {
 
         val analysis = builder.build
 
-        // making compiler happy (must return Unit)
-        val done: Unit = dataLoadedPromise.success(analysis)
+        onModelReady(analysis)
+
       })
-
-      dataLoadedPromise.future
-
     }
 
-    def handleFileDropped(modelAccepter: ModelAccepter)(e: DragEvent): Callback = {
-
-      import scala.concurrent.ExecutionContext.Implicits.global
+    def handleFileDropped(onModelReady: Analysis[Project] => Unit)(e: DragEvent): Callback = {
 
       e.stopPropagation()
       e.preventDefault()
@@ -89,16 +80,16 @@ object FileImportComponent {
         val file = files(0)
         val url = URL.createObjectURL(file)
 
-        // parsing the model happens asynchronously -> returns a future
-        val analysisFuture = parseModel(url)
-        // hand new model to modelAccepter as soon as future completes successfully
-        CallbackTo(analysisFuture.map(analysis => modelAccepter(analysis)))
+        // parsing happens asynchronously -> will call onModelReady when done
+        parseModel(url, onModelReady)
+
+        Callback.empty
       } else {
         Callback.log("No files to import")
       }
     }
 
-    def render(p: Props) = <.div(css.fileDropZone, ^.onDragOver ==> handleDragOver, ^.onDrop ==> handleFileDropped(p.modelAccepter),
+    def render(p: Props) = <.div(css.fileDropZone, ^.onDragOver ==> handleDragOver, ^.onDrop ==> handleFileDropped(p.onModelReady),
       <.h1("Drag and drop"),
       <.p("To import data from CSV file")
     )
@@ -109,6 +100,6 @@ object FileImportComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(modelAccepter: ModelAccepter) = component(Props(modelAccepter))
+  def apply(onModelReady: Analysis[Project] => Unit) = component(Props(onModelReady))
 
 }
