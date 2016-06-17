@@ -1,5 +1,6 @@
 package ch.fhnw.ima.saav.component
 
+import ch.fhnw.ima.saav.component.Pages.ProjectAnalysisPageComponent.{ImportState, Ready}
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -21,7 +22,7 @@ object D3Component {
 
   case class State(node: Option[HTMLDivElement])
 
-  case class Props(model: Option[Analysis[Project]])
+  case class Props(importState: ImportState)
 
   class Backend($: BackendScope[Props, State]) {
     def render() = <.div()
@@ -37,7 +38,10 @@ object D3Component {
     })
     .shouldComponentUpdate(scope => {
       scope.nextState.node match {
-        case Some(node) => scope.nextProps.model.foreach(appendContents(node, _))
+        case Some(node) => scope.nextProps.importState match {
+          case Ready(model) => appendContents(node, model)
+          case _ =>
+        }
         case _ =>
       }
       false
@@ -55,6 +59,6 @@ object D3Component {
     d3.select(node).text(s"Loaded ${analysis.entities.size} project(s) @ $now")
   }
 
-  def apply(model: Option[Analysis[Project]]) = component(Props(model))
+  def apply(importState: ImportState) = component(Props(importState))
 
 }

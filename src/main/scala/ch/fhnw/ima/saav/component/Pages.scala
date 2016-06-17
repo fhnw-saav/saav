@@ -65,21 +65,25 @@ object Pages {
 
   object ProjectAnalysisPageComponent {
 
-    case class State(model: Option[Analysis[Project]])
+    sealed trait ImportState
+    case object Empty extends ImportState
+    case class InProgress(progress: Float) extends ImportState
+    case class Ready(model: Analysis[Project]) extends ImportState
+
+    case class State(importState: ImportState)
 
     class Backend($: BackendScope[Unit, State]) {
 
-      def update = (model: Analysis[Project]) =>
-        $.setState(State(Some(model))).runNow()
+      def onNewImportState(importState: ImportState) = $.modState(_.copy(importState = importState))
 
       def render(s: State) = {
-        <.div(<.h1(ProjectAnalysisPage.displayName), FileImportComponent(update), D3Component(s.model))
+        <.div(<.h1(ProjectAnalysisPage.displayName), FileImportComponent(s.importState, onNewImportState), D3Component(s.importState))
       }
 
     }
 
     private val component = ReactComponentB[Unit](ProjectAnalysisPageComponent.getClass.getSimpleName)
-      .initialState(State(None))
+      .initialState(State(Empty))
       .renderBackend[Backend]
       .build
 
