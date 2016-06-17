@@ -33,6 +33,11 @@ object model {
       median(values)
     }
 
+    def groupedValue(entity: E): Option[Double] = {
+      val values = categories.flatMap(groupedValue(entity, _))
+      median(values)
+    }
+
     private def median(values: Seq[Double]) = {
       val sortedValues = values.sorted
       sortedValues.size match {

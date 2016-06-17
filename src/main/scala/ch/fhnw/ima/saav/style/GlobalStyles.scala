@@ -28,10 +28,26 @@ object GlobalStyles extends StyleSheet.Inline {
     addClassNames("alert", "alert-info")
   )
 
+  val barChartBarRect = style(
+    svgFill := c"#286090" // bootstrap blue
+  )
+
+  val barChartAxis = style {
+    unsafeChild("path.domain")(
+      svgFill := none,
+      svgStroke(c"#fff")
+    )
+  }
+
+  val barChartValueLabel = style {
+    svgFill := "white"
+  }
+
   // our own custom styling for the file upload drop zone
   val fileDropZone = style(
     border(2.px, dashed, c"#bbb"),
     borderRadius(5.px),
+    marginTop(20.px),
     padding(25.px),
     textAlign.center,
     color(c"#bbb")

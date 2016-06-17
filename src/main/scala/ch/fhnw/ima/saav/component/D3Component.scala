@@ -3,12 +3,15 @@ package ch.fhnw.ima.saav.component
 import ch.fhnw.ima.saav.component.Pages.ProjectAnalysisPageComponent.{ImportState, Ready}
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement
+import org.singlespaced.d3js.Ops._
 import org.singlespaced.d3js.d3
 
 import scala.scalajs.js
+import scala.scalajs.js.JSConverters._
 
 /**
   * A component which uses D3.js to append content to a DOM element.
@@ -23,6 +26,8 @@ object D3Component {
   case class State(node: Option[HTMLDivElement])
 
   case class Props(importState: ImportState)
+
+  val css = GlobalStyles
 
   class Backend($: BackendScope[Props, State]) {
     def render() = <.div()
@@ -44,19 +49,84 @@ object D3Component {
         }
         case _ =>
       }
-      false
+      false // never need to re-render (directly manipulating DOM via D3)
     })
     .build
 
   def appendContents(node: HTMLDivElement, analysis: Analysis[Project]): Unit = {
-    val date = new js.Date()
-    val now = Seq(
-      date.getHours(),
-      date.getMinutes(),
-      date.getSeconds()
-    ).mkString(":")
 
-    d3.select(node).text(s"Loaded ${analysis.entities.size} project(s) @ $now")
+    val svgWidth = 1000
+    val svgHeight = 400
+
+    val paddingLeft = 20
+    val paddingRight = 0
+    val paddingTop = 20
+    val paddingBottom = 20
+
+    val barPaddingFraction = 0.1
+    val valueLabelOffsetY = 20d
+
+    val maxWidth = svgWidth - paddingLeft - paddingRight
+    val maxHeight = svgHeight - paddingTop - paddingBottom
+
+    // an individual data item -> defines one bar
+    case class Datum(name: String, median: Double)
+
+    // create data items from analysis model
+    val data = analysis.entities.map { project =>
+      val median = analysis.groupedValue(project)
+      Datum(project.name, median.getOrElse(Double.NaN))
+    }.toJSArray
+
+    // how data items map to pixel coordinates
+    val scaleX = d3.scale.ordinal().domain(data.map(_.name)).rangeRoundBands((0d, maxWidth.toDouble), barPaddingFraction, barPaddingFraction)
+    val scaleY = d3.scale.linear().domain(js.Array(0, data.map(_.median).max)).range(js.Array(maxHeight, 0))
+
+    val axisX = d3.svg.axis().orient("bottom").scale(scaleX)
+
+    def barTranslateX(offset: Double) = (d: Datum) => s"translate(${offset + scaleX(d.name)}, 0)"
+    val barWidth: Double = scaleX.rangeBand()
+
+    val svg = d3.select(node).append("svg").attr("width", svgWidth).attr("height", svgHeight)
+
+    val chart = svg.append("g")
+      .attr("transform", s"translate($paddingLeft, $paddingTop)")
+
+    // x axis
+    chart.append("g")
+      .attr("class", css.barChartAxis.htmlClass)
+      .attr("transform", s"translate (0, $maxHeight)")
+      .call(axisX)
+
+    // one bar for each data item
+    val bars = chart
+      .selectAll("g.bars")
+      .data(data)
+      .enter()
+
+    // bar rectangles
+    bars
+      .append("g")
+      .attr("transform", barTranslateX(0))
+      .append("rect")
+      .attr("class", css.barChartBarRect.htmlClass)
+      .attr("y", maxHeight)
+      .attr("height", 0)
+      .attr("width", barWidth)
+      .transition()
+      .duration(1500)
+      .attr("y", (d: Datum) => scaleY(d.median))
+      .attr("height", (d: Datum) => maxHeight - scaleY(d.median))
+
+    // bar value labels
+    bars
+      .append("text")
+      .attr("class", css.barChartValueLabel.htmlClass)
+      .text((d: Datum) => s"${d.median}")
+      .attr("transform", barTranslateX(barWidth / 2))
+      .attr("text-anchor", "middle")
+      .attr("y", (d: Datum) => scaleY(d.median) + valueLabelOffsetY)
+
   }
 
   def apply(importState: ImportState) = component(Props(importState))
