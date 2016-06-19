@@ -1,6 +1,7 @@
 package ch.fhnw.ima.saav.style
 
 import scalacss.Defaults._
+import scalacss.Percentage
 
 /**
   * Defines CSS styles that can be referenced from Scala.js React tags.
@@ -15,7 +16,7 @@ object GlobalStyles extends StyleSheet.Inline {
   // a bootstrap container with customizations
   val container = style(
     addClassNames("container"),
-    paddingTop(20.px)
+    paddingTop(20 px)
   )
 
   // bootstrap's button-style anchors
@@ -26,6 +27,23 @@ object GlobalStyles extends StyleSheet.Inline {
   // bootstrap's info-style alert box
   val infoBox = style(
     addClassNames("alert", "alert-info")
+  )
+
+  // SVG responsiveness (http://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js)
+  val svgContainer = style(
+    display.inlineBlock,
+    position.relative,
+    width(Percentage(100)), // syntactic sugar for percentages?
+    paddingBottom(Percentage(100)),
+    verticalAlign.top,
+    overflow.hidden
+  )
+
+  val svgContentResponsive = style(
+    display.inlineBlock,
+    position.absolute,
+    top(10 px),
+    left(0 px)
   )
 
   val barChartBarRect = style(
@@ -45,10 +63,10 @@ object GlobalStyles extends StyleSheet.Inline {
 
   // our own custom styling for the file upload drop zone
   val fileDropZone = style(
-    border(2.px, dashed, c"#bbb"),
-    borderRadius(5.px),
-    marginTop(20.px),
-    padding(25.px),
+    border(2 px, dashed, c"#bbb"),
+    borderRadius(5 px),
+    marginTop(20 px),
+    padding(25 px),
     textAlign.center,
     color(c"#bbb")
   )

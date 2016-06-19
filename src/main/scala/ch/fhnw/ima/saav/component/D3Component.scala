@@ -9,6 +9,7 @@ import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement
 import org.singlespaced.d3js.Ops._
 import org.singlespaced.d3js.d3
+import scalacss.ScalaCssReact._
 
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
@@ -30,7 +31,7 @@ object D3Component {
   val css = GlobalStyles
 
   class Backend($: BackendScope[Props, State]) {
-    def render() = <.div()
+    def render() = <.div(css.svgContainer)
   }
 
   private val component = ReactComponentB[Props](D3Component.getClass.getSimpleName)
@@ -58,15 +59,13 @@ object D3Component {
     val svgWidth = 1000
     val svgHeight = 400
 
-    val paddingLeft = 20
-    val paddingRight = 0
     val paddingTop = 20
     val paddingBottom = 20
 
     val barPaddingFraction = 0.1
     val valueLabelOffsetY = 20d
 
-    val maxWidth = svgWidth - paddingLeft - paddingRight
+    val maxWidth = svgWidth
     val maxHeight = svgHeight - paddingTop - paddingBottom
 
     // an individual data item -> defines one bar
@@ -87,10 +86,15 @@ object D3Component {
     def barTranslateX(offset: Double) = (d: Datum) => s"translate(${offset + scaleX(d.name)}, 0)"
     val barWidth: Double = scaleX.rangeBand()
 
-    val svg = d3.select(node).append("svg").attr("width", svgWidth).attr("height", svgHeight)
+    val svg = d3
+      .select(node)
+      .append("svg")
+      .attr("class", css.svgContentResponsive.htmlClass)
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", s"0 0 $svgWidth $svgHeight")
 
     val chart = svg.append("g")
-      .attr("transform", s"translate($paddingLeft, $paddingTop)")
+      .attr("transform", s"translate(0, $paddingTop)")
 
     // x axis
     chart.append("g")
