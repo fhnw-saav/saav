@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.style
 
 import scalacss.Defaults._
-import scalacss.Percentage
+import scala.language.postfixOps
 
 /**
   * Defines CSS styles that can be referenced from Scala.js React tags.
@@ -33,8 +33,8 @@ object GlobalStyles extends StyleSheet.Inline {
   val svgContainer = style(
     display.inlineBlock,
     position.relative,
-    width(Percentage(100)), // syntactic sugar for percentages?
-    paddingBottom(Percentage(100)),
+    width(100 %%),
+    paddingBottom(100 %%),
     verticalAlign.top,
     overflow.hidden
   )
