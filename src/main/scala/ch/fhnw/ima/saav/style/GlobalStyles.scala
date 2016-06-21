@@ -24,9 +24,17 @@ object GlobalStyles extends StyleSheet.Inline {
     addClassNames("btn", "btn-primary", "btn-lg", "btn-block", "active")
   )
 
+  val defaultButton = style(
+    addClassName("btn btn-default")
+  )
+
   // bootstrap's info-style alert box
   val infoBox = style(
     addClassNames("alert", "alert-info")
+  )
+
+  val pullRight = style(
+    addClassNames("pull-right")
   )
 
   // SVG responsiveness (http://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js)

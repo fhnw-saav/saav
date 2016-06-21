@@ -45,7 +45,7 @@ object Pages {
     def subPages = List[SubPage](ProjectAnalysisPage, PersonAnalysisPage, OrganisationAnalysisPage)
   }
 
-  val css = GlobalStyles
+  private val css = GlobalStyles
 
   object HomePageComponent {
 
@@ -68,7 +68,7 @@ object Pages {
     sealed trait ImportState
     case object Empty extends ImportState
     case class InProgress(progress: Float) extends ImportState
-    case class Ready(model: Analysis[Project]) extends ImportState
+    case class Ready(analysis: Analysis[Project]) extends ImportState
 
     case class State(importState: ImportState)
 
@@ -77,9 +77,20 @@ object Pages {
       def onNewImportState(importState: ImportState) = $.modState(_.copy(importState = importState))
 
       def render(s: State) = {
-        <.div(<.h1(ProjectAnalysisPage.displayName), FileImportComponent(s.importState, onNewImportState), D3Component(s.importState))
+        val analysisDependentContent = s.importState match {
+          case Ready(analysis) =>
+            <.div(
+              <.div(css.pullRight, PdfExportComponent(analysis)),
+              D3Component(analysis)
+            )
+          case _ => <.div()
+        }
+        <.div(
+          <.h1(ProjectAnalysisPage.displayName),
+          FileImportComponent(s.importState, onNewImportState),
+          analysisDependentContent
+        )
       }
-
     }
 
     private val component = ReactComponentB[Unit](ProjectAnalysisPageComponent.getClass.getSimpleName)

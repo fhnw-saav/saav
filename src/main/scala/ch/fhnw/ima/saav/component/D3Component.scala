@@ -1,6 +1,5 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.component.Pages.ProjectAnalysisPageComponent.{ImportState, Ready}
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.style.GlobalStyles
@@ -9,10 +8,10 @@ import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement
 import org.singlespaced.d3js.Ops._
 import org.singlespaced.d3js.d3
-import scalacss.ScalaCssReact._
 
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
+import scalacss.ScalaCssReact._
 
 /**
   * A component which uses D3.js to append content to a DOM element.
@@ -26,7 +25,7 @@ object D3Component {
 
   case class State(node: Option[HTMLDivElement])
 
-  case class Props(importState: ImportState)
+  case class Props(analysis: Analysis[Project])
 
   val css = GlobalStyles
 
@@ -44,10 +43,7 @@ object D3Component {
     })
     .shouldComponentUpdate(scope => {
       scope.nextState.node match {
-        case Some(node) => scope.nextProps.importState match {
-          case Ready(model) => appendContents(node, model)
-          case _ =>
-        }
+        case Some(node) => appendContents(node, scope.nextProps.analysis)
         case _ =>
       }
       false // never need to re-render (directly manipulating DOM via D3)
@@ -78,7 +74,7 @@ object D3Component {
     }.toJSArray
 
     // how data items map to pixel coordinates
-    val scaleX = d3.scale.ordinal().domain(data.map(_.name)).rangeRoundBands((0d, maxWidth.toDouble), barPaddingFraction, barPaddingFraction)
+    val scaleX = d3.scale.ordinal().domain(data.map(_.name)).rangeRoundBands((0d, maxWidth.toDouble), barPaddingFraction, 0)
     val scaleY = d3.scale.linear().domain(js.Array(0, data.map(_.median).max)).range(js.Array(maxHeight, 0))
 
     val axisX = d3.svg.axis().orient("bottom").scale(scaleX)
@@ -133,6 +129,6 @@ object D3Component {
 
   }
 
-  def apply(importState: ImportState) = component(Props(importState))
+  def apply(analysis: Analysis[Project]) = component(Props(analysis))
 
 }
