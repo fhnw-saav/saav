@@ -79,4 +79,8 @@ object GlobalStyles extends StyleSheet.Inline {
     color(c"#bbb")
   )
 
+  val hidden = style(
+    display.none
+  )
+
 }
