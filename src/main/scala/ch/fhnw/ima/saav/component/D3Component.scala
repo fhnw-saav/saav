@@ -56,7 +56,7 @@ object D3Component {
     val svgHeight = 400
 
     val paddingTop = 20
-    val paddingBottom = 20
+    val paddingBottom = 30
 
     val barPaddingFraction = 0.1
     val valueLabelOffsetY = 20d
