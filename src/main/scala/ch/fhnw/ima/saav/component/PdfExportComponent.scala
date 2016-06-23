@@ -33,9 +33,15 @@ object PdfExportComponent {
   private def generatePdf = Callback {
 
     val css = GlobalStyles
-    val svg = document.querySelector("." + css.svgContentResponsive.htmlClass)
+
+    val svgChart = document.querySelector("." + css.svgContentResponsive.htmlClass)
+    val width = svgChart.clientWidth
+    val height = svgChart.clientHeight
 
     // 1. build an SVG/XML string representation
+    val svg = svgChart.cloneNode(true)
+    svg.insertBefore(createDefsWithInlinedCss(), svg.firstChild)
+
     val svgString = new XMLSerializer().serializeToString(svg)
     val blob = new Blob(js.Array(svgString), BlobPropertyBag("image/svg+xml;charset=utf-8"))
     val svgStringUrl = URL.createObjectURL(blob)
@@ -44,15 +50,15 @@ object PdfExportComponent {
 
     // take high-resolution displays into account (otherwise looks blurry on retina)
     val pixelRatio = window.devicePixelRatio.toInt
-    canvas.width = svg.clientWidth * pixelRatio
-    canvas.height = svg.clientHeight * pixelRatio
+    canvas.width = width * pixelRatio
+    canvas.height = height * pixelRatio
     canvas.style.width = canvas.width + "px"
     canvas.style.height = canvas.height + "px"
 
     val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
     img.onload = { evt: Event =>
-      
+
       // 3. render the HTML img node onto an HTML canvas
       ctx.drawImage(img, 0, 0)
       URL.revokeObjectURL(svgStringUrl)
@@ -75,6 +81,17 @@ object PdfExportComponent {
 
     // 2. use an HTML img node to load the SVG/XML string representation
     img.src = svgStringUrl
+  }
+
+  private def createDefsWithInlinedCss(): Element = {
+    // include our style
+    val cssStyle = document.querySelector("style").cloneNode(true).asInstanceOf[Element]
+    // include font (should actually inline complete bootstrap CSS, but this is just a PoC)
+    cssStyle.innerHTML = "* { font-family: \"Helvetica Neue\",Helvetica,Arial,sans-serif; } " + cssStyle.innerHTML
+    // container for inlined CSS
+    val defsElement = document.createElement("defs")
+    defsElement.appendChild(cssStyle)
+    defsElement
   }
 
   case class Props(analysis: Analysis[Project])
