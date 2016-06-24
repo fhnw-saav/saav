@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.component.Pages.Page.ProjectAnalysisPage
+import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.style.GlobalStyles
@@ -9,7 +9,7 @@ import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
 import scalacss.ScalaCssReact._
 
-object Pages {
+object pages {
 
   // abstracts a page (at least conceptually -> this is a SPA)
   trait Page {

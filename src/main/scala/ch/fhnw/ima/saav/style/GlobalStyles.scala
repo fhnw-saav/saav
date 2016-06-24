@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.style
 
-import scalacss.Defaults._
 import scala.language.postfixOps
+import scalacss.Defaults._
 
 /**
   * Defines CSS styles that can be referenced from Scala.js React tags.
@@ -13,6 +13,8 @@ object GlobalStyles extends StyleSheet.Inline {
 
   import dsl._
 
+  def styleWrap(classNames: String*) = style(addClassNames(classNames: _*))
+
   // a bootstrap container with customizations
   val container = style(
     addClassNames("container"),
@@ -20,22 +22,14 @@ object GlobalStyles extends StyleSheet.Inline {
   )
 
   // bootstrap's button-style anchors
-  val mainLinkButton = style(
-    addClassNames("btn", "btn-primary", "btn-lg", "btn-block", "active")
-  )
+  val mainLinkButton = styleWrap("btn", "btn-primary", "btn-lg", "btn-block", "active")
 
-  val defaultButton = style(
-    addClassName("btn btn-default")
-  )
+  val defaultButton = styleWrap("btn btn-default")
 
   // bootstrap's info-style alert box
-  val infoBox = style(
-    addClassNames("alert", "alert-info")
-  )
+  val infoBox = styleWrap("alert", "alert-info")
 
-  val pullRight = style(
-    addClassNames("pull-right")
-  )
+  val pullRight = styleWrap("pull-right")
 
   // SVG responsiveness (http://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js)
   val svgContainer = style(
@@ -82,5 +76,18 @@ object GlobalStyles extends StyleSheet.Inline {
   val hidden = style(
     display.none
   )
+
+  // wrap styles in a namespace, assign to val to prevent lazy initialization
+  object modal {
+    val modal = styleWrap("modal")
+    val fade = styleWrap("fade")
+    val dialog = styleWrap("modal-dialog")
+    val content = styleWrap("modal-content")
+    val header = styleWrap("modal-header")
+    val body = styleWrap("modal-body")
+    val footer = styleWrap("modal-footer")
+  }
+
+  val _modal = modal
 
 }

@@ -1,8 +1,8 @@
 package ch.fhnw.ima.saav
 
 import ch.fhnw.ima.saav.component.TodoComponent
-import ch.fhnw.ima.saav.component.Pages.Page.{HomePage, ProjectAnalysisPage}
-import ch.fhnw.ima.saav.component.Pages._
+import ch.fhnw.ima.saav.component.pages.Page.{HomePage, ProjectAnalysisPage}
+import ch.fhnw.ima.saav.component.pages._
 import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.ReactDOM
 import japgolly.scalajs.react.extra.router.{Resolution, Router, _}

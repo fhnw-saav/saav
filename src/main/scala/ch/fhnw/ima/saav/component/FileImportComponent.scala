@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav.component
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import ch.fhnw.ima.saav.component.Pages.ProjectAnalysisPageComponent.{Empty, ImportState, InProgress, Ready}
+import ch.fhnw.ima.saav.component.pages.ProjectAnalysisPageComponent.{Empty, ImportState, InProgress, Ready}
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.style.GlobalStyles
