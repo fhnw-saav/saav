@@ -1,6 +1,5 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, ReactNode, _}
 
@@ -9,8 +8,6 @@ import scalacss.ScalaCssReact._
 import scala.language.implicitConversions
 
 object bootstrap {
-
-  private val css = GlobalStyles
 
   @js.native
   trait BootstrapJQuery extends JQuery {

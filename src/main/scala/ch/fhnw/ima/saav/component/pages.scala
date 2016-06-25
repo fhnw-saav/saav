@@ -3,7 +3,6 @@ package ch.fhnw.ima.saav.component
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
-import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
@@ -44,8 +43,6 @@ object pages {
 
     def subPages = List[SubPage](ProjectAnalysisPage, PersonAnalysisPage, OrganisationAnalysisPage)
   }
-
-  private val css = GlobalStyles
 
   object HomePageComponent {
 

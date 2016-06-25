@@ -90,4 +90,11 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val _modal = modal
 
+  object form {
+    val group = styleWrap("form-group")
+    val control = styleWrap("form-control")
+  }
+
+  val _form = form
+
 }

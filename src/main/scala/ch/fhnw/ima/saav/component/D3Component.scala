@@ -2,7 +2,6 @@ package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
-import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement
@@ -26,8 +25,6 @@ object D3Component {
   case class State(node: Option[HTMLDivElement])
 
   case class Props(analysis: Analysis[Project])
-
-  val css = GlobalStyles
 
   class Backend($: BackendScope[Props, State]) {
     def render() = <.div(css.svgContainer)

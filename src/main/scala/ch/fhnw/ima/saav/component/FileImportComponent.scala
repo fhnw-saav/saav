@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import ch.fhnw.ima.saav.component.pages.ProjectAnalysisPageComponent.{Empty, ImportState, InProgress, Ready}
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
-import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
 import org.scalajs.dom
@@ -23,8 +22,6 @@ import scalacss.ScalaCssReact._
 object FileImportComponent {
 
   case class Props(importState: ImportState, onNewImportState: ImportState => Callback)
-
-  private val css = GlobalStyles
 
   @JSName("URL")
   @js.native

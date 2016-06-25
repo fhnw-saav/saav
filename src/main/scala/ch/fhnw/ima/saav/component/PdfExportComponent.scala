@@ -3,7 +3,6 @@ package ch.fhnw.ima.saav.component
 import ch.fhnw.ima.saav.component.bootstrap.{Button, Modal}
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
-import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
 import org.scalajs.dom
@@ -13,26 +12,26 @@ import org.scalajs.dom.raw.XMLSerializer
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
+import scalacss.ScalaCssReact._
 
 object PdfExportComponent {
 
   case class Props(analysis: Analysis[Project])
 
-  case class State(showReportForm: Boolean)
+  case class State(showReportForm: Boolean, title: String)
 
   class Backend($: BackendScope[Props, State]) {
 
-    private def showReportForm = $.setState(State(true))
+    private def showReportForm = $.modState(_.copy(showReportForm = true))
+
+    private def hideReportForm = $.modState(_.copy(showReportForm = false))
 
     // Exporting an SVG tree to a PNG is pretty cumbersome:
     // 1. build an SVG/XML string representation (including CSS)
     // 2. render SVG string onto an HTML canvas (via canvg lib)
     // 3. export the HTML canvas to PNG
     // 4. add PNG to PDF
-    private def generatePdf = Callback {
-
-      val css = GlobalStyles
-
+    private def generatePdf(title: String) = Callback {
       val svgChart = document.querySelector("." + css.svgContentResponsive.htmlClass)
       val width = svgChart.getBoundingClientRect().width
       val height = svgChart.getBoundingClientRect().height
@@ -41,9 +40,9 @@ object PdfExportComponent {
       val svg = svgChart.cloneNode(true)
       svg.insertBefore(createDefsWithInlinedCss(), svg.firstChild)
       val svgString = new XMLSerializer().serializeToString(svg)
-      val canvas = document.createElement("canvas").asInstanceOf[Canvas]
 
-      // take high-resolution displays into account (otherwise looks blurry on retina)
+      // create a canvas, taking high-resolution displays into account (otherwise looks blurry on retina)
+      val canvas = document.createElement("canvas").asInstanceOf[Canvas]
       val pixelRatio = window.devicePixelRatio.toInt
       canvas.width = (width * pixelRatio).toInt
       canvas.height = (height * pixelRatio).toInt
@@ -56,7 +55,7 @@ object PdfExportComponent {
 
       val doc = new jsPDF("p", "px", "a4")
       val x = 50
-      doc.text(x, 50, pages.Page.ProjectAnalysisPage.displayName)
+      doc.text(x, 50, title)
 
       // 4. add PNG to PDF
       val scaling = 0.3
@@ -78,16 +77,27 @@ object PdfExportComponent {
       defsElement
     }
 
+    def onTitleChange(e: ReactEventI) = {
+      val newValue = e.target.value
+      $.modState(_.copy(title = newValue))
+    }
+
     def render(s: State) = {
-      val button = Button(showReportForm, "Generate PDF...")
+      val exportPdfLabel = "Export PDF"
+      val button = Button(showReportForm, exportPdfLabel + "...")
       if (s.showReportForm) {
-          val modal = Modal(
-            Modal.Props(
-              header = hide => <.h2("Generate PDF"),
-              footer = hide => Button(generatePdf >> hide >> $.setState(State(false)), "OK")),
-            TodoComponent("Customization Form")
-          )
-          <.div(button, modal)
+        val titleInput = <.input(css.form.control, ^.`type` := "text", ^.id := "title", ^.onChange ==> onTitleChange)
+        val labelledTitleInput = <.div(
+          <.label(css.form.group, ^.`for` := "title", "Title:"),
+          titleInput
+        )
+        val modal = Modal(
+          Modal.Props(
+            header = hide => <.h2(exportPdfLabel),
+            footer = hide => Button(generatePdf(s.title) >> hide >> hideReportForm, "OK")),
+          labelledTitleInput
+        )
+        <.div(button, modal)
       } else {
         <.div(button)
       }
@@ -96,7 +106,7 @@ object PdfExportComponent {
   }
 
   private val component = ReactComponentB[Props](PdfExportComponent.getClass.getSimpleName)
-    .initialState(State(false))
+    .initialState(State(showReportForm = false, pages.Page.ProjectAnalysisPage.displayName))
     .renderBackend[Backend]
     .build
 
