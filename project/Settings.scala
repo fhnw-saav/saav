@@ -13,7 +13,6 @@ object Settings {
   )
 
   object versions {
-    val saav = "0.1.0-SNAPSHOT"
     val scala = "2.11.8"
 
     // libraryDependencies

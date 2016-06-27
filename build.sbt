@@ -2,7 +2,6 @@ lazy val root = (project in file("."))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := Settings.name,
-    version := Settings.versions.saav,
     scalaVersion := Settings.versions.scala,
     scalacOptions ++= Settings.scalacOptions
   )
@@ -22,3 +21,16 @@ persistLauncher in Test := false
 
 // make the referenced paths on source maps relative to target path
 relativeSourceMaps := true
+
+// custom release process
+// https://github.com/sbt/sbt-release#can-we-finally-customize-that-release-process-please
+import ReleaseTransformations._
+releaseProcess := Seq[ReleaseStep](
+  inquireVersions,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  setNextVersion,
+  commitNextVersion
+)
