@@ -1,7 +1,5 @@
 package ch.fhnw.ima.saav.component
 
-import java.util.concurrent.atomic.AtomicInteger
-
 import ch.fhnw.ima.saav.component.pages.ProjectAnalysisPageComponent.{Empty, ImportState, InProgress, Ready}
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
@@ -13,7 +11,6 @@ import org.singlespaced.d3js.d3
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
-import scala.scalajs.js.timers.SetTimeoutHandle
 import scalacss.ScalaCssReact._
 
 /**
@@ -54,62 +51,13 @@ object FileImportComponent {
     }
 
     def parseModel(url: String, onNewImportState: ImportState => Callback): Unit = {
-
-      // D3.js parsing happens asynchronously
-      // in order to report progress, parsing of each row will be dispatched as a separate thunk, giving
-      // react a chance to update the UI in between
-      d3.csv(url, (data: js.Array[Row]) => {
-
-        val rowCount = data.size
+      d3.csv(url, (rows: js.Array[Row]) => {
         val builder = AnalysisBuilder.projectAnalysisBuilder
 
-        // tracks how far along we are (execution order of async thunks is not guaranteed, but we need
-        // to know when all rows have been parsed)
-        val parsedRowCountRef = new AtomicInteger()
-
-        for ((row, rowIndex) <- data.zipWithIndex) {
-          parseRowAsync(onNewImportState, builder, rowCount, parsedRowCountRef, row, rowIndex)
-        }
-
+        // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
+        // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
+        parseRowBatchAsync(onNewImportState, builder, rows, 0)
       })
-    }
-
-
-    def parseRowAsync(onNewImportState: (ImportState) => Callback, builder: AnalysisBuilder[Project], rowCount: Int, parsedRowCountRef: AtomicInteger, row: Row, rowIndex: Int): SetTimeoutHandle = {
-
-      js.timers.setTimeout(10) {
-
-        val keyIt = row.keys.iterator
-
-        val project = Project(row(keyIt.next()))
-        val hierarchyLevels = row(keyIt.next()).split(":::")
-        val category = hierarchyLevels(0)
-        val subCategory = hierarchyLevels(1)
-        val indicator = hierarchyLevels(2)
-        val review = Review(row(keyIt.next()))
-        val value = row(keyIt.next()).toDouble
-
-        builder
-          .category(category)
-          .subCategory(subCategory)
-          .indicator(indicator)
-          .addValue(project, review, value)
-
-        val parsedRowCount = parsedRowCountRef.incrementAndGet()
-
-        // report progress (every 10th row is enough)
-        if (rowIndex % 10 == 0) {
-          val progress = (rowIndex + 1) / rowCount.toFloat
-          onNewImportState(InProgress(progress)).runNow()
-        }
-
-        // parsing is complete -> model can be built
-        if (parsedRowCount == rowCount) {
-          val analysis = builder.build
-          onNewImportState(Ready(analysis)).runNow()
-        }
-
-      }
     }
 
     def render(p: Props) = {
@@ -124,6 +72,62 @@ object FileImportComponent {
         case Ready(_) => <.div()
       }
     }
+
+  }
+
+  def parseRowBatchAsync(onNewImportState: (ImportState) => Callback, builder: AnalysisBuilder[Project], rows: Seq[Row], batchIndex: Int): Unit = {
+
+    val batchSize = 10
+
+    js.timers.setTimeout(0) {
+
+      for (
+        indexWithinBatch <- 0 until batchSize;
+        rowIndex = (batchIndex * batchSize) + indexWithinBatch
+        if rowIndex < rows.length
+      ) {
+
+        val row = rows(rowIndex)
+
+        parseRow(builder, row)
+
+        // parsing is complete -> model can be built
+        if (rowIndex == rows.length - 1) {
+          val analysis = builder.build
+          onNewImportState(Ready(analysis)).runNow()
+        }
+        // report progress and schedule next batch
+        else if (indexWithinBatch == batchSize - 1) {
+          val progress = (rowIndex + 1).toFloat / rows.length
+          onNewImportState(InProgress(progress)).runNow()
+          parseRowBatchAsync(onNewImportState, builder, rows, batchIndex + 1)
+        }
+
+      }
+
+    }
+
+  }
+
+  def parseRow(builder: AnalysisBuilder[Project], row: Row): AnalysisBuilder[Project] = {
+
+    val keyIt = row.keys.iterator
+
+    val project = Project(row(keyIt.next()))
+    val hierarchyLevels = row(keyIt.next()).split(":::")
+    val category = hierarchyLevels(0)
+    val subCategory = hierarchyLevels(1)
+    val indicator = hierarchyLevels(2)
+    val review = Review(row(keyIt.next()))
+    val value = row(keyIt.next()).toDouble
+
+    builder
+      .category(category)
+      .subCategory(subCategory)
+      .indicator(indicator)
+      .addValue(project, review, value)
+
+    builder
 
   }
 
