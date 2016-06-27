@@ -114,10 +114,6 @@ object PdfExportComponent {
 
   // Scala facades to 3rd party JS libs --> need more type-safety once we settle on a usage...
 
-  @JSName("URL")
-  @js.native
-  object URL extends dom.URL
-
   @js.native
   @JSName("jsPDF")
   class jsPDF(orientation: String, unit: String, pageFormat: String) extends js.Object {

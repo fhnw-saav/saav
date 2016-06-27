@@ -20,10 +20,6 @@ object FileImportComponent {
 
   case class Props(importState: ImportState, onNewImportState: ImportState => Callback)
 
-  @JSName("URL")
-  @js.native
-  object URL extends dom.URL
-
   type Row = js.Dictionary[String]
 
   class Backend($: BackendScope[Props, Unit]) {
