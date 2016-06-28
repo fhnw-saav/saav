@@ -1,2 +1,5 @@
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.9")
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.0.0")
+addSbtPlugin("org.clapper" % "sbt-editsource" % "0.7.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.4")
