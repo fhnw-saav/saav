@@ -37,7 +37,6 @@ releaseProcess := Seq[ReleaseStep](
   commitNextVersion
 )
 
-// assemble site for gh-pages branch
 git.remoteRepo := "https://github.com/fhnw-saav/saav.git"
 
 // replace paths in index.html
@@ -48,19 +47,28 @@ substitutions in EditSource ++= Seq(
   sub("""fastopt""".r, "opt", SubAll)
 )
 
+// assemble site for gh-pages branch
 siteMappings ++=
-  Seq(file("target/index.html") -> "index.html") ++
-    ((target.value / "scala-2.11" ** ("saav-opt.js" || "saav-fullopt.js.map" || "saav-jsdeps.js" || "saav-launcher.js")).get map {
-      (f: File) => (f, "js/" + f.getName)
-    }) ++
+  Seq(
+    target.value / "index.html" -> "index.html",
+    toJsFolder((artifactPath in (Compile, fullOptJS)).value),
+    toJsFolder(file((artifactPath in (Compile, fullOptJS)).value.getPath + ".map")),
+    toJsFolder((artifactPath in (Compile, packageScalaJSLauncher)).value),
+    toJsFolder((artifactPath in (Compile, packageJSDependencies)).value)
+  ) ++
     directory(root.base / "css") ++
     directory(root.base / "js")
 
-// http://bit.ly/28Jcd5K
+def toJsFolder(f: File) = f -> s"js/${f.name}"
+
+// Helper method to map complete dir contents (http://bit.ly/28Jcd5K)
 def directory(sourceDir: File): Seq[(File, String)] = {
   Option(sourceDir.getParentFile)
     .map(parent => sourceDir.*** pair relativeTo(parent))
     .getOrElse(sourceDir.*** pair basic)
 }
 
-makeSite <<= makeSite.dependsOn(Keys.clean in Compile, fullOptJS in Compile, edit in EditSource)
+lazy val cleanSite = taskKey[Unit]("Cleans contents of 'target/site'")
+cleanSite := IO.delete(target.value / "site")
+
+makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource)
