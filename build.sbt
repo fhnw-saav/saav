@@ -51,10 +51,10 @@ substitutions in EditSource ++= Seq(
 siteMappings ++=
   Seq(
     target.value / "index.html" -> "index.html",
-    toJsFolder((artifactPath in (Compile, fullOptJS)).value),
-    toJsFolder(file((artifactPath in (Compile, fullOptJS)).value.getPath + ".map")),
-    toJsFolder((artifactPath in (Compile, packageScalaJSLauncher)).value),
-    toJsFolder((artifactPath in (Compile, packageJSDependencies)).value)
+    toJsFolder((fullOptJS in Compile).value.data),
+    toJsFolder(file((fullOptJS in Compile).value.data.getPath + ".map")),
+    toJsFolder((packageScalaJSLauncher in Compile).value.data),
+    toJsFolder((packageJSDependencies in Compile).value)
   ) ++
     directory(root.base / "css") ++
     directory(root.base / "js")
@@ -69,6 +69,6 @@ def directory(sourceDir: File): Seq[(File, String)] = {
 }
 
 lazy val cleanSite = taskKey[Unit]("Cleans contents of 'target/site'")
-cleanSite := IO.delete(target.value / "site")
+cleanSite := IO.delete(siteDirectory.value)
 
 makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource)
