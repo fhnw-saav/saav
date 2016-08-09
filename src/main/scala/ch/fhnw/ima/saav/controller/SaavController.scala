@@ -11,22 +11,24 @@ object SaavController {
 
   // Actions
 
-  final case class ProjectAnalysisImportInProgress(progress: Float) extends Action
+  final case class ProjectAnalysisImportInProgressAction(progress: Float) extends Action
 
-  final case class ProjectAnalysisImportFailed(throwable: Throwable) extends Action
+  final case class ProjectAnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
 
-  final case class ProjectAnalysisReady(analysis: Analysis[Project]) extends Action
+  final case class ProjectAnalysisReadyAction(analysis: Analysis[Project]) extends Action
 
   // Handlers
 
-  class ProjectAnalysisHandler(modelRW: ModelRW[SaavModel, Either[ImportProgress, Analysis[Project]]]) extends ActionHandler(modelRW) {
+  class ProjectAnalysisHandler[M](modelRW: ModelRW[M, Either[ImportState, Analysis[Project]]]) extends ActionHandler(modelRW) {
 
     override def handle = {
-      case ProjectAnalysisImportInProgress(progress) => updated(Left(InProgress(progress)))
-      case a @ ProjectAnalysisImportFailed(t) =>
-        logException(this.getClass.getSimpleName, String.valueOf(a), t)
-        updated(Left(Failed(t)))
-      case ProjectAnalysisReady(analysis) => updated(Right(analysis))
+      case ProjectAnalysisImportInProgressAction(progress) => updated(Left(ImportInProgress(progress)))
+      case a @ ProjectAnalysisImportFailedAction(t, logToConsole) =>
+        if (logToConsole) {
+          logException(this.getClass.getSimpleName, String.valueOf(a), t)
+        }
+        updated(Left(ImportFailed(t)))
+      case ProjectAnalysisReadyAction(analysis) => updated(Right(analysis))
     }
 
   }
@@ -35,7 +37,7 @@ object SaavController {
 
   object SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
 
-    override protected def initialModel = SaavModel(Left(NotStarted()))
+    override protected def initialModel = SaavModel()
 
     override protected val actionHandler = composeHandlers(
       new ProjectAnalysisHandler(zoomRW(_.projectAnalysis)((model, newValue) => model.copy(projectAnalysis = newValue)))

@@ -1,9 +1,9 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.{ProjectAnalysisImportFailed, ProjectAnalysisImportInProgress, ProjectAnalysisReady}
+import ch.fhnw.ima.saav.controller.SaavController.{ProjectAnalysisImportFailedAction, ProjectAnalysisImportInProgressAction, ProjectAnalysisReadyAction}
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder, Review}
-import ch.fhnw.ima.saav.model.{Failed, InProgress, NotStarted, SaavModel}
+import ch.fhnw.ima.saav.model.{ImportFailed, ImportInProgress, ImportNotStarted, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
@@ -34,7 +34,7 @@ object FileImportComponent {
       e.stopPropagation()
       e.preventDefault()
 
-      val handleError = (t: Throwable) => proxy.dispatch(ProjectAnalysisImportFailed(t)).runNow()
+      val handleError = (t: Throwable) => proxy.dispatch(ProjectAnalysisImportFailedAction(t)).runNow()
 
       try {
         val files = e.dataTransfer.files
@@ -42,8 +42,8 @@ object FileImportComponent {
           val file = files(0)
           val url = URL.createObjectURL(file)
 
-          val handleProgress = (progress: Float) => proxy.dispatch(ProjectAnalysisImportInProgress(progress)).runNow()
-          val handleReady = (analysis: Analysis[Project]) => proxy.dispatch(ProjectAnalysisReady(analysis)).runNow()
+          val handleProgress = (progress: Float) => proxy.dispatch(ProjectAnalysisImportInProgressAction(progress)).runNow()
+          val handleReady = (analysis: Analysis[Project]) => proxy.dispatch(ProjectAnalysisReadyAction(analysis)).runNow()
 
           parseModel(url, handleProgress, handleReady, handleError)
 
@@ -68,14 +68,14 @@ object FileImportComponent {
 
     def render(p: Props) = {
       p.proxy.value.projectAnalysis match {
-        case Left(NotStarted()) =>
+        case Left(ImportNotStarted()) =>
           <.div(css.fileDropZone,
             ^.onDragOver ==> handleDragOver,
             ^.onDrop ==> handleFileDropped(p.proxy),
             <.div(<.h1("Drag and drop"), <.p("To import data from CSV file")))
-        case Left(InProgress(progress)) =>
+        case Left(ImportInProgress(progress)) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
-        case Left(Failed(t)) =>
+        case Left(ImportFailed(t)) =>
           <.div(css.fileDropZone, <.h1("Import failed"), <.p("See console log for details"))
         case _ => <.div()
       }

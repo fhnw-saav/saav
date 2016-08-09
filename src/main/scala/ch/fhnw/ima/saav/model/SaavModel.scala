@@ -4,12 +4,12 @@ package model
 import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
 
-case class SaavModel(projectAnalysis: Either[ImportProgress, Analysis[Project]])
+case class SaavModel(projectAnalysis: Either[ImportState, Analysis[Project]] = Left(ImportNotStarted()))
 
-sealed trait ImportProgress
+sealed trait ImportState
 
-final case class NotStarted() extends ImportProgress
+final case class ImportNotStarted() extends ImportState
 
-final case class InProgress(progress: Float) extends ImportProgress
+final case class ImportInProgress(progress: Float) extends ImportState
 
-final case class Failed(throwable: Throwable) extends ImportProgress
+final case class ImportFailed(throwable: Throwable) extends ImportState
