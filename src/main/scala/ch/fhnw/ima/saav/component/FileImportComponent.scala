@@ -6,7 +6,7 @@ import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.model.{ImportFailed, ImportInProgress, ImportNotStarted, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
+import japgolly.scalajs.react.{Callback, ReactComponentB}
 import org.scalajs.dom.DragEvent
 import org.singlespaced.d3js.d3
 
@@ -22,73 +22,57 @@ object FileImportComponent {
 
   type Row = js.Dictionary[String]
 
-  class Backend($: BackendScope[Props, Unit]) {
-
-    def handleDragOver(e: DragEvent) = Callback {
-      e.stopPropagation()
-      e.preventDefault()
-      e.dataTransfer.dropEffect = "copy"
-    }
-
-    // callbacks which are invoked during file parsing
-    // 'runNow' is needed because all parsing happens asynchronously
-
-    def handleProgress(progress: Float): Unit = $.props.map(_.proxy.dispatch(AnalysisImportInProgressAction(progress))).runNow()
-
-    def handleReady(analysis: Analysis[Project]): Unit = $.props.map(_.proxy.dispatch(AnalysisReadyAction(analysis))).runNow()
-
-    def handleError(t: Throwable): Unit = $.props.map(_.proxy.dispatch(AnalysisImportFailedAction(t))).runNow()
-
-
-    def handleFileDropped(proxy: ModelProxy[SaavModel])(e: DragEvent): Callback = {
-      e.stopPropagation()
-      e.preventDefault()
-
-      // actual file parsing
-
-      try {
-        val files = e.dataTransfer.files
-        if (files.length > 0) {
-          val file = files(0)
-          val url = URL.createObjectURL(file)
-
-          parseModel(url, handleProgress, handleReady, handleError)
-
-        } else {
-          Callback.log("No files to import")
-        }
-      } catch {
-        case t: Throwable => handleError(t)
-      }
-      Callback.empty
-    }
-
-    def parseModel(url: String, handleProgress: Float => Any, handleReady: Analysis[Project] => Any, handleError: Throwable => Any): Unit = {
-      d3.csv(url, (rows: js.Array[Row]) => {
-        val builder = AnalysisBuilder.projectAnalysisBuilder
-
-        // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
-        // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
-        parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, handleError)
-      })
-    }
-
-    def render(p: Props) = {
-      p.proxy.value.analysis match {
-        case Left(ImportNotStarted()) =>
-          <.div(css.fileDropZone,
-            ^.onDragOver ==> handleDragOver,
-            ^.onDrop ==> handleFileDropped(p.proxy),
-            <.div(<.h1("Drag and drop"), <.p("To import data from CSV file")))
-        case Left(ImportInProgress(progress)) =>
-          <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
-        case Left(ImportFailed(t)) =>
-          <.div(css.fileDropZone, <.h1("Import failed"), <.p("See console log for details"))
-        case _ => <.div()
-      }
-    }
-
+  private def handleDragOver(e: DragEvent) = Callback {
+    e.stopPropagation()
+    e.preventDefault()
+    e.dataTransfer.dropEffect = "copy"
   }
+
+  // callbacks which are invoked during file parsing
+  // 'runNow' is needed because all parsing happens asynchronously
+
+  private def handleProgress(proxy: ModelProxy[SaavModel])(progress: Float): Unit =
+    proxy.dispatch(AnalysisImportInProgressAction(progress)).runNow()
+
+  private def handleReady(proxy: ModelProxy[SaavModel])(analysis: Analysis[Project]): Unit =
+    proxy.dispatch(AnalysisReadyAction(analysis)).runNow()
+
+  private def handleError(proxy: ModelProxy[SaavModel])(t: Throwable): Unit =
+    proxy.dispatch(AnalysisImportFailedAction(t)).runNow()
+
+  private def handleFileDropped(proxy: ModelProxy[SaavModel])(e: DragEvent): Callback = {
+    e.stopPropagation()
+    e.preventDefault()
+
+    // actual file parsing
+
+    try {
+      val files = e.dataTransfer.files
+      if (files.length > 0) {
+        val file = files(0)
+        val url = URL.createObjectURL(file)
+
+        parseModel(url, handleProgress(proxy), handleReady(proxy), handleError(proxy))
+
+      } else {
+        Callback.log("No files to import")
+      }
+    } catch {
+      case t: Throwable => handleError(proxy)(t)
+    }
+    Callback.empty
+  }
+
+  private def parseModel(url: String, handleProgress: Float => Any, handleReady: Analysis[Project] => Any, handleError: Throwable => Any): Unit = {
+    d3.csv(url, (rows: js.Array[Row]) => {
+      val builder = AnalysisBuilder.projectAnalysisBuilder
+
+      // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
+      // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
+      parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, handleError)
+    })
+  }
+
 
   def parseRowBatchAsync(builder: AnalysisBuilder[Project], rows: Seq[Row], batchIndex: Int, handleProgress: Float => Any, handleReady: Analysis[Project] => Any, handleError: Throwable => Any): Unit = {
 
@@ -152,7 +136,20 @@ object FileImportComponent {
   }
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
-    .renderBackend[Backend]
+    .render_P(p => {
+      p.proxy.value.analysis match {
+        case Left(ImportNotStarted()) =>
+          <.div(css.fileDropZone,
+            ^.onDragOver ==> handleDragOver,
+            ^.onDrop ==> handleFileDropped(p.proxy),
+            <.div(<.h1("Drag and drop"), <.p("To import data from CSV file")))
+        case Left(ImportInProgress(progress)) =>
+          <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
+        case Left(ImportFailed(t)) =>
+          <.div(css.fileDropZone, <.h1("Import failed"), <.p("See console log for details"))
+        case _ => <.div()
+      }
+    })
     .build
 
   def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
