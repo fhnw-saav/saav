@@ -1,1 +1,3 @@
-## Software application to analyse and visualise research output in the humanities and social sciences (SAAV)
+# SAAV image:https://travis-ci.org/fhnw-saav/saav.svg?branch=master["Build Status", link="https://travis-ci.org/fhnw-saav/saav"]
+
+Software application to analyse and visualise research output in the humanities and social sciences
