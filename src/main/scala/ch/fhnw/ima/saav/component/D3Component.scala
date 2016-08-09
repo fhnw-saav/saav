@@ -1,8 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.model.model.Analysis
-import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.model.{Analysis, Entity}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement
@@ -25,7 +24,7 @@ object D3Component {
 
   case class State(node: Option[HTMLDivElement])
 
-  case class Props(analysis: Analysis[Project])
+  case class Props(analysis: Analysis[Entity])
 
   class Backend($: BackendScope[Props, State]) {
     def render() = <.div(css.svgContainer)
@@ -48,7 +47,7 @@ object D3Component {
     })
     .build
 
-  def appendContents(node: HTMLDivElement, analysis: Analysis[Project]): Unit = {
+  def appendContents(node: HTMLDivElement, analysis: Analysis[Entity]): Unit = {
 
     val svgWidth = 1000
     val svgHeight = 400
@@ -66,9 +65,9 @@ object D3Component {
     case class Datum(name: String, median: Double)
 
     // create data items from analysis model
-    val data = analysis.entities.map { project =>
-      val median = analysis.groupedValue(project)
-      Datum(project.name, median.getOrElse(Double.NaN))
+    val data = analysis.entities.map { entity =>
+      val median = analysis.groupedValue(entity)
+      Datum(entity.name, median.getOrElse(Double.NaN))
     }.toJSArray
 
     // how data items map to pixel coordinates
@@ -127,6 +126,6 @@ object D3Component {
 
   }
 
-  def apply(analysis: Analysis[Project]) = component(Props(analysis))
+  def apply(analysis: Analysis[Entity]) = component(Props(analysis))
 
 }

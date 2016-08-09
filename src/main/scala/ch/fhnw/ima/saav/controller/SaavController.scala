@@ -2,8 +2,7 @@ package ch.fhnw.ima.saav
 package controller
 
 import ch.fhnw.ima.saav.model._
-import ch.fhnw.ima.saav.model.model.Analysis
-import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.model.{Analysis, Entity}
 import diode._
 import diode.react.ReactConnector
 
@@ -11,24 +10,24 @@ object SaavController {
 
   // Actions
 
-  final case class ProjectAnalysisImportInProgressAction(progress: Float) extends Action
+  final case class AnalysisImportInProgressAction(progress: Float) extends Action
 
-  final case class ProjectAnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
+  final case class AnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
 
-  final case class ProjectAnalysisReadyAction(analysis: Analysis[Project]) extends Action
+  final case class AnalysisReadyAction[E <: Entity](analysis: Analysis[E]) extends Action
 
   // Handlers
 
-  class ProjectAnalysisHandler[M](modelRW: ModelRW[M, Either[ImportState, Analysis[Project]]]) extends ActionHandler(modelRW) {
+  class AnalysisHandler[M](modelRW: ModelRW[M, Either[ImportState, Analysis[Entity]]]) extends ActionHandler(modelRW) {
 
     override def handle = {
-      case ProjectAnalysisImportInProgressAction(progress) => updated(Left(ImportInProgress(progress)))
-      case a @ ProjectAnalysisImportFailedAction(t, logToConsole) =>
+      case AnalysisImportInProgressAction(progress) => updated(Left(ImportInProgress(progress)))
+      case a@AnalysisImportFailedAction(t, logToConsole) =>
         if (logToConsole) {
           logException(this.getClass.getSimpleName, String.valueOf(a), t)
         }
         updated(Left(ImportFailed(t)))
-      case ProjectAnalysisReadyAction(analysis) => updated(Right(analysis))
+      case AnalysisReadyAction(analysis) => updated(Right(analysis))
     }
 
   }
@@ -40,7 +39,7 @@ object SaavController {
     override protected def initialModel = SaavModel()
 
     override protected val actionHandler = composeHandlers(
-      new ProjectAnalysisHandler(zoomRW(_.projectAnalysis)((model, newValue) => model.copy(projectAnalysis = newValue)))
+      new AnalysisHandler(zoomRW(_.analysis)((model, newValue) => model.copy(analysis = newValue)))
     )
 
     override def handleError(msg: String): Unit = {

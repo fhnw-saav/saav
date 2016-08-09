@@ -5,7 +5,7 @@ import ch.fhnw.ima.saav.model.model.Entity.{Organisation, Person, Project}
 
 object model {
 
-  final case class Analysis[E <: Entity](categories: Seq[Category], entities: Seq[E], reviews: Seq[Review], private val valuesByIndicator: Map[Indicator, Map[(E, Review), Double]]) {
+  final case class Analysis[E <: Entity](categories: Seq[Category], entities: Seq[E], reviews: Seq[Review], valuesByIndicator: Map[Indicator, Map[(E, Review), Double]]) {
 
     def value(entity: E, indicator: Indicator, review: Review): Option[Double] = {
       valuesByIndicator.get(indicator) match {
@@ -58,15 +58,17 @@ object model {
 
   final case class Review(name: String)
 
-  sealed abstract class Entity(name: String)
+  sealed abstract class Entity() {
+    def name: String
+  }
 
   object Entity {
 
-    final case class Project(name: String) extends Entity(name)
+    final case class Project(name: String) extends Entity
 
-    final case class Person(name: String) extends Entity(name)
+    final case class Person(name: String) extends Entity
 
-    final case class Organisation(name: String) extends Entity(name)
+    final case class Organisation(name: String) extends Entity
 
   }
 

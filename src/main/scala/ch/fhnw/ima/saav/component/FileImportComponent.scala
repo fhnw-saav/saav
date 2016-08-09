@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.{ProjectAnalysisImportFailedAction, ProjectAnalysisImportInProgressAction, ProjectAnalysisReadyAction}
+import ch.fhnw.ima.saav.controller.SaavController.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.model.{ImportFailed, ImportInProgress, ImportNotStarted, SaavModel}
@@ -30,20 +30,27 @@ object FileImportComponent {
       e.dataTransfer.dropEffect = "copy"
     }
 
+    // callbacks which are invoked during file parsing
+    // 'runNow' is needed because all parsing happens asynchronously
+
+    def handleProgress(progress: Float): Unit = $.props.map(_.proxy.dispatch(AnalysisImportInProgressAction(progress))).runNow()
+
+    def handleReady(analysis: Analysis[Project]): Unit = $.props.map(_.proxy.dispatch(AnalysisReadyAction(analysis))).runNow()
+
+    def handleError(t: Throwable): Unit = $.props.map(_.proxy.dispatch(AnalysisImportFailedAction(t))).runNow()
+
+
     def handleFileDropped(proxy: ModelProxy[SaavModel])(e: DragEvent): Callback = {
       e.stopPropagation()
       e.preventDefault()
 
-      val handleError = (t: Throwable) => proxy.dispatch(ProjectAnalysisImportFailedAction(t)).runNow()
+      // actual file parsing
 
       try {
         val files = e.dataTransfer.files
         if (files.length > 0) {
           val file = files(0)
           val url = URL.createObjectURL(file)
-
-          val handleProgress = (progress: Float) => proxy.dispatch(ProjectAnalysisImportInProgressAction(progress)).runNow()
-          val handleReady = (analysis: Analysis[Project]) => proxy.dispatch(ProjectAnalysisReadyAction(analysis)).runNow()
 
           parseModel(url, handleProgress, handleReady, handleError)
 
@@ -67,7 +74,7 @@ object FileImportComponent {
     }
 
     def render(p: Props) = {
-      p.proxy.value.projectAnalysis match {
+      p.proxy.value.analysis match {
         case Left(ImportNotStarted()) =>
           <.div(css.fileDropZone,
             ^.onDragOver ==> handleDragOver,

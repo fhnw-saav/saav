@@ -1,10 +1,9 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.model.Analysis
-import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.model.{Analysis, Entity}
 
-case class SaavModel(projectAnalysis: Either[ImportState, Analysis[Project]] = Left(ImportNotStarted()))
+case class SaavModel(analysis: Either[ImportState, Analysis[Entity]] = Left(ImportNotStarted()))
 
 sealed trait ImportState
 

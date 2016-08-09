@@ -68,7 +68,7 @@ object pages {
     private val component = ReactComponentB[Props](ProjectAnalysisPageComponent.getClass.getSimpleName)
       .render_P(p => {
 
-        val content: TagMod = p.proxy.value.projectAnalysis match {
+        val content: TagMod = p.proxy.value.analysis match {
           case Left(importProgress) =>
             FileImportComponent(p.proxy)
           case Right(analysisModel) => <.div(
