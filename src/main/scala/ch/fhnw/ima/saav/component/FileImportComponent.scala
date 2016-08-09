@@ -1,16 +1,16 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.component.pages.ProjectAnalysisPageComponent.{Empty, ImportState, InProgress, Ready}
+import ch.fhnw.ima.saav.controller.SaavController.{ProjectAnalysisImportFailed, ProjectAnalysisImportInProgress, ProjectAnalysisReady}
 import ch.fhnw.ima.saav.model.model.Entity.Project
-import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.{Failed, InProgress, NotStarted, SaavModel}
+import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
-import org.scalajs.dom
 import org.scalajs.dom.DragEvent
 import org.singlespaced.d3js.d3
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
 import scalacss.ScalaCssReact._
 
 /**
@@ -18,7 +18,7 @@ import scalacss.ScalaCssReact._
   */
 object FileImportComponent {
 
-  case class Props(importState: ImportState, onNewImportState: ImportState => Callback)
+  case class Props(proxy: ModelProxy[SaavModel])
 
   type Row = js.Dictionary[String]
 
@@ -30,75 +30,92 @@ object FileImportComponent {
       e.dataTransfer.dropEffect = "copy"
     }
 
-    def handleFileDropped(onNewImportState: ImportState => Callback)(e: DragEvent): Callback = {
+    def handleFileDropped(proxy: ModelProxy[SaavModel])(e: DragEvent): Callback = {
       e.stopPropagation()
       e.preventDefault()
-      val files = e.dataTransfer.files
-      if (files.length > 0) {
-        val file = files(0)
-        val url = URL.createObjectURL(file)
 
-        parseModel(url, onNewImportState)
+      val handleError = (t: Throwable) => proxy.dispatch(ProjectAnalysisImportFailed(t)).runNow()
 
-        Callback.empty
-      } else {
-        Callback.log("No files to import")
+      try {
+        val files = e.dataTransfer.files
+        if (files.length > 0) {
+          val file = files(0)
+          val url = URL.createObjectURL(file)
+
+          val handleProgress = (progress: Float) => proxy.dispatch(ProjectAnalysisImportInProgress(progress)).runNow()
+          val handleReady = (analysis: Analysis[Project]) => proxy.dispatch(ProjectAnalysisReady(analysis)).runNow()
+
+          parseModel(url, handleProgress, handleReady, handleError)
+
+        } else {
+          Callback.log("No files to import")
+        }
+      } catch {
+        case t: Throwable => handleError(t)
       }
+      Callback.empty
     }
 
-    def parseModel(url: String, onNewImportState: ImportState => Callback): Unit = {
+    def parseModel(url: String, handleProgress: Float => Any, handleReady: Analysis[Project] => Any, handleError: Throwable => Any): Unit = {
       d3.csv(url, (rows: js.Array[Row]) => {
         val builder = AnalysisBuilder.projectAnalysisBuilder
 
         // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
         // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
-        parseRowBatchAsync(onNewImportState, builder, rows, 0)
+        parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, handleError)
       })
     }
 
     def render(p: Props) = {
-      p.importState match {
-        case Empty =>
+      p.proxy.value.projectAnalysis match {
+        case Left(NotStarted()) =>
           <.div(css.fileDropZone,
             ^.onDragOver ==> handleDragOver,
-            ^.onDrop ==> handleFileDropped(p.onNewImportState),
+            ^.onDrop ==> handleFileDropped(p.proxy),
             <.div(<.h1("Drag and drop"), <.p("To import data from CSV file")))
-        case InProgress(progress) =>
+        case Left(InProgress(progress)) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
-        case Ready(_) => <.div()
+        case Left(Failed(t)) =>
+          <.div(css.fileDropZone, <.h1("Import failed"), <.p("See console log for details"))
+        case _ => <.div()
       }
     }
 
   }
 
-  def parseRowBatchAsync(onNewImportState: (ImportState) => Callback, builder: AnalysisBuilder[Project], rows: Seq[Row], batchIndex: Int): Unit = {
+  def parseRowBatchAsync(builder: AnalysisBuilder[Project], rows: Seq[Row], batchIndex: Int, handleProgress: Float => Any, handleReady: Analysis[Project] => Any, handleError: Throwable => Any): Unit = {
 
     val batchSize = 10
 
     js.timers.setTimeout(0) {
 
-      for (
-        indexWithinBatch <- 0 until batchSize;
-        rowIndex = (batchIndex * batchSize) + indexWithinBatch
-        if rowIndex < rows.length
-      ) {
+      try {
 
-        val row = rows(rowIndex)
+        for (
+          indexWithinBatch <- 0 until batchSize;
+          rowIndex = (batchIndex * batchSize) + indexWithinBatch
+          if rowIndex < rows.length
+        ) {
 
-        parseRow(builder, row)
+          val row = rows(rowIndex)
 
-        // parsing is complete -> model can be built
-        if (rowIndex == rows.length - 1) {
-          val analysis = builder.build
-          onNewImportState(Ready(analysis)).runNow()
+          parseRow(builder, row)
+
+          // parsing is complete -> model can be built
+          if (rowIndex == rows.length - 1) {
+            val analysis = builder.build
+            handleReady(analysis)
+          }
+          // report progress and schedule next batch
+          else if (indexWithinBatch == batchSize - 1) {
+            val progress = (rowIndex + 1).toFloat / rows.length
+            handleProgress(progress)
+            parseRowBatchAsync(builder, rows, batchIndex + 1, handleProgress, handleReady, handleError)
+          }
+
         }
-        // report progress and schedule next batch
-        else if (indexWithinBatch == batchSize - 1) {
-          val progress = (rowIndex + 1).toFloat / rows.length
-          onNewImportState(InProgress(progress)).runNow()
-          parseRowBatchAsync(onNewImportState, builder, rows, batchIndex + 1)
-        }
-
+      } catch {
+        case t: Throwable => handleError(t)
       }
 
     }
@@ -131,6 +148,6 @@ object FileImportComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(importState: ImportState, onNewImportState: ImportState => Callback) = component(Props(importState, onNewImportState))
+  def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
 
 }

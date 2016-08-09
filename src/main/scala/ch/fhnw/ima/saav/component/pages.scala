@@ -2,10 +2,10 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
-import ch.fhnw.ima.saav.model.model.Analysis
-import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.SaavModel
+import diode.react.ModelProxy
+import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
 import scalacss.ScalaCssReact._
 
@@ -63,40 +63,25 @@ object pages {
 
   object ProjectAnalysisPageComponent {
 
-    sealed trait ImportState
-    case object Empty extends ImportState
-    case class InProgress(progress: Float) extends ImportState
-    case class Ready(analysis: Analysis[Project]) extends ImportState
+    case class Props(proxy: ModelProxy[SaavModel])
 
-    case class State(importState: ImportState)
+    private val component = ReactComponentB[Props](ProjectAnalysisPageComponent.getClass.getSimpleName)
+      .render_P(p => {
 
-    class Backend($: BackendScope[Unit, State]) {
-
-      def onNewImportState(importState: ImportState) = $.modState(_.copy(importState = importState))
-
-      def render(s: State) = {
-        val analysisDependentContent = s.importState match {
-          case Ready(analysis) =>
-            <.div(
-              <.div(css.pullRight, PdfExportComponent(analysis)),
-              D3Component(analysis)
-            )
-          case _ => <.div()
+        val content: TagMod = p.proxy.value.projectAnalysis match {
+          case Left(importProgress) =>
+            FileImportComponent(p.proxy)
+          case Right(analysisModel) => <.div(
+            <.div(css.pullRight, PdfExportComponent(analysisModel)),
+            D3Component(analysisModel)
+          )
         }
-        <.div(
-          <.h1(ProjectAnalysisPage.displayName),
-          FileImportComponent(s.importState, onNewImportState),
-          analysisDependentContent
-        )
-      }
-    }
 
-    private val component = ReactComponentB[Unit](ProjectAnalysisPageComponent.getClass.getSimpleName)
-      .initialState(State(Empty))
-      .renderBackend[Backend]
+        <.div(<.h1(ProjectAnalysisPage.displayName), content)
+      })
       .build
 
-    def apply() = component()
+    def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
 
   }
 

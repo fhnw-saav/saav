@@ -3,6 +3,7 @@ package ch.fhnw.ima.saav
 import ch.fhnw.ima.saav.component.TodoComponent
 import ch.fhnw.ima.saav.component.pages.Page.{HomePage, ProjectAnalysisPage}
 import ch.fhnw.ima.saav.component.pages._
+import ch.fhnw.ima.saav.controller.SaavController.SaavCircuit
 import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.ReactDOM
 import japgolly.scalajs.react.extra.router.{Resolution, Router, _}
@@ -23,10 +24,13 @@ object MainApp extends js.JSApp {
   val routerConfig: RouterConfig[Page] = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
 
+    // re-usable connections to controller
+    val modelConnection = SaavCircuit.connect(m => m)
+
     // defines how hash-prefixed locations are mapped to a rendered component
     def routeSubPage(subPage: SubPage): Rule = staticRoute("#/" + subPage.hashLink, subPage) ~> renderR(ctl => {
       subPage match {
-        case ProjectAnalysisPage => ProjectAnalysisPageComponent()
+        case ProjectAnalysisPage => modelConnection(ProjectAnalysisPageComponent(_))
         case _ => TodoComponent(subPage.displayName)
       }
     })

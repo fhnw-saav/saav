@@ -6,7 +6,6 @@ import ch.fhnw.ima.saav.model.model.Analysis
 import ch.fhnw.ima.saav.model.model.Entity.Project
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
-import org.scalajs.dom
 import org.scalajs.dom._
 import org.scalajs.dom.html.Canvas
 import org.scalajs.dom.raw.XMLSerializer

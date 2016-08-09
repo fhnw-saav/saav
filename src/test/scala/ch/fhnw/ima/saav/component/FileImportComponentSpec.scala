@@ -1,9 +1,8 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.FileImportComponent.Row
-import ch.fhnw.ima.saav.component.pages.ProjectAnalysisPageComponent.{ImportState, InProgress, Ready}
-import ch.fhnw.ima.saav.model.model.AnalysisBuilder
-import japgolly.scalajs.react.Callback
+import ch.fhnw.ima.saav.model.model.Entity.Project
+import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder}
 import org.scalatest.FlatSpec
 
 import scala.scalajs.js
@@ -42,19 +41,16 @@ class FileImportComponentSpec extends FlatSpec {
     // poor man's synchronization (all that we got in JS)
     var done = false
 
-    val onImportState = (importState: ImportState) => Callback {
-      importState match {
-        case InProgress(progress) => assert(Math.round(100 * progress) == Math.round(100 * (10f/rowCount)))
-        case Ready(analysis) =>
-          assert(analysis.entities.length == rowCount)
-          done = true
-        case _ => fail("Unexpected state")
-      }
-    }
-
     val builder = AnalysisBuilder.projectAnalysisBuilder
 
-    FileImportComponent.parseRowBatchAsync(onImportState, builder, rows, 0)
+    val handleProgress = (progress: Float) => assert(Math.round(100 * progress) == Math.round(100 * (10f / rowCount)))
+
+    val handleReady = (analysis: Analysis[Project]) => {
+      assert(analysis.entities.length == rowCount)
+      done = true
+    }
+
+    FileImportComponent.parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, { _ => })
 
     js.timers.setTimeout(1000) {
       assert(done, "Async parsing not complete -> consider setting a higher timeout")
