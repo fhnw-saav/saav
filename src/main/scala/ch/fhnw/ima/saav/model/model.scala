@@ -1,7 +1,7 @@
-package ch.fhnw.ima.saav.model
+package ch.fhnw.ima.saav
+package model
 
 import ch.fhnw.ima.saav.model.model.Entity.{Organisation, Person, Project}
-import scala.collection.immutable.Seq // Seq in Predef is mutable (http://bit.ly/261xOxR)
 
 object model {
 

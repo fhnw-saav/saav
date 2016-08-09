@@ -1,4 +1,5 @@
-package ch.fhnw.ima.saav.component
+package ch.fhnw.ima.saav
+package component
 
 import ch.fhnw.ima.saav.component.bootstrap.{Button, Modal}
 import ch.fhnw.ima.saav.model.model.Analysis

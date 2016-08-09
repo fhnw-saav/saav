@@ -1,4 +1,5 @@
-package ch.fhnw.ima.saav.style
+package ch.fhnw.ima.saav
+package style
 
 import scala.language.postfixOps
 import scalacss.Defaults._
