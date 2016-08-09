@@ -1,6 +1,6 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
-lazy val root = (project in file("."))
+lazy val saav = (project in file("."))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := Settings.name,
@@ -56,12 +56,12 @@ siteMappings ++=
     toJsFolder((packageScalaJSLauncher in Compile).value.data),
     toJsFolder((packageJSDependencies in Compile).value)
   ) ++
-    directory(root.base / "css") ++
-    directory(root.base / "js")
+    directory(saav.base / "css") ++
+    directory(saav.base / "js")
 
 def toJsFolder(f: File) = f -> s"js/${f.name}"
 
-// Helper method to map complete dir contents (http://bit.ly/28Jcd5K)
+// Helper method to map complete dir contents (http://bit.ly/2aIlez9)
 def directory(sourceDir: File): Seq[(File, String)] = {
   Option(sourceDir.getParentFile)
     .map(parent => sourceDir.*** pair relativeTo(parent))
