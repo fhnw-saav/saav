@@ -21,12 +21,12 @@ object Settings {
     val scalaJsD3 = "0.3.3"
 
     // libraryDependencies (test)
-    val scalaTest = "3.0.0-RC2"
+    val scalaTest = "3.0.0"
 
     // jsDependencies
-    val react = "15.0.2"
-    val bootstrap = "3.3.6"
-    val jQuery = "1.11.3"
+    val react = "15.2.1"
+    val bootstrap = "3.3.7"
+    val jQuery = "1.12.4"
   }
 
   val libraryDependencies = Def.setting(Seq(
