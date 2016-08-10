@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
-import ch.fhnw.ima.saav.model.SaavModel
+import ch.fhnw.ima.saav.model.{DataModel, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -77,9 +77,9 @@ object pages {
     private val component = ReactComponentB[Props](ProjectAnalysisPageComponent.getClass.getSimpleName)
       .render_P(p => {
 
-        val content: TagMod = p.proxy.value.analysis match {
-          case Left(importProgress) => FileImportComponent(p.proxy)
-          case Right(analysisModel) => AnalysisReadyComponent(p.proxy)
+        val content: TagMod = p.proxy.value.model match {
+          case Left(noData) => FileImportComponent(p.proxy.zoom(_ => noData))
+          case Right(data) => PageWithDataComponent(p.proxy.zoom(_ => data))
         }
 
         <.div(<.h1(ProjectAnalysisPage.displayName), content)
@@ -90,14 +90,14 @@ object pages {
 
   }
 
-  object AnalysisReadyComponent {
+  object PageWithDataComponent {
 
-    case class Props(proxy: ModelProxy[SaavModel])
+    case class Props(proxy: ModelProxy[DataModel])
 
-    private val component = ReactComponentB[Props](AnalysisReadyComponent.getClass.getSimpleName)
+    private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
       .render_P(p => {
 
-        val analysis = p.proxy.value.analysis.right.get
+        val analysis = p.proxy.value.analysis
         val colors = p.proxy.value.colors
 
         <.div(
@@ -114,7 +114,7 @@ object pages {
       })
       .build
 
-    def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
+    def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
 
   }
 

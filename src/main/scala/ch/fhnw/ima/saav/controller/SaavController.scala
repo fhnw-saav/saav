@@ -17,16 +17,16 @@ object SaavController {
 
   final case class AnalysisReadyAction[E <: Entity](analysis: Analysis[E]) extends Action
 
-  class AnalysisHandler[M](modelRW: ModelRW[M, Either[ImportState, Analysis[Entity]]]) extends ActionHandler(modelRW) {
+  class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataModel, DataModel]]) extends ActionHandler(modelRW) {
 
     override def handle = {
-      case AnalysisImportInProgressAction(progress) => updated(Left(ImportInProgress(progress)))
+      case AnalysisImportInProgressAction(progress) => updated(Left(NoDataModel(ImportInProgress(progress))))
       case a@AnalysisImportFailedAction(t, logToConsole) =>
         if (logToConsole) {
           logException(this.getClass.getSimpleName, String.valueOf(a), t)
         }
-        updated(Left(ImportFailed(t)))
-      case AnalysisReadyAction(analysis) => updated(Right(analysis))
+        updated(Left(NoDataModel(ImportFailed(t))))
+      case AnalysisReadyAction(analysis) => updated(Right(DataModel(analysis)))
     }
 
   }
@@ -34,6 +34,7 @@ object SaavController {
   // Color Actions
 
   final case class AutoColorizeAction(entities: Seq[Entity]) extends Action
+
   final case class UpdateEntityColorAction(entity: Entity, webColor: WebColor) extends Action
 
   class ColorHandler[M](modelRW: ModelRW[M, Map[Entity, WebColor]]) extends ActionHandler(modelRW) {
@@ -56,10 +57,17 @@ object SaavController {
 
     override protected def initialModel = SaavModel()
 
-    override protected val actionHandler = composeHandlers(
-      new AnalysisHandler(zoomRW(_.analysis)((model, newValue) => model.copy(analysis = newValue))),
-      new ColorHandler(zoomRW(_.colors)((model, newValue) => model.copy(colors = newValue)))
-    )
+    private val analysisHandler = new AnalysisHandler(zoomRW(_.model)((m, v) => m.copy(model = v)))
+
+    private val colorHandler = {
+      def modelGet = (m: SaavModel) =>
+        m.model.right.toOption.map(_.colors).getOrElse(Map())
+      def modelSet = (m: SaavModel, v: Map[Entity, WebColor]) =>
+        m.copy(model = m.model.right.map(_.copy(colors = v)))
+      new ColorHandler(zoomRW(modelGet)(modelSet))
+    }
+
+    override protected val actionHandler = composeHandlers(analysisHandler, colorHandler)
 
     override def handleError(msg: String): Unit = {
       val name = SaavController.getClass.getSimpleName

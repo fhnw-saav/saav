@@ -17,4 +17,6 @@ object colors {
     WebColor("#859900")
   )
 
+  val defaultColor = WebColor("#000000")
+
 }

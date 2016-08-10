@@ -3,7 +3,7 @@ package ch.fhnw.ima.saav.component
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
 import ch.fhnw.ima.saav.model.domain.Entity.Project
 import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Review}
-import ch.fhnw.ima.saav.model.{ImportFailed, ImportInProgress, ImportNotStarted, SaavModel}
+import ch.fhnw.ima.saav.model._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB}
@@ -18,7 +18,7 @@ import scalacss.ScalaCssReact._
   */
 object FileImportComponent {
 
-  case class Props(proxy: ModelProxy[SaavModel])
+  case class Props(proxy: ModelProxy[NoDataModel])
 
   type Row = js.Dictionary[String]
 
@@ -31,16 +31,16 @@ object FileImportComponent {
   // callbacks which are invoked during file parsing
   // 'runNow' is needed because all parsing happens asynchronously
 
-  private def handleProgress(proxy: ModelProxy[SaavModel])(progress: Float): Unit =
+  private def handleProgress(proxy: ModelProxy[NoDataModel])(progress: Float): Unit =
     proxy.dispatch(AnalysisImportInProgressAction(progress)).runNow()
 
-  private def handleReady(proxy: ModelProxy[SaavModel])(analysis: Analysis[Project]): Unit =
+  private def handleReady(proxy: ModelProxy[NoDataModel])(analysis: Analysis[Project]): Unit =
     proxy.dispatch(AnalysisReadyAction(analysis)).runNow()
 
-  private def handleError(proxy: ModelProxy[SaavModel])(t: Throwable): Unit =
+  private def handleError(proxy: ModelProxy[NoDataModel])(t: Throwable): Unit =
     proxy.dispatch(AnalysisImportFailedAction(t)).runNow()
 
-  private def handleFileDropped(proxy: ModelProxy[SaavModel])(e: DragEvent): Callback = {
+  private def handleFileDropped(proxy: ModelProxy[NoDataModel])(e: DragEvent): Callback = {
     e.stopPropagation()
     e.preventDefault()
 
@@ -137,21 +137,21 @@ object FileImportComponent {
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {
-      p.proxy.value.analysis match {
-        case Left(ImportNotStarted()) =>
+      p.proxy.value.importState match {
+        case ImportNotStarted() =>
           <.div(css.fileDropZone,
             ^.onDragOver ==> handleDragOver,
             ^.onDrop ==> handleFileDropped(p.proxy),
             <.div(<.h1("Drag and drop"), <.p("To import data from CSV file")))
-        case Left(ImportInProgress(progress)) =>
+        case ImportInProgress(progress) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
-        case Left(ImportFailed(t)) =>
+        case ImportFailed(t) =>
           <.div(css.fileDropZone, <.h1("Import failed"), <.p("See console log for details"))
         case _ => <.div()
       }
     })
     .build
 
-  def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[NoDataModel]) = component(Props(proxy))
 
 }
