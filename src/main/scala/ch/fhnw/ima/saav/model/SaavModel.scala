@@ -1,8 +1,9 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.model.{Analysis, Entity}
+import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 
+/** Application model (incl. presentation state). */
 case class SaavModel(analysis: Either[ImportState, Analysis[Entity]] = Left(ImportNotStarted()))
 
 sealed trait ImportState

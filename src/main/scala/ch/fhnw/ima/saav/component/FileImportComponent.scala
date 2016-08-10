@@ -1,8 +1,8 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
-import ch.fhnw.ima.saav.model.model.Entity.Project
-import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.domain.Entity.Project
+import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Review}
 import ch.fhnw.ima.saav.model.{ImportFailed, ImportInProgress, ImportNotStarted, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._

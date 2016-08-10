@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.bootstrap.{Button, Modal}
-import ch.fhnw.ima.saav.model.model.{Analysis, Entity}
+import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
 import org.scalajs.dom._

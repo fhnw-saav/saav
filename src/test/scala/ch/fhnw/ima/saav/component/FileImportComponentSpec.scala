@@ -1,8 +1,8 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.FileImportComponent.Row
-import ch.fhnw.ima.saav.model.model.Entity.Project
-import ch.fhnw.ima.saav.model.model.{Analysis, AnalysisBuilder}
+import ch.fhnw.ima.saav.model.domain.Entity.Project
+import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder}
 import org.scalatest.FlatSpec
 
 import scala.scalajs.js

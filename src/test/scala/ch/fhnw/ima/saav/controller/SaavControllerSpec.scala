@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisHandler, _}
-import ch.fhnw.ima.saav.model.model.AnalysisBuilder
+import ch.fhnw.ima.saav.model.domain.AnalysisBuilder
 import ch.fhnw.ima.saav.model.{ImportFailed, ImportInProgress, SaavModel}
 import diode.ActionResult.ModelUpdate
 import diode.RootModelRW

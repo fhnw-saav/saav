@@ -1,10 +1,10 @@
 package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.model.model.Entity.Project
-import ch.fhnw.ima.saav.model.model.{AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.domain.Entity.Project
+import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Review}
 import org.scalatest.FlatSpec
 
-class ModelSpec extends FlatSpec {
+class DomainModelSpec extends FlatSpec {
 
   "An analysis builder" should "add categories" in {
     val analysis = AnalysisBuilder.projectAnalysisBuilder

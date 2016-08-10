@@ -1,9 +1,9 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.model.Entity.{Organisation, Person, Project}
+import ch.fhnw.ima.saav.model.domain.Entity.{Organisation, Person, Project}
 
-object model {
+object domain {
 
   final case class Analysis[E <: Entity](categories: Seq[Category], entities: Seq[E], reviews: Seq[Review], valuesByIndicator: Map[Indicator, Map[(E, Review), Double]]) {
 

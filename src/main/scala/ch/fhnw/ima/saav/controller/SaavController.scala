@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package controller
 
 import ch.fhnw.ima.saav.model._
-import ch.fhnw.ima.saav.model.model.{Analysis, Entity}
+import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import diode._
 import diode.react.ReactConnector
 
