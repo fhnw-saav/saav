@@ -2,21 +2,20 @@ package ch.fhnw.ima.saav
 package controller
 
 import ch.fhnw.ima.saav.model._
+import ch.fhnw.ima.saav.model.colors._
 import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import diode._
 import diode.react.ReactConnector
 
 object SaavController {
 
-  // Actions
+  // Analysis Actions
 
   final case class AnalysisImportInProgressAction(progress: Float) extends Action
 
   final case class AnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
 
   final case class AnalysisReadyAction[E <: Entity](analysis: Analysis[E]) extends Action
-
-  // Handlers
 
   class AnalysisHandler[M](modelRW: ModelRW[M, Either[ImportState, Analysis[Entity]]]) extends ActionHandler(modelRW) {
 
@@ -32,6 +31,25 @@ object SaavController {
 
   }
 
+  // Color Actions
+
+  final case class AutoColorizeAction(entities: Seq[Entity]) extends Action
+  final case class UpdateEntityColorAction(entity: Entity, webColor: WebColor) extends Action
+
+  class ColorHandler[M](modelRW: ModelRW[M, Map[Entity, WebColor]]) extends ActionHandler(modelRW) {
+
+    private def colorize(entities: Seq[Entity]) =
+      entities.zipWithIndex.map {
+        case (e, i) => (e, solarizedPalette(i % solarizedPalette.size))
+      }.toMap
+
+    override def handle = {
+      case AutoColorizeAction(entities) => updated(colorize(entities))
+      case UpdateEntityColorAction(entity, color) => updated(value + (entity -> color))
+    }
+
+  }
+
   // Circuit
 
   object SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
@@ -39,7 +57,8 @@ object SaavController {
     override protected def initialModel = SaavModel()
 
     override protected val actionHandler = composeHandlers(
-      new AnalysisHandler(zoomRW(_.analysis)((model, newValue) => model.copy(analysis = newValue)))
+      new AnalysisHandler(zoomRW(_.analysis)((model, newValue) => model.copy(analysis = newValue))),
+      new ColorHandler(zoomRW(_.colors)((model, newValue) => model.copy(colors = newValue)))
     )
 
     override def handleError(msg: String): Unit = {

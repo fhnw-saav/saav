@@ -1,30 +1,66 @@
 package ch.fhnw.ima.saav
 package component
 
+import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction}
 import ch.fhnw.ima.saav.model.domain.Entity
+import ch.fhnw.ima.saav.model.SaavModel
+import ch.fhnw.ima.saav.model.colors.WebColor
 import diode.react.ModelProxy
-import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.{ReactComponentB, _}
+import org.scalajs.dom.raw.HTMLInputElement
 
+import scala.language.postfixOps
 import scalacss.ScalaCssReact._
 
 object LegendComponent {
 
-  case class Props(proxy: ModelProxy[Seq[Entity]])
+  // TODO: Introduce Backend to avoid passing around proxy
+
+  case class Props(proxy: ModelProxy[SaavModel])
+
+  def header(entities: Seq[Entity], proxy: ModelProxy[SaavModel]) = {
+    def dispatch = {
+      proxy.dispatch(AutoColorizeAction(entities))
+    }
+    val autoColorize = <.i(css.glyph.magic, ^.onClick --> dispatch, ^.title := "Auto-Colorize")
+    <.tr(<.th("#"), <.th("Name"), <.th(^.textAlign.center, autoColorize))
+  }
+
+  def createRow(entity: Entity, index: Int, color: WebColor, proxy: ModelProxy[SaavModel]) =
+    <.tr(
+      <.th(^.scope := "row", index + 1),
+      <.td(entity.name),
+      <.td(^.textAlign.center, colorPicker(entity, color, proxy))
+    )
+
+  def colorPicker(entity: Entity, color: WebColor, proxy: ModelProxy[SaavModel]) = {
+    def dispatch(e: SyntheticEvent[HTMLInputElement]) = {
+      val newColor = WebColor(e.target.value)
+      proxy.dispatch(UpdateEntityColorAction(entity, newColor))
+    }
+    <.input.color(^.value := color.hexValue, ^.onChange ==> dispatch)
+  }
 
   private final val component = ReactComponentB[Props](LegendComponent.getClass.getSimpleName)
     .render_P(p => {
-      val entities = p.proxy.value
-      val rows = for ((e, i) <- entities.zipWithIndex)
-        yield <.tr(
-          <.th(^.scope := "row", i + 1), <.td(e.name)
-        )
+
+      val entities = p.proxy.value.analysis.right.get.entities
+      val colors = p.proxy.value.colors
+      val rows = entities.zipWithIndex.map {
+        case (e, i) => createRow(e, i, colors(e), p.proxy)
+      }
+
       <.table(css.legendTable,
-        <.thead(<.tr(<.th("#"), <.th("Name"))),
+        <.thead(header(entities, p.proxy)),
         <.tbody(rows))
+    })
+    .componentDidMount(scope => {
+      val entities = scope.props.proxy.value.analysis.right.get.entities
+      scope.props.proxy.dispatch(AutoColorizeAction(entities))
     })
     .build
 
-  def apply(proxy: ModelProxy[Seq[Entity]]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
 
 }

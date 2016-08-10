@@ -1,6 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
+import ch.fhnw.ima.saav.model.colors.WebColor
 import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
@@ -24,7 +25,7 @@ object D3Component {
 
   case class State(node: Option[HTMLDivElement])
 
-  case class Props(analysis: Analysis[Entity])
+  case class Props(analysis: Analysis[Entity], colors: Map[Entity, WebColor])
 
   class Backend($: BackendScope[Props, State]) {
     def render() = <.div(css.svgContainer)
@@ -40,19 +41,23 @@ object D3Component {
     })
     .shouldComponentUpdate(scope => {
       scope.nextState.node match {
-        case Some(node) => appendContents(node, scope.nextProps.analysis)
+        case Some(node) =>
+          // delete complete svg if already present
+          d3.select(node).select("svg").remove()
+          // render d3 (will append new svg)
+          appendContents(node, scope.nextProps.analysis, scope.nextProps.colors)
         case _ =>
       }
       false // never need to re-render (directly manipulating DOM via D3)
     })
     .build
 
-  def appendContents(node: HTMLDivElement, analysis: Analysis[Entity]): Unit = {
+  def appendContents(node: HTMLDivElement, analysis: Analysis[Entity], colors: Map[Entity, WebColor]): Unit = {
 
     val svgWidth = 1000
     val svgHeight = 400
 
-    val paddingTop = 0
+    val paddingTop = 50
     val paddingBottom = 30
 
     val barPaddingFraction = 0.1
@@ -62,12 +67,12 @@ object D3Component {
     val maxHeight = svgHeight - paddingTop - paddingBottom
 
     // an individual data item -> defines one bar
-    case class Datum(name: String, median: Double)
+    case class Datum(name: String, median: Double, color: WebColor)
 
     // create data items from analysis model
     val data = analysis.entities.map { entity =>
       val median = analysis.groupedValue(entity)
-      Datum(entity.name, median.getOrElse(Double.NaN))
+      Datum(entity.name, median.getOrElse(Double.NaN), colors(entity))
     }.toJSArray
 
     // how data items map to pixel coordinates
@@ -106,12 +111,8 @@ object D3Component {
       .append("g")
       .attr("transform", barTranslateX(0))
       .append("rect")
-      .attr("class", css.barChartBarRect.htmlClass)
-      .attr("y", maxHeight)
-      .attr("height", 0)
+      .attr("fill", (d: Datum) => d.color.hexValue)
       .attr("width", barWidth)
-      .transition()
-      .duration(1500)
       .attr("y", (d: Datum) => scaleY(d.median))
       .attr("height", (d: Datum) => maxHeight - scaleY(d.median))
 
@@ -126,6 +127,6 @@ object D3Component {
 
   }
 
-  def apply(analysis: Analysis[Entity]) = component(Props(analysis))
+  def apply(analysis: Analysis[Entity], colors: Map[Entity, WebColor]) = component(Props(analysis, colors))
 
 }

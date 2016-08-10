@@ -1,10 +1,13 @@
 package ch.fhnw.ima.saav
 package model
 
+import ch.fhnw.ima.saav.model.colors.WebColor
 import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 
+// TODO: Split into case classes (SaavModelImportPending, SaavModelAnalysisReady)
+
 /** Application model (incl. presentation state). */
-case class SaavModel(analysis: Either[ImportState, Analysis[Entity]] = Left(ImportNotStarted()))
+case class SaavModel(analysis: Either[ImportState, Analysis[Entity]] = Left(ImportNotStarted()), colors: Map[Entity, WebColor] = Map().withDefaultValue(WebColor("#000000")))
 
 sealed trait ImportState
 

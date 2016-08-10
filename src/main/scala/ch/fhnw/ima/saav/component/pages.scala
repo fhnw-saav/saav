@@ -3,7 +3,6 @@ package component
 
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
 import ch.fhnw.ima.saav.model.SaavModel
-import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -80,7 +79,7 @@ object pages {
 
         val content: TagMod = p.proxy.value.analysis match {
           case Left(importProgress) => FileImportComponent(p.proxy)
-          case Right(analysisModel) => AnalysisReadyComponent(p.proxy, analysisModel)
+          case Right(analysisModel) => AnalysisReadyComponent(p.proxy)
         }
 
         <.div(<.h1(ProjectAnalysisPage.displayName), content)
@@ -93,25 +92,29 @@ object pages {
 
   object AnalysisReadyComponent {
 
-    case class Props(proxy: ModelProxy[SaavModel], analysis: Analysis[Entity])
+    case class Props(proxy: ModelProxy[SaavModel])
 
     private val component = ReactComponentB[Props](AnalysisReadyComponent.getClass.getSimpleName)
       .render_P(p => {
+
+        val analysis = p.proxy.value.analysis.right.get
+        val colors = p.proxy.value.colors
+
         <.div(
           <.div(css.row,
             <.div(css.colXs12,
-              <.span(css.pullRight, PdfExportComponent(p.analysis))
+              <.span(css.pullRight, PdfExportComponent(analysis))
             )
           ),
           <.div(css.row,
-            <.div(css.colXs2, LegendComponent(p.proxy.zoom(_ => p.analysis.entities))),
-            <.div(css.colXs10, D3Component(p.analysis))
+            <.div(css.colXs2, LegendComponent(p.proxy)),
+            <.div(css.colXs10, D3Component(analysis, colors))
           )
         )
       })
       .build
 
-    def apply(proxy: ModelProxy[SaavModel], analysis: Analysis[Entity]) = component(Props(proxy, analysis))
+    def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
 
   }
 

@@ -55,10 +55,6 @@ object GlobalStyles extends StyleSheet.Inline {
     left(0 px)
   )
 
-  val barChartBarRect = style(
-    svgFill := c"#286090" // bootstrap blue
-  )
-
   val barChartAxis = style {
     unsafeChild("path.domain")(
       svgFill := none,
@@ -84,7 +80,6 @@ object GlobalStyles extends StyleSheet.Inline {
     display.none
   )
 
-  // wrap styles in a namespace, assign to val to prevent lazy initialization
   object modal {
     val modal = styleWrap("modal")
     val fade = styleWrap("fade")
@@ -95,7 +90,7 @@ object GlobalStyles extends StyleSheet.Inline {
     val footer = styleWrap("modal-footer")
   }
 
-  val _modal = modal
+  val _modal = modal // prevent lazy initialization
 
   object form {
     val group = styleWrap("form-group")
@@ -105,5 +100,11 @@ object GlobalStyles extends StyleSheet.Inline {
   val _form = form
 
   val legendTable = styleWrap("table table-hover")
+
+  object glyph {
+    val magic = styleWrap("fa fa-fw fa-magic")
+  }
+
+  val _glyph = glyph // prevent lazy initialization
 
 }
