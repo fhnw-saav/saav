@@ -50,7 +50,7 @@ object MainApp extends js.JSApp {
     val css = GlobalStyles
 
     // our main container
-    <.div(css.container, r.render())
+    <.div(css.saavContainer, r.render())
   }
 
   def main() = {

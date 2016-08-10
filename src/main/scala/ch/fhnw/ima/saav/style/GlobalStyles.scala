@@ -17,8 +17,8 @@ object GlobalStyles extends StyleSheet.Inline {
   def styleWrap(classNames: String*) = style(addClassNames(classNames: _*))
 
   // a bootstrap container with customizations
-  val container = style(
-    addClassNames("container"),
+  val saavContainer = style(
+    addClassNames("container-fluid"),
     paddingTop(20 px)
   )
 
@@ -31,6 +31,12 @@ object GlobalStyles extends StyleSheet.Inline {
   val infoBox = styleWrap("alert", "alert-info")
 
   val pullRight = styleWrap("pull-right")
+
+  val row = styleWrap("row")
+
+  val colXs2 = styleWrap("col-xs-2")
+  val colXs10 = styleWrap("col-xs-10")
+  val colXs12 = styleWrap("col-xs-12")
 
   // SVG responsiveness (http://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js)
   val svgContainer = style(
@@ -97,5 +103,7 @@ object GlobalStyles extends StyleSheet.Inline {
   }
 
   val _form = form
+
+  val legendTable = styleWrap("table table-hover")
 
 }

@@ -52,7 +52,7 @@ object D3Component {
     val svgWidth = 1000
     val svgHeight = 400
 
-    val paddingTop = 20
+    val paddingTop = 0
     val paddingBottom = 30
 
     val barPaddingFraction = 0.1
