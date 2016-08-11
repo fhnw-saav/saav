@@ -1,9 +1,10 @@
 package ch.fhnw.ima.saav.component
 
+import ch.fhnw.ima.saav.component.bootstrap.Button
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
+import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.domain.Entity.Project
 import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Review}
-import ch.fhnw.ima.saav.model._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB}
@@ -11,6 +12,7 @@ import org.scalajs.dom.DragEvent
 import org.singlespaced.d3js.d3
 
 import scala.scalajs.js
+import scala.util.Random
 import scalacss.ScalaCssReact._
 
 /**
@@ -135,14 +137,38 @@ object FileImportComponent {
 
   }
 
+  private def importMockData(proxy: ModelProxy[NoDataModel]) = {
+    val builder = new AnalysisBuilder[Project]
+    val indicatorScope = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
+
+    val reviewOne = Review("Review 1")
+    val reviewTwo = Review("Review 2")
+
+    val r = Random
+
+    for (i <- 1 to 10) {
+      val project = Project(s"Project $i")
+      indicatorScope.addValue(project, reviewOne, r.nextInt(100))
+      indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
+    }
+
+    val analysis = builder.build
+    proxy.dispatch(AnalysisReadyAction(analysis))
+  }
+
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {
       p.proxy.value.importState match {
         case ImportNotStarted() =>
-          <.div(css.fileDropZone,
-            ^.onDragOver ==> handleDragOver,
-            ^.onDrop ==> handleFileDropped(p.proxy),
-            <.div(<.h1("Drag and drop"), <.p("To import data from CSV file")))
+          <.div(
+            <.div(css.fileDropZone,
+              ^.onDragOver ==> handleDragOver,
+              ^.onDrop ==> handleFileDropped(p.proxy),
+              <.div(
+                <.h1("Drag and drop"),
+                <.p("To import data from CSV file")
+              )),
+            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockData(p.proxy), "Or: Give me some mock data")))
         case ImportInProgress(progress) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
         case ImportFailed(t) =>

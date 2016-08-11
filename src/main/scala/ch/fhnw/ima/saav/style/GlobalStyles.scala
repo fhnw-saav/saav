@@ -107,4 +107,9 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val _glyph = glyph // prevent lazy initialization
 
+  val vSpaced = style(
+    marginTop(10 px),
+    marginBottom(10 px)
+  )
+
 }
