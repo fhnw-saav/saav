@@ -35,6 +35,8 @@ object GlobalStyles extends StyleSheet.Inline {
   val row = styleWrap("row")
 
   val colXs2 = styleWrap("col-xs-2")
+  val colXs3 = styleWrap("col-xs-3")
+  val colXs9 = styleWrap("col-xs-9")
   val colXs10 = styleWrap("col-xs-10")
   val colXs12 = styleWrap("col-xs-12")
 

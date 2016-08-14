@@ -26,7 +26,10 @@ object SaavController {
           logException(this.getClass.getSimpleName, String.valueOf(a), t)
         }
         updated(Left(NoDataModel(ImportFailed(t))))
-      case AnalysisReadyAction(analysis) => updated(Right(DataModel(analysis)))
+      case AnalysisReadyAction(analysis) =>
+        val model = DataModel(analysis, selectedEntities = analysis.entities.toSet)
+        updated(Right(model))
+
     }
 
   }
@@ -51,6 +54,24 @@ object SaavController {
 
   }
 
+  // Entity Selection
+
+  final case class UpdateEntitySelectionAction(entity: Entity, selected: Boolean) extends Action
+
+  class EntitySelectionHandler[M](modelRW: ModelRW[M, Set[Entity]]) extends ActionHandler(modelRW) {
+
+    override def handle = {
+      case UpdateEntitySelectionAction(entity, selected) =>
+        val newModel = if (selected) {
+          value + entity
+        } else {
+          value - entity
+        }
+        updated(newModel)
+    }
+
+  }
+
   // Circuit
 
   object SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
@@ -67,7 +88,15 @@ object SaavController {
       new ColorHandler(zoomRW(modelGet)(modelSet))
     }
 
-    override protected val actionHandler = composeHandlers(analysisHandler, colorHandler)
+    private val selectionHandler = {
+      def modelGet = (m: SaavModel) =>
+        m.model.right.toOption.map(_.selectedEntities).getOrElse(Set())
+      def modelSet = (m: SaavModel, v: Set[Entity]) =>
+        m.copy(model = m.model.right.map(_.copy(selectedEntities = v)))
+      new EntitySelectionHandler(zoomRW(modelGet)(modelSet))
+    }
+
+    override protected val actionHandler = composeHandlers(analysisHandler, colorHandler, selectionHandler)
 
     override def handleError(msg: String): Unit = {
       val name = SaavController.getClass.getSimpleName

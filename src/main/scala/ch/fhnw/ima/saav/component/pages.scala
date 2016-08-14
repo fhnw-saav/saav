@@ -107,8 +107,8 @@ object pages {
             )
           ),
           <.div(css.row,
-            <.div(css.colXs2, LegendComponent(p.proxy)),
-            <.div(css.colXs10, D3Component(analysis, colors))
+            <.div(css.colXs3, LegendComponent(p.proxy)),
+            <.div(css.colXs9, D3Component(p.proxy.value))
           )
         )
       })
