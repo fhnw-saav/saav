@@ -5,30 +5,19 @@ import ch.fhnw.ima.saav.model.domain.Entity.{Organisation, Person, Project}
 
 object domain {
 
-  final case class Analysis[E <: Entity](categories: Seq[Category], entities: Seq[E], reviews: Seq[Review], valuesByIndicator: Map[Indicator, Map[(E, Review), Double]]) {
+  final case class Analysis[E <: Entity](categories: Seq[Category[E]], entities: Seq[E], reviews: Seq[Review]) {
 
-    def value(entity: E, indicator: Indicator, review: Review): Option[Double] = {
-      valuesByIndicator.get(indicator) match {
-        case None => None
-        case Some(values) => values.get((entity, review))
-      }
+    def groupedValue(entity: E, indicator: Indicator[E]): Option[Double] = {
+      val values = reviews.flatMap(review => indicator.values.get((entity, review)))
+      median(values)
     }
 
-    def groupedValue(entity: E, indicator: Indicator): Option[Double] = {
-      valuesByIndicator.get(indicator) match {
-        case None => None
-        case Some(valueMap) =>
-          val values = reviews.flatMap(review => valueMap.get((entity, review)))
-          median(values)
-      }
-    }
-
-    def groupedValue(entity: E, subCategory: SubCategory): Option[Double] = {
+    def groupedValue(entity: E, subCategory: SubCategory[E]): Option[Double] = {
       val values = subCategory.indicators.flatMap(groupedValue(entity, _))
       median(values)
     }
 
-    def groupedValue(entity: E, category: Category): Option[Double] = {
+    def groupedValue(entity: E, category: Category[E]): Option[Double] = {
       val values = category.subCategories.flatMap(groupedValue(entity, _))
       median(values)
     }
@@ -48,13 +37,14 @@ object domain {
         case length => Some(sortedValues(length / 2))
       }
     }
+
   }
 
-  final case class Category(name: String, subCategories: Seq[SubCategory])
+  final case class Category[E <: Entity](name: String, subCategories: Seq[SubCategory[E]])
 
-  final case class SubCategory(name: String, indicators: Seq[Indicator])
+  final case class SubCategory[E <: Entity](name: String, indicators: Seq[Indicator[E]])
 
-  final case class Indicator(name: String)
+  final case class Indicator[E <: Entity](name: String, values: Map[(E, Review), Double])
 
   final case class Review(name: String)
 
@@ -101,12 +91,12 @@ object domain {
 
     def build: Analysis[E] = {
       val categories = categoryBuilders.map(_.toCategory)
-      val valuesByIndicator = categoryBuilders.flatMap(_.valuesByIndicator).toMap
-      Analysis[E](categories, entities.distinct, reviews.distinct, valuesByIndicator)
+      Analysis[E](categories, entities.distinct, reviews.distinct)
     }
 
     trait CategoryBuilder {
       def subCategory(name: String): SubCategoryBuilder
+
       def build: AnalysisBuilder[E]
     }
 
@@ -125,13 +115,12 @@ object domain {
 
       def toCategory = Category(name, subCategoryBuilders.map(_.toSubCategory))
 
-      def valuesByIndicator = subCategoryBuilders.flatMap(_.valuesByIndicator).toMap
-
       override def build = AnalysisBuilder.this
     }
 
     trait SubCategoryBuilder {
       def indicator(name: String): IndicatorBuilder
+
       def build: CategoryBuilder
     }
 
@@ -150,8 +139,6 @@ object domain {
 
       def toSubCategory = SubCategory(name, indicatorBuilders.map(_.toIndicator))
 
-      def valuesByIndicator = indicatorBuilders.flatMap(_.valuesByIndicator).toMap
-
       def build = categoryBuilder
 
     }
@@ -159,9 +146,6 @@ object domain {
     trait IndicatorBuilder {
 
       def addValue(entity: E, review: Review, value: Double): IndicatorBuilder
-
-      // exposing this makes testing easier; it is safe, as indicators only wrap a name, thus no scope state is leaking
-      def toIndicator: Indicator
 
       def build: SubCategoryBuilder
 
@@ -177,9 +161,7 @@ object domain {
         this
       }
 
-      override def toIndicator = Indicator(name)
-
-      def valuesByIndicator = Map(toIndicator -> values)
+      def toIndicator = Indicator(name, values)
 
       def build = subCategoryBuilder
 

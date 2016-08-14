@@ -94,14 +94,13 @@ class DomainModelSpec extends FlatSpec {
     assert(analysis.entities.size == 3)
     assert(analysis.reviews.size == 2)
 
-    val indicator = indicatorScope.toIndicator
+    val indicator = analysis.categories(0).subCategories(0).indicators(0)
 
-    assert(analysis.value(entityOne, indicator, reviewOne) == Option(11))
-    assert(analysis.value(entityOne, indicator, reviewTwo) == Option(12))
-    assert(analysis.value(entityThree, indicator, reviewOne) == Option(31))
-    assert(analysis.value(entityTwo, indicator, reviewOne) == Option(21))
-    assert(analysis.value(entityThree, indicator, reviewTwo) == Option(32))
-
+    assert(indicator.values((entityOne, reviewOne)) == 11)
+    assert(indicator.values((entityOne, reviewTwo)) == 12)
+    assert(indicator.values((entityTwo, reviewOne)) == 21)
+    assert(indicator.values((entityThree, reviewOne)) == 31)
+    assert(indicator.values((entityThree, reviewTwo)) == 32)
   }
 
   "An analysis" should "group values by indicator/sub-category/category using median" in {
@@ -122,6 +121,8 @@ class DomainModelSpec extends FlatSpec {
               .indicator("Indicator 112")
                 .addValue(project, reviewTwo, 3)
                 .build
+              .indicator("Indicator 113")
+                .build
               .build
             .build
         .category("Category 2").build
@@ -134,10 +135,12 @@ class DomainModelSpec extends FlatSpec {
     val subCategory11 = category1.subCategories(0)
     val indicator111 = subCategory11.indicators(0)
     val indicator112 = subCategory11.indicators(1)
+    val indicator113 = subCategory11.indicators(2)
 
     // grouping by indicator
     assert(analysis.groupedValue(project, indicator111) == Option(1.5), "Grouping by indicator: Even number of values")
     assert(analysis.groupedValue(project, indicator112) == Option(3), "Grouping by indicator: Odd number of values")
+    assert(analysis.groupedValue(project, indicator113).isEmpty, "Grouping by indicator: No values")
 
     // grouping by sub-category
     assert(analysis.groupedValue(project, subCategory11) == Option(2.25), "Grouping by sub-category")
