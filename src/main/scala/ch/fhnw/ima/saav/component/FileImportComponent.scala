@@ -168,7 +168,7 @@ object FileImportComponent {
                 <.h1("Drag and drop"),
                 <.p("To import data from CSV file")
               )),
-            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockData(p.proxy), "Or: Give me some mock data")))
+            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockData(p.proxy), "Quick, some mock data, please!")))
         case ImportInProgress(progress) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
         case ImportFailed(t) =>

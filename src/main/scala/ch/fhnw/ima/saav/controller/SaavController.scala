@@ -56,16 +56,16 @@ object SaavController {
 
   // Entity Selection
 
-  final case class UpdateEntitySelectionAction(entity: Entity, selected: Boolean) extends Action
+  final case class UpdateEntitySelectionAction(entities: Seq[Entity], selected: Boolean) extends Action
 
   class EntitySelectionHandler[M](modelRW: ModelRW[M, Set[Entity]]) extends ActionHandler(modelRW) {
 
     override def handle = {
-      case UpdateEntitySelectionAction(entity, selected) =>
+      case UpdateEntitySelectionAction(entities, selected) =>
         val newModel = if (selected) {
-          value + entity
+          value ++ entities
         } else {
-          value - entity
+          value -- entities
         }
         updated(newModel)
     }

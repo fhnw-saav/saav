@@ -45,7 +45,10 @@ object D3Component {
           // delete complete svg if already present
           d3.select(node).select("svg").remove()
           // render d3 (will append new svg)
-          appendContents(node, scope.nextProps.dataModel)
+          val model = scope.nextProps.dataModel
+          if (model.selectedEntities.nonEmpty) {
+            appendContents(node, model)
+          }
         case _ =>
       }
       false // never need to re-render (directly manipulating DOM via D3)

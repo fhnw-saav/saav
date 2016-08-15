@@ -6,6 +6,7 @@ import ch.fhnw.ima.saav.model.DataModel
 import ch.fhnw.ima.saav.model.colors.WebColor
 import ch.fhnw.ima.saav.model.domain.Entity
 import diode.react.ModelProxy
+import japgolly.scalajs.react.extra.components.TriStateCheckbox
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, _}
 import org.scalajs.dom.raw.HTMLInputElement
@@ -18,30 +19,40 @@ object LegendComponent {
   // TODO: Maybe this should be a first class citizen?
   case class DisplayableEntity(entity: Entity, selected: Boolean, color: WebColor)
 
-  case class Props(proxy: ModelProxy[DataModel], entities: Seq[DisplayableEntity])
+  case class Props(proxy: ModelProxy[DataModel], entities: Seq[DisplayableEntity], allSelectionState: TriStateCheckbox.State)
 
   class Backend($: BackendScope[Props, Unit]) {
 
-    def dispatchAutoColorizeAction(entities: Seq[Entity]) = {
+    def autoColorize(entities: Seq[Entity]) = {
       $.props >>= (_.proxy.dispatch(AutoColorizeAction(entities)))
     }
 
-    def dispatchUpdateEntityColorAction(entity: DisplayableEntity)(e: SyntheticEvent[HTMLInputElement]) = {
+    def updateEntityColor(entity: DisplayableEntity)(e: SyntheticEvent[HTMLInputElement]) = {
       val newColor = WebColor(e.target.value)
       $.props >>= (_.proxy.dispatch(UpdateEntityColorAction(entity.entity, newColor)))
     }
 
-    def dispatchToggleEntitySelectionAction(entity: DisplayableEntity) = {
-      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(entity.entity, !entity.selected)))
+    def toggleEntitySelection(entity: DisplayableEntity) = {
+      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(Seq(entity.entity), !entity.selected)))
     }
 
-    def header(entities: Seq[Entity]) = {
-      val autoColorize = <.i(css.glyph.magic, ^.onClick --> dispatchAutoColorizeAction(entities), ^.title := "Auto-Colorize")
+    def updateAllEntitySelections() = {
+      $.props >>= { p =>
+        val newSelected = p.allSelectionState match {
+          case TriStateCheckbox.Checked => false
+          case _ => true
+        }
+        p.proxy.dispatch(UpdateEntitySelectionAction(p.entities.map(_.entity), selected = newSelected))
+      }
+    }
+
+    def header(entities: Seq[Entity], allSelectionState: TriStateCheckbox.State) = {
+      val autoColorizeGlyph = <.i(css.glyph.magic, ^.onClick --> autoColorize(entities), ^.title := "Auto-Colorize")
       <.tr(
         <.th("#"),
         <.th("Name"),
-        <.th("Selected"),
-        <.th(^.textAlign.center, autoColorize))
+        <.th(allCheckbox(allSelectionState)),
+        <.th(^.textAlign.center, autoColorizeGlyph))
     }
 
     def createRow(entity: DisplayableEntity, index: Int) =
@@ -52,12 +63,16 @@ object LegendComponent {
         <.td(^.textAlign.center, colorPicker(entity))
       )
 
+    def allCheckbox(allSelection: TriStateCheckbox.State) = {
+      TriStateCheckbox.Component(TriStateCheckbox.Props(allSelection, updateAllEntitySelections()))
+    }
+
     def checkbox(entity: DisplayableEntity) = {
-      <.input.checkbox(^.checked := entity.selected, ^.onChange --> dispatchToggleEntitySelectionAction(entity))
+      <.input.checkbox(^.checked := entity.selected, ^.onChange --> toggleEntitySelection(entity))
     }
 
     def colorPicker(entity: DisplayableEntity) = {
-      <.input.color(^.value := entity.color.hexValue, ^.onChange ==> dispatchUpdateEntityColorAction(entity))
+      <.input.color(^.value := entity.color.hexValue, ^.onChange ==> updateEntityColor(entity))
     }
 
     def render(p: Props) = {
@@ -68,7 +83,7 @@ object LegendComponent {
       }
 
       <.table(css.legendTable,
-        <.thead(header(entities.map(_.entity))),
+        <.thead(header(entities.map(_.entity), p.allSelectionState)),
         <.tbody(rows))
     }
 
@@ -88,7 +103,14 @@ object LegendComponent {
     val selected = m.selectedEntities
     val colors = m.colors
     val displayableEntities = entities.map(e => DisplayableEntity(e, selected.contains(e), colors(e)))
-    val props = Props(proxy, displayableEntities)
+
+    val allSelectionState = displayableEntities.map(_.selected).distinct match {
+      case Seq(true) => TriStateCheckbox.Checked
+      case Seq(false) => TriStateCheckbox.Unchecked
+      case _ => TriStateCheckbox.Indeterminate
+    }
+
+    val props = Props(proxy, displayableEntities, allSelectionState)
     component(props)
   }
 
