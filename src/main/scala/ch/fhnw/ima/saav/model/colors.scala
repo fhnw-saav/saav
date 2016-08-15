@@ -17,6 +17,8 @@ object colors {
     WebColor("#859900")
   )
 
-  val defaultColor = WebColor("#000000")
+  val DefaultColor = WebColor("#000000")
+
+  val DisabledColor = WebColor("#777777")
 
 }

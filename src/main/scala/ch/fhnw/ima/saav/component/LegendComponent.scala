@@ -3,7 +3,7 @@ package component
 
 import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntitySelectionAction}
 import ch.fhnw.ima.saav.model.DataModel
-import ch.fhnw.ima.saav.model.colors.WebColor
+import ch.fhnw.ima.saav.model.colors._
 import ch.fhnw.ima.saav.model.domain.Entity
 import diode.react.ModelProxy
 import japgolly.scalajs.react.extra.components.TriStateCheckbox
@@ -55,13 +55,15 @@ object LegendComponent {
         <.th(^.textAlign.center, autoColorizeGlyph))
     }
 
-    def createRow(entity: DisplayableEntity, index: Int) =
-      <.tr(
+    def createRow(entity: DisplayableEntity, index: Int) = {
+      val style = if (entity.selected) css.empty else css.textMuted
+      <.tr(style,
         <.th(^.scope := "row", index + 1),
         <.td(entity.entity.name),
         <.td(checkbox(entity)),
         <.td(^.textAlign.center, colorPicker(entity))
       )
+    }
 
     def allCheckbox(allSelection: TriStateCheckbox.State) = {
       TriStateCheckbox.Component(TriStateCheckbox.Props(allSelection, updateAllEntitySelections()))
@@ -72,7 +74,10 @@ object LegendComponent {
     }
 
     def colorPicker(entity: DisplayableEntity) = {
-      <.input.color(^.value := entity.color.hexValue, ^.onChange ==> updateEntityColor(entity))
+      <.input.color(
+        ^.value := (if (entity.selected) entity.color else DisabledColor).hexValue,
+        ^.disabled := !entity.selected,
+        ^.onChange ==> updateEntityColor(entity))
     }
 
     def render(p: Props) = {

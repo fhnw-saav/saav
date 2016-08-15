@@ -114,4 +114,8 @@ object GlobalStyles extends StyleSheet.Inline {
     marginBottom(10 px)
   )
 
+  val textMuted = styleWrap("text-muted")
+
+  val empty = styleWrap("")
+
 }

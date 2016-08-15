@@ -17,4 +17,4 @@ final case class ImportInProgress(progress: Float) extends ImportState
 
 final case class ImportFailed(throwable: Throwable) extends ImportState
 
-case class DataModel(analysis: Analysis[Entity], colors: Map[Entity, WebColor] = Map().withDefaultValue(defaultColor), selectedEntities: Set[Entity])
+case class DataModel(analysis: Analysis[Entity], colors: Map[Entity, WebColor] = Map().withDefaultValue(DefaultColor), selectedEntities: Set[Entity])
