@@ -37,7 +37,7 @@ class SaavControllerSpec extends FlatSpec with Matchers {
     val analysis = AnalysisBuilder.personAnalysisBuilder.build
     val result = createHandler.handle(AnalysisReadyAction(analysis))
     result.newModelOpt match {
-      case Some(Right(DataModel(actualAnalysis, _, selectedEntities))) =>
+      case Some(Right(DataModel(actualAnalysis, _, selectedEntities, None))) =>
         actualAnalysis shouldBe analysis
         selectedEntities should contain allElementsOf analysis.entities
       case _ =>

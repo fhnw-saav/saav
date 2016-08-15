@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntitySelectionAction}
+import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntitySelectionAction}
 import ch.fhnw.ima.saav.model.DataModel
 import ch.fhnw.ima.saav.model.colors._
 import ch.fhnw.ima.saav.model.domain.Entity
@@ -17,14 +17,14 @@ import scalacss.ScalaCssReact._
 object LegendComponent {
 
   // TODO: Maybe this should be a first class citizen?
-  case class DisplayableEntity(entity: Entity, selected: Boolean, color: WebColor)
+  case class DisplayableEntity(entity: Entity, isSelected: Boolean, color: WebColor, isPinned: Boolean)
 
   case class Props(proxy: ModelProxy[DataModel], entities: Seq[DisplayableEntity], allSelectionState: TriStateCheckbox.State)
 
   class Backend($: BackendScope[Props, Unit]) {
 
-    def autoColorize(entities: Seq[Entity]) = {
-      $.props >>= (_.proxy.dispatch(AutoColorizeAction(entities)))
+    def autoColorize(entities: Seq[DisplayableEntity]) = {
+      $.props >>= (_.proxy.dispatch(AutoColorizeAction(entities.map(_.entity))))
     }
 
     def updateEntityColor(entity: DisplayableEntity)(e: SyntheticEvent[HTMLInputElement]) = {
@@ -33,7 +33,7 @@ object LegendComponent {
     }
 
     def toggleEntitySelection(entity: DisplayableEntity) = {
-      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(Seq(entity.entity), !entity.selected)))
+      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(Seq(entity.entity), !entity.isSelected)))
     }
 
     def updateAllEntitySelections() = {
@@ -42,26 +42,47 @@ object LegendComponent {
           case TriStateCheckbox.Checked => false
           case _ => true
         }
-        p.proxy.dispatch(UpdateEntitySelectionAction(p.entities.map(_.entity), selected = newSelected))
+        p.proxy.dispatch(UpdateEntitySelectionAction(p.entities.map(_.entity), isSelected = newSelected))
       }
     }
 
-    def header(entities: Seq[Entity], allSelectionState: TriStateCheckbox.State) = {
-      val autoColorizeGlyph = <.i(css.glyph.magic, ^.onClick --> autoColorize(entities), ^.title := "Auto-Colorize")
+    def toggleEntityPinning(entity: DisplayableEntity) = {
+      $.props >>= { p =>
+        val pinnedEntity = if (entity.isPinned) None else Some(entity.entity)
+        p.proxy.dispatch(UpdateEntityPinningAction(pinnedEntity))
+      }
+    }
+
+    val pinGlyph = <.i(css.glyph.pin, ^.title := "Pin")
+
+    def header(entities: Seq[DisplayableEntity], allSelectionState: TriStateCheckbox.State) = {
+
+      val autoColorizeGlyph = <.i(
+        css.glyph.magic,
+        ^.cursor.pointer,
+        ^.onClick --> autoColorize(entities.filter(_.isSelected)),
+        ^.title := "Auto-Colorize")
+
       <.tr(
         <.th("#"),
         <.th("Name"),
         <.th(allCheckbox(allSelectionState)),
-        <.th(^.textAlign.center, autoColorizeGlyph))
+        <.th(^.textAlign.center, autoColorizeGlyph),
+        <.th(^.textAlign.center, pinGlyph)
+      )
     }
 
     def createRow(entity: DisplayableEntity, index: Int) = {
-      val style = if (entity.selected) css.empty else css.textMuted
-      <.tr(style,
+
+      val selectionStyle = if (entity.isSelected) css.empty else css.textMuted
+      val pinStyle = if (entity.isPinned) css.active else css.empty
+
+      <.tr(selectionStyle, pinStyle,
         <.th(^.scope := "row", index + 1),
         <.td(entity.entity.name),
         <.td(checkbox(entity)),
-        <.td(^.textAlign.center, colorPicker(entity))
+        <.td(^.textAlign.center, colorPicker(entity)),
+        pinCell(entity)
       )
     }
 
@@ -70,14 +91,23 @@ object LegendComponent {
     }
 
     def checkbox(entity: DisplayableEntity) = {
-      <.input.checkbox(^.checked := entity.selected, ^.onChange --> toggleEntitySelection(entity))
+      <.input.checkbox(^.checked := entity.isSelected, ^.onChange --> toggleEntitySelection(entity))
     }
 
     def colorPicker(entity: DisplayableEntity) = {
       <.input.color(
-        ^.value := (if (entity.selected) entity.color else DisabledColor).hexValue,
-        ^.disabled := !entity.selected,
+        ^.value := (if (entity.isSelected) entity.color else DisabledColor).hexValue,
+        ^.disabled := !entity.isSelected,
         ^.onChange ==> updateEntityColor(entity))
+    }
+
+    def pinCell(entity: DisplayableEntity) = {
+      if (entity.isSelected) {
+        val glyph = if (entity.isPinned) pinGlyph else EmptyTag
+        <.td(^.textAlign.center, ^.onClick --> toggleEntityPinning(entity), ^.cursor.pointer, glyph)
+      } else {
+        <.td()
+      }
     }
 
     def render(p: Props) = {
@@ -88,7 +118,7 @@ object LegendComponent {
       }
 
       <.table(css.legendTable,
-        <.thead(header(entities.map(_.entity), p.allSelectionState)),
+        <.thead(header(entities, p.allSelectionState)),
         <.tbody(rows))
     }
 
@@ -106,10 +136,11 @@ object LegendComponent {
     val m = proxy.value
     val entities = m.analysis.entities
     val selected = m.selectedEntities
+    val pinned = m.pinnedEntity
     val colors = m.colors
-    val displayableEntities = entities.map(e => DisplayableEntity(e, selected.contains(e), colors(e)))
+    val displayableEntities = entities.map(e => DisplayableEntity(e, selected.contains(e), colors(e), pinned.contains(e)))
 
-    val allSelectionState = displayableEntities.map(_.selected).distinct match {
+    val allSelectionState = displayableEntities.map(_.isSelected).distinct match {
       case Seq(true) => TriStateCheckbox.Checked
       case Seq(false) => TriStateCheckbox.Unchecked
       case _ => TriStateCheckbox.Indeterminate

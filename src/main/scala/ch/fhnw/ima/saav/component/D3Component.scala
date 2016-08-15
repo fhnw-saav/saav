@@ -65,17 +65,18 @@ object D3Component {
 
     val barPaddingFraction = 0.1
     val valueLabelOffsetY = 20d
+    val pinningIndicatorOffsetY = 20
 
     val maxWidth = svgWidth
     val maxHeight = svgHeight - paddingTop - paddingBottom
 
     // an individual data item -> defines one bar
-    case class Datum(name: String, median: Double, color: WebColor)
+    case class Datum(name: String, median: Double, color: WebColor, isPinned: Boolean)
 
     // create data items from analysis model
     val data = dataModel.selectedEntities.map { entity =>
       val median = dataModel.analysis.groupedValue(entity)
-      Datum(entity.name, median.getOrElse(Double.NaN), dataModel.colors(entity))
+      Datum(entity.name, median.getOrElse(Double.NaN), dataModel.colors(entity), dataModel.pinnedEntity.contains(entity))
     }.toJSArray
 
     // how data items map to pixel coordinates
@@ -127,6 +128,15 @@ object D3Component {
       .attr("transform", barTranslateX(barWidth / 2))
       .attr("text-anchor", "middle")
       .attr("y", (d: Datum) => scaleY(d.median) + valueLabelOffsetY)
+
+    // pinning
+    bars
+      .append("text")
+      .attr("class", css.barChartValueLabel.htmlClass)
+      .text((d: Datum) => if (d.isPinned) "*" else "")
+      .attr("transform", barTranslateX(barWidth / 2))
+      .attr("text-anchor", "middle")
+      .attr("y", (d: Datum) => scaleY(d.median) + valueLabelOffsetY + pinningIndicatorOffsetY)
 
   }
 

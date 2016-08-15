@@ -7,6 +7,8 @@ import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import diode._
 import diode.react.ReactConnector
 
+import scala.collection.immutable.ListSet
+
 object SaavController {
 
   // Analysis Actions
@@ -27,7 +29,7 @@ object SaavController {
         }
         updated(Left(NoDataModel(ImportFailed(t))))
       case AnalysisReadyAction(analysis) =>
-        val model = DataModel(analysis, selectedEntities = analysis.entities.toSet)
+        val model = DataModel(analysis, selectedEntities = ListSet.empty ++ analysis.entities)
         updated(Right(model))
 
     }
@@ -45,7 +47,7 @@ object SaavController {
     private def colorize(entities: Seq[Entity]) =
       entities.zipWithIndex.map {
         case (e, i) => (e, solarizedPalette(i % solarizedPalette.size))
-      }.toMap
+      }.toMap.withDefaultValue(colors.DefaultColor)
 
     override def handle = {
       case AutoColorizeAction(entities) => updated(colorize(entities))
@@ -54,20 +56,33 @@ object SaavController {
 
   }
 
-  // Entity Selection
+  // Entity Selection & Pinning
 
-  final case class UpdateEntitySelectionAction(entities: Seq[Entity], selected: Boolean) extends Action
+  final case class UpdateEntitySelectionAction(entities: Seq[Entity], isSelected: Boolean) extends Action
 
-  class EntitySelectionHandler[M](modelRW: ModelRW[M, Set[Entity]]) extends ActionHandler(modelRW) {
+  final case class UpdateEntityPinningAction(pinnedEntity: Option[Entity]) extends Action
+
+  case class SelectionAndPinning(selected: ListSet[Entity] = ListSet.empty, pinned: Option[Entity] = None)
+
+  class SelectionAndPinningHandler[M](modelRW: ModelRW[M, SelectionAndPinning]) extends ActionHandler(modelRW) {
 
     override def handle = {
-      case UpdateEntitySelectionAction(entities, selected) =>
-        val newModel = if (selected) {
-          value ++ entities
+      case UpdateEntitySelectionAction(entities, isSelected) =>
+        val newSelection = if (isSelected) {
+          value.selected ++ entities
         } else {
-          value -- entities
+          value.selected -- entities
         }
-        updated(newModel)
+        // clear pinning upon de-selection
+        val newPinned: Option[Entity] = value.pinned.flatMap { currentlyPinned =>
+          if (newSelection.contains(currentlyPinned)) {
+            value.pinned
+          } else {
+            None
+          }
+        }
+        updated(SelectionAndPinning(newSelection, newPinned))
+      case UpdateEntityPinningAction(pinnedEntity) => updated(value.copy(pinned = pinnedEntity))
     }
 
   }
@@ -88,15 +103,15 @@ object SaavController {
       new ColorHandler(zoomRW(modelGet)(modelSet))
     }
 
-    private val selectionHandler = {
+    private val selectionAndPinningHandler = {
       def modelGet = (m: SaavModel) =>
-        m.model.right.toOption.map(_.selectedEntities).getOrElse(Set())
-      def modelSet = (m: SaavModel, v: Set[Entity]) =>
-        m.copy(model = m.model.right.map(_.copy(selectedEntities = v)))
-      new EntitySelectionHandler(zoomRW(modelGet)(modelSet))
+        m.model.right.toOption.map(dm => SelectionAndPinning(dm.selectedEntities, dm.pinnedEntity)).getOrElse(SelectionAndPinning())
+      def modelSet = (m: SaavModel, v: SelectionAndPinning) =>
+        m.copy(model = m.model.right.map(_.copy(selectedEntities = v.selected, pinnedEntity = v.pinned)))
+      new SelectionAndPinningHandler(zoomRW(modelGet)(modelSet))
     }
 
-    override protected val actionHandler = composeHandlers(analysisHandler, colorHandler, selectionHandler)
+    override protected val actionHandler = composeHandlers(analysisHandler, colorHandler, selectionAndPinningHandler)
 
     override def handleError(msg: String): Unit = {
       val name = SaavController.getClass.getSimpleName

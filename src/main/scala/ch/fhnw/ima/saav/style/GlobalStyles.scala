@@ -105,6 +105,7 @@ object GlobalStyles extends StyleSheet.Inline {
 
   object glyph {
     val magic = styleWrap("fa fa-fw fa-magic")
+    val pin = styleWrap("fa fa-fw fa-thumb-tack")
   }
 
   val _glyph = glyph // prevent lazy initialization
@@ -115,6 +116,8 @@ object GlobalStyles extends StyleSheet.Inline {
   )
 
   val textMuted = styleWrap("text-muted")
+
+  val active = styleWrap("active")
 
   val empty = styleWrap("")
 
