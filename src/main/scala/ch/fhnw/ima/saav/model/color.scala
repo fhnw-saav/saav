@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package model
 
-object colors {
+object color {
 
   // org.scalajs.dom.ext.Color doesn't support hex value access
   final case class WebColor(hexValue: String)

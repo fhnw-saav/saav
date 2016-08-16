@@ -2,8 +2,8 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntitySelectionAction}
-import ch.fhnw.ima.saav.model.DataModel
-import ch.fhnw.ima.saav.model.colors._
+import ch.fhnw.ima.saav.model.app.DataModel
+import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.Entity
 import diode.react.ModelProxy
 import japgolly.scalajs.react.extra.components.TriStateCheckbox

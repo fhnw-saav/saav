@@ -2,7 +2,8 @@ package ch.fhnw.ima.saav
 package controller
 
 import ch.fhnw.ima.saav.model._
-import ch.fhnw.ima.saav.model.colors._
+import ch.fhnw.ima.saav.model.app._
+import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import diode._
 import diode.react.ReactConnector
@@ -47,7 +48,7 @@ object SaavController {
     private def colorize(entities: Seq[Entity]) =
       entities.zipWithIndex.map {
         case (e, i) => (e, solarizedPalette(i % solarizedPalette.size))
-      }.toMap.withDefaultValue(colors.DefaultColor)
+      }.toMap.withDefaultValue(color.DefaultColor)
 
     override def handle = {
       case AutoColorizeAction(entities) => updated(colorize(entities))

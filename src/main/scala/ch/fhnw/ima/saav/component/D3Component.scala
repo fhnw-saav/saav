@@ -1,8 +1,8 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.model.DataModel
-import ch.fhnw.ima.saav.model.colors.WebColor
+import ch.fhnw.ima.saav.model.app.DataModel
+import ch.fhnw.ima.saav.model.color.WebColor
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement

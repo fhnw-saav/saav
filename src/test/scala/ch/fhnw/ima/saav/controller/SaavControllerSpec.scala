@@ -1,9 +1,9 @@
 package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisHandler, _}
-import ch.fhnw.ima.saav.model._
-import ch.fhnw.ima.saav.model.domain.AnalysisBuilder
+import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.Entity.Person
+import ch.fhnw.ima.saav.model.domain._
 import diode.RootModelRW
 import org.scalatest._
 
