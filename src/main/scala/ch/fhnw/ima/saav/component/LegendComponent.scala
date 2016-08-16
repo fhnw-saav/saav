@@ -9,7 +9,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.extra.components.TriStateCheckbox
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, _}
-import org.scalajs.dom.raw.HTMLInputElement
+import org.scalajs.dom.raw.{HTMLInputElement, HTMLTableCellElement}
 
 import scala.language.postfixOps
 import scalacss.ScalaCssReact._
@@ -46,10 +46,15 @@ object LegendComponent {
       }
     }
 
-    def toggleEntityPinning(entity: DisplayableEntity) = {
-      $.props >>= { p =>
-        val pinnedEntity = if (entity.isPinned) None else Some(entity.entity)
-        p.proxy.dispatch(UpdateEntityPinningAction(pinnedEntity))
+    def toggleEntityPinning(entity: DisplayableEntity)(e: ReactEvent) = {
+      // only control pinning if the click happens in a blank table row area (i.e NOT on the checkbox, color widget)
+      if (e.target.isInstanceOf[HTMLTableCellElement]) {
+        $.props >>= { p =>
+          val pinnedEntity = if (entity.isPinned) None else Some(entity.entity)
+          p.proxy.dispatch(UpdateEntityPinningAction(pinnedEntity))
+        }
+      } else {
+        Callback.empty
       }
     }
 
@@ -76,13 +81,15 @@ object LegendComponent {
 
       val selectionStyle = if (entity.isSelected) css.empty else css.textMuted
       val pinStyle = if (entity.isPinned) css.active else css.empty
+      val cursor = if (entity.isSelected) ^.cursor.pointer else EmptyTag
+      val togglePinOnClick = if (entity.isSelected) ^.onClick ==> toggleEntityPinning(entity) else EmptyTag
 
-      <.tr(selectionStyle, pinStyle,
+      <.tr(selectionStyle, pinStyle, cursor, togglePinOnClick,
         <.th(^.scope := "row", index + 1),
         <.td(entity.entity.name),
         <.td(checkbox(entity)),
         <.td(^.textAlign.center, colorPicker(entity)),
-        pinCell(entity)
+        <.td(^.textAlign.center, if (entity.isPinned) pinGlyph else EmptyTag)
       )
     }
 
@@ -99,15 +106,6 @@ object LegendComponent {
         ^.value := (if (entity.isSelected) entity.color else DisabledColor).hexValue,
         ^.disabled := !entity.isSelected,
         ^.onChange ==> updateEntityColor(entity))
-    }
-
-    def pinCell(entity: DisplayableEntity) = {
-      if (entity.isSelected) {
-        val glyph = if (entity.isPinned) pinGlyph else EmptyTag
-        <.td(^.textAlign.center, ^.onClick --> toggleEntityPinning(entity), ^.cursor.pointer, glyph)
-      } else {
-        <.td()
-      }
     }
 
     def render(p: Props) = {
