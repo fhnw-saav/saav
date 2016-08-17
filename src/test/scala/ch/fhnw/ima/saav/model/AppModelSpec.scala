@@ -7,7 +7,7 @@ class AppModelSpec extends FlatSpec {
 
   ignore should "provide a plotting-friendly API" in {
 
-    val model: PlottableProfileDataModel = ???
+    val model: PlottableQualityDataModel = ???
 
     for (category <- model.categories) {
 

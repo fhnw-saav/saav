@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
-import ch.fhnw.ima.saav.model.app.{DataModel, SaavModel}
+import ch.fhnw.ima.saav.model.app.{DataModel, PlottableQualityDataModel, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -97,18 +97,17 @@ object pages {
     private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
       .render_P(p => {
 
-        val analysis = p.proxy.value.analysis
-        val colors = p.proxy.value.colors
+        val qualityDataModelProxy = p.proxy.zoom(new PlottableQualityDataModel(_))
 
         <.div(
           <.div(css.row,
             <.div(css.colXs12,
-              <.span(css.pullRight, PdfExportComponent(analysis))
+              <.span(css.pullRight, PdfExportComponent())
             )
           ),
           <.div(css.row,
-            <.div(css.colXs3, LegendComponent(p.proxy)),
-            <.div(css.colXs9, D3Component(p.proxy.value))
+            <.div(css.colXs3, LegendComponent(qualityDataModelProxy.zoom(_.rankedEntities))),
+            <.div(css.colXs9, D3Component(qualityDataModelProxy))
           )
         )
       })

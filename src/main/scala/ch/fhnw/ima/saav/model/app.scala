@@ -21,6 +21,7 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
+  // TODO: Refactor into PlottableQualityDataModel
   case class DataModel(
     analysis: Analysis[Entity],
     colors: Map[Entity, WebColor] = Map().withDefaultValue(DefaultColor),
@@ -28,9 +29,7 @@ object app {
     pinnedEntity: Option[Entity] = None
   )
 
-  /** Work in Progress */
-
-  class PlottableProfileDataModel(private val dataModel: DataModel, private val weights: Weights) {
+  class PlottableQualityDataModel(private val dataModel: DataModel, private val weights: Weights = Weights()) {
 
     val categories: Seq[PlottableCategory] = dataModel.analysis.categories.map { c =>
       new PlottableCategory(c, dataModel.analysis.reviews, weights)
@@ -47,7 +46,9 @@ object app {
 
   }
 
-  case class PlottableEntity(entity: Entity, isSelected: Boolean, color: WebColor, isPinned: Boolean, value: Option[Double])
+  case class PlottableEntity(entity: Entity, isSelected: Boolean = false, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double]) {
+    val name = entity.name
+  }
 
   class PlottableSubCategory(private[app] val subCategory: SubCategory[Entity], private val reviews: Seq[Review], private val disabledIndicators: Set[Indicator[_]]) {
 

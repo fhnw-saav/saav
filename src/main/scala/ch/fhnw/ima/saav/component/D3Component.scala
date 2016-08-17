@@ -1,8 +1,9 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.model.app.DataModel
+import ch.fhnw.ima.saav.model.app.{PlottableEntity, PlottableQualityDataModel}
 import ch.fhnw.ima.saav.model.color.WebColor
+import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import org.scalajs.dom.raw.HTMLDivElement
@@ -25,7 +26,7 @@ object D3Component {
 
   case class State(node: Option[HTMLDivElement])
 
-  case class Props(dataModel: DataModel)
+  case class Props(proxy: ModelProxy[PlottableQualityDataModel])
 
   class Backend($: BackendScope[Props, State]) {
     def render() = <.div(css.svgContainer)
@@ -45,9 +46,10 @@ object D3Component {
           // delete complete svg if already present
           d3.select(node).select("svg").remove()
           // render d3 (will append new svg)
-          val model = scope.nextProps.dataModel
-          if (model.selectedEntities.nonEmpty) {
-            appendContents(node, model)
+          val model = scope.nextProps.proxy.value
+          val entities = model.rankedEntities.filter(_.isSelected)
+          if (entities.nonEmpty) {
+            appendContents(node, entities)
           }
         case _ =>
       }
@@ -55,7 +57,7 @@ object D3Component {
     })
     .build
 
-  def appendContents(node: HTMLDivElement, dataModel: DataModel): Unit = {
+  def appendContents(node: HTMLDivElement, entities: Seq[PlottableEntity]): Unit = {
 
     val svgWidth = 1000
     val svgHeight = 400
@@ -74,9 +76,9 @@ object D3Component {
     case class Datum(name: String, median: Double, color: WebColor, isPinned: Boolean)
 
     // create data items from analysis model
-    val data = dataModel.selectedEntities.map { entity =>
-      val median = dataModel.analysis.groupedValue(entity)
-      Datum(entity.name, median.getOrElse(Double.NaN), dataModel.colors(entity), dataModel.pinnedEntity.contains(entity))
+    val data = entities.map { entity =>
+      val median = entity.value
+      Datum(entity.name, median.getOrElse(Double.NaN), entity.color, entity.isPinned)
     }.toJSArray
 
     // how data items map to pixel coordinates
@@ -140,6 +142,6 @@ object D3Component {
 
   }
 
-  def apply(dataModel: DataModel) = component(Props(dataModel))
+  def apply(proxy: ModelProxy[PlottableQualityDataModel]) = component(Props(proxy))
 
 }

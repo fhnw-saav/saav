@@ -2,7 +2,6 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.bootstrap.{Button, Modal}
-import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
 import org.scalajs.dom._
@@ -15,11 +14,9 @@ import scalacss.ScalaCssReact._
 
 object PdfExportComponent {
 
-  case class Props(analysis: Analysis[Entity])
-
   case class State(showReportForm: Boolean = false, title: String = "Title")
 
-  class Backend($: BackendScope[Props, State]) {
+  class Backend($: BackendScope[Unit, State]) {
 
     private def showReportForm = $.modState(_.copy(showReportForm = true))
 
@@ -104,12 +101,12 @@ object PdfExportComponent {
 
   }
 
-  private val component = ReactComponentB[Props](PdfExportComponent.getClass.getSimpleName)
+  private val component = ReactComponentB[Unit](PdfExportComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
     .build
 
-  def apply(analysis: Analysis[Entity]) = component(Props(analysis))
+  def apply() = component()
 
   // Scala facades to 3rd party JS libs --> need more type-safety once we settle on a usage...
 

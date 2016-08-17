@@ -56,11 +56,11 @@ class SaavControllerSpec extends FunSpec with Matchers {
   describe(s"Handling ${UpdateEntitySelectionAction.getClass.getSimpleName}") {
     it("should wire selected entities") {
       val handler = selectionAndPinningHandler(SelectionAndPinning())
-      val selectedEntities = Seq(Person("x"), Person("y"))
+      val selectedEntities = Seq(PlottableEntity(Person("x"), value = None), PlottableEntity(Person("y"), value = None))
       val result = handler.handle(UpdateEntitySelectionAction(selectedEntities, isSelected = true))
       result.newModelOpt match {
         case Some(SelectionAndPinning(actualSelectedEntities, actualPinned)) =>
-          actualSelectedEntities.toSeq == selectedEntities
+          actualSelectedEntities.toSeq == selectedEntities.map(_.entity)
           actualPinned shouldBe empty
         case _ => failOnUnexpectedAction
       }
@@ -77,13 +77,13 @@ class SaavControllerSpec extends FunSpec with Matchers {
       }
     }
     it("should not touch pinning if entity is still selected") {
-      val anEntity = Person("x")
-      val handler = selectionAndPinningHandler(SelectionAndPinning(pinned = Some(anEntity)))
+      val anEntity = PlottableEntity(Person("x"), value = None)
+      val handler = selectionAndPinningHandler(SelectionAndPinning(pinned = Some(anEntity.entity)))
       val result = handler.handle(UpdateEntitySelectionAction(Seq(anEntity), isSelected = true))
       result.newModelOpt match {
         case Some(SelectionAndPinning(actualSelectedEntities, actualPinned)) =>
-          actualSelectedEntities shouldBe ListSet(anEntity)
-          actualPinned shouldBe Some(anEntity)
+          actualSelectedEntities shouldBe ListSet(anEntity.entity)
+          actualPinned shouldBe Some(anEntity.entity)
         case _ => failOnUnexpectedAction
       }
     }
@@ -92,11 +92,11 @@ class SaavControllerSpec extends FunSpec with Matchers {
   describe(s"Handling ${UpdateEntityPinningAction.getClass.getSimpleName}") {
     it("should wire a pinned entity") {
       val handler = selectionAndPinningHandler(SelectionAndPinning())
-      val pinnedEntity = Some(Person("x"))
+      val pinnedEntity = Some(PlottableEntity(Person("x"), value = None))
       val result = handler.handle(UpdateEntityPinningAction(pinnedEntity))
       result.newModelOpt match {
         case Some(SelectionAndPinning(_, actualPinnedEntity)) =>
-          actualPinnedEntity shouldBe pinnedEntity
+          actualPinnedEntity shouldBe pinnedEntity.map(_.entity)
         case _ => failOnUnexpectedAction
       }
     }

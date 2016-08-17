@@ -39,9 +39,9 @@ object SaavController {
 
   // Color Actions
 
-  final case class AutoColorizeAction(entities: Seq[Entity]) extends Action
+  final case class AutoColorizeAction(entities: Seq[PlottableEntity]) extends Action
 
-  final case class UpdateEntityColorAction(entity: Entity, webColor: WebColor) extends Action
+  final case class UpdateEntityColorAction(entity: PlottableEntity, webColor: WebColor) extends Action
 
   class ColorHandler[M](modelRW: ModelRW[M, Map[Entity, WebColor]]) extends ActionHandler(modelRW) {
 
@@ -51,17 +51,17 @@ object SaavController {
       }.toMap.withDefaultValue(color.DefaultColor)
 
     override def handle = {
-      case AutoColorizeAction(entities) => updated(colorize(entities))
-      case UpdateEntityColorAction(entity, color) => updated(value + (entity -> color))
+      case AutoColorizeAction(entities) => updated(colorize(entities.map(_.entity)))
+      case UpdateEntityColorAction(entity, color) => updated(value + (entity.entity -> color))
     }
 
   }
 
   // Entity Selection & Pinning
 
-  final case class UpdateEntitySelectionAction(entities: Seq[Entity], isSelected: Boolean) extends Action
+  final case class UpdateEntitySelectionAction(entities: Seq[PlottableEntity], isSelected: Boolean) extends Action
 
-  final case class UpdateEntityPinningAction(pinnedEntity: Option[Entity]) extends Action
+  final case class UpdateEntityPinningAction(pinnedEntity: Option[PlottableEntity]) extends Action
 
   case class SelectionAndPinning(selected: ListSet[Entity] = ListSet.empty, pinned: Option[Entity] = None)
 
@@ -70,9 +70,9 @@ object SaavController {
     override def handle = {
       case UpdateEntitySelectionAction(entities, isSelected) =>
         val newSelection = if (isSelected) {
-          value.selected ++ entities
+          value.selected ++ entities.map(_.entity)
         } else {
-          value.selected -- entities
+          value.selected -- entities.map(_.entity)
         }
         // clear pinning upon de-selection
         val newPinned: Option[Entity] = value.pinned.flatMap { currentlyPinned =>
@@ -83,7 +83,7 @@ object SaavController {
           }
         }
         updated(SelectionAndPinning(newSelection, newPinned))
-      case UpdateEntityPinningAction(pinnedEntity) => updated(value.copy(pinned = pinnedEntity))
+      case UpdateEntityPinningAction(pinnedEntity) => updated(value.copy(pinned = pinnedEntity.map(_.entity)))
     }
 
   }
