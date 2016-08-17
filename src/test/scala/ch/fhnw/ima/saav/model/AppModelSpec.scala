@@ -33,9 +33,17 @@ class AppModelSpec extends FlatSpec {
 
   it should "calculate weighted medians" in {
 
-    val valuesWithWeights = Seq((13d, 0.1), (23d, 0.03), (54d, 0.04))
-    val weightedMedian = app.weightedMedian(valuesWithWeights)
-    weightedMedian === 13
+    {
+      val valuesWithWeights = Seq((13d, 0.1), (23d, 0.03), (54d, 0.04))
+      val weightedMedian = app.weightedMedian(valuesWithWeights)
+      weightedMedian === 13
+    }
+
+    {
+      val valuesWithWeights = Seq((1d, 0.613), (2d, 0.001), (3d, 0.613))
+      val weightedMedian = app.weightedMedian(valuesWithWeights)
+      weightedMedian === 2
+    }
 
   }
 
