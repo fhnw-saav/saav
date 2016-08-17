@@ -47,7 +47,7 @@ object SaavController {
 
     private def colorize(entities: Seq[Entity]) =
       entities.zipWithIndex.map {
-        case (e, i) => (e, solarizedPalette(i % solarizedPalette.size))
+        case (e, i) => (e, SolarizedPalette(i % SolarizedPalette.size))
       }.toMap.withDefaultValue(color.DefaultColor)
 
     override def handle = {

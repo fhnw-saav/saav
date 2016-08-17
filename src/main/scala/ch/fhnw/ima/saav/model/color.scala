@@ -6,7 +6,7 @@ object color {
   // org.scalajs.dom.ext.Color doesn't support hex value access
   final case class WebColor(hexValue: String)
 
-  val solarizedPalette = Seq(
+  val SolarizedPalette = Seq(
     WebColor("#b58900"),
     WebColor("#cb4b16"),
     WebColor("#dc322f"),
