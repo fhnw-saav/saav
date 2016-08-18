@@ -111,6 +111,11 @@ object pages {
             )
           ),
           <.div(css.row,
+            <.div(css.colXs12, css.vSpaced,
+              SvgPlotComponent(qualityDataModelProxy)
+            )
+          ),
+          <.div(css.row,
             <.div(css.colXs3, LegendComponent(qualityDataModelProxy.zoom(_.rankedEntities))),
             <.div(css.colXs9, D3Component(qualityDataModelProxy))
           )
