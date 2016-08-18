@@ -1,16 +1,22 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.model.app.PlottableQualityDataModel
+import ch.fhnw.ima.saav.model.app.{PlottableEntity, PlottableQualityDataModel}
 import diode.react.ModelProxy
-import japgolly.scalajs.react.ReactComponentB
-import japgolly.scalajs.react.vdom.svg.all._
+import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
 object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[PlottableQualityDataModel])
 
-  private val component = ReactComponentB[Props](SvgPlotComponent.getClass.getSimpleName)
-    .render_P { p =>
+  case class State(hovered: Option[PlottableEntity] = None)
+
+  class Backend($: BackendScope[Props, State]) {
+
+    def setHoveredEntity(entity: PlottableEntity) = $.modState(s => State(Some(entity)))
+    def clearHoveredEntity() = $.modState(s => State(None))
+
+    def render(p: Props, s: State) = {
 
       val m = p.proxy.value
 
@@ -20,7 +26,10 @@ object SvgPlotComponent {
 
       val padding = 10
 
-      val background = rect(fill := "lightgrey", x := "0", y := "0", width := "100%", height := "100%")
+      val background = <.svg.rect(
+        ^.svg.fill := "lightgrey",
+        ^.svg.x := "0", ^.svg.y := "0",
+        ^.svg.width := "100%", ^.svg.height := "100%")
 
       val plot = {
 
@@ -32,10 +41,10 @@ object SvgPlotComponent {
           x = (categoryIndex * categoryLineDistance) + (categoryLineDistance / 2.0) + padding
         } yield {
           val lineStartY = padding
-          val categoryLine = line(
-            x1 := x, y1 := lineStartY,
-            x2 := x, y2 := lineStartY + lineHeight,
-            stroke := "black", strokeWidth := "1"
+          val categoryLine = <.svg.line(
+            ^.svg.x1 := x, ^.svg.y1 := lineStartY,
+            ^.svg.x2 := x, ^.svg.y2 := lineStartY + lineHeight,
+            ^.svg.stroke := "black", ^.svg.strokeWidth := "1"
           )
 
           val entityPointDistance = lineHeight / m.rankedEntities.length
@@ -44,16 +53,18 @@ object SvgPlotComponent {
             (entity, entityIndex) <- m.rankedEntities.zipWithIndex
             y = (entityIndex * entityPointDistance) + lineStartY + (entityPointDistance / 2)
           } yield {
-            val strokeIfPinned = if (entity.isPinned) "black" else "transparent"
-            circle(
-              cx := x, cy := y, r := 5,
-              fill := entity.color.hexValue,
-              strokeWidth := 2,
-              stroke := strokeIfPinned
+            val pinnedOrHovered = if (entity.isPinned || s.hovered.contains(entity)) "black" else "transparent"
+            <.svg.circle(
+              ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
+              ^.svg.fill := entity.color.hexValue,
+              ^.svg.strokeWidth := 2,
+              ^.svg.stroke := pinnedOrHovered,
+              ^.onMouseOver --> setHoveredEntity(entity),
+              ^.onMouseOut --> clearHoveredEntity()
             )
           }
 
-          g(
+          <.svg.g(
             categoryLine,
             entityMedians
           )
@@ -61,14 +72,20 @@ object SvgPlotComponent {
 
       }
 
-      svg(viewBox := s"0 0 $plotWidth $plotHeight",
+      <.svg.svg(^.svg.viewBox := s"0 0 $plotWidth $plotHeight",
         background,
         plot
       )
+
     }
+
+  }
+
+  private val component = ReactComponentB[Props](SvgPlotComponent.getClass.getSimpleName)
+    .initialState(State())
+    .renderBackend[Backend]
     .build
 
   def apply(proxy: ModelProxy[PlottableQualityDataModel]) = component(Props(proxy))
-
 
 }
