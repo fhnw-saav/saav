@@ -41,7 +41,7 @@ object SvgPlotComponent {
           x = (categoryIndex * categoryLineDistance) + (categoryLineDistance / 2.0) + padding
         } yield {
           val lineStartY = padding
-          val categoryLine = <.svg.line(
+          val categoryLines = <.svg.line(
             ^.svg.x1 := x, ^.svg.y1 := lineStartY,
             ^.svg.x2 := x, ^.svg.y2 := lineStartY + lineHeight,
             ^.svg.stroke := "black", ^.svg.strokeWidth := "1"
@@ -49,7 +49,7 @@ object SvgPlotComponent {
 
           val entityPointDistance = lineHeight / m.rankedEntities.length
 
-          val entityMedians = for {
+          val entityPoints = for {
             (entity, entityIndex) <- m.rankedEntities.zipWithIndex
             y = (entityIndex * entityPointDistance) + lineStartY + (entityPointDistance / 2)
           } yield {
@@ -65,8 +65,8 @@ object SvgPlotComponent {
           }
 
           <.svg.g(
-            categoryLine,
-            entityMedians
+            categoryLines,
+            entityPoints
           )
         }
 
