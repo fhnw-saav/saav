@@ -9,12 +9,17 @@ object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[PlottableQualityDataModel])
 
-  case class State(hovered: Option[PlottableEntity] = None)
+  // TODO: Once PlottableCategory is a case class, use (PlottableCategory, PlottableEntity) pair here
+  type HoveredPoint = Option[(String, PlottableEntity)]
+
+  case class State(hoveredPoint: HoveredPoint = None)
 
   class Backend($: BackendScope[Props, State]) {
 
-    def setHoveredEntity(entity: PlottableEntity) = $.modState(s => State(Some(entity)))
-    def clearHoveredEntity() = $.modState(s => State(None))
+    def setHoveredPoint(hoveredPoint: HoveredPoint) =
+      $.modState(s => State(hoveredPoint))
+
+    def clearHoveredPoint() = $.modState(s => State(None))
 
     def render(p: Props, s: State) = {
 
@@ -47,20 +52,21 @@ object SvgPlotComponent {
             ^.svg.stroke := "black", ^.svg.strokeWidth := "1"
           )
 
-          val entityPointDistance = lineHeight / m.rankedEntities.length
+          val entities = m.rankedEntities.filter(_.isSelected)
+          val entityPointDistance = lineHeight / entities.length
 
           val entityPoints = for {
-            (entity, entityIndex) <- m.rankedEntities.zipWithIndex
+            (entity, entityIndex) <- entities.zipWithIndex
             y = (entityIndex * entityPointDistance) + lineStartY + (entityPointDistance / 2)
           } yield {
-            val pinnedOrHovered = if (entity.isPinned || s.hovered.contains(entity)) "black" else "transparent"
+            val pinnedOrHovered = if (entity.isPinned || s.hoveredPoint.contains((category.name, entity))) "black" else "transparent"
             <.svg.circle(
               ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
               ^.svg.fill := entity.color.hexValue,
               ^.svg.strokeWidth := 2,
               ^.svg.stroke := pinnedOrHovered,
-              ^.onMouseOver --> setHoveredEntity(entity),
-              ^.onMouseOut --> clearHoveredEntity()
+              ^.onMouseOver --> setHoveredPoint(Some((category.name, entity))),
+              ^.onMouseOut --> clearHoveredPoint()
             )
           }
 
