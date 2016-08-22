@@ -19,7 +19,23 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  final case class PlottableQualityDataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory])
+  final case class PlottableQualityDataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory]) {
+
+    def updateWeights(analysis: Analysis[Entity], weights: Weights): PlottableQualityDataModel = {
+
+      val entityMap: Map[Entity, PlottableEntity] = rankedEntities.map(e => e.entity -> e).toMap
+      val newModel = PlottableQualityDataModel(analysis, weights)
+
+      val newRankedEntities = newModel.rankedEntities.map { e =>
+        val template = entityMap(e.entity)
+        e.copy(color = template.color, isSelected = template.isSelected, isPinned = template.isPinned)
+      }
+
+      newModel.copy(rankedEntities = newRankedEntities)
+
+    }
+
+  }
 
   object PlottableQualityDataModel {
 
@@ -55,7 +71,7 @@ object app {
 
   object PlottableSubCategory {
 
-    def apply(entities: Seq[Entity], subCategory: SubCategory[Entity], reviews: Seq[Review], disabledIndicators: Set[Indicator[_]]): PlottableSubCategory = {
+    def apply(entities: Seq[Entity], subCategory: SubCategory[Entity], reviews: Seq[Review], disabledIndicators: Set[Indicator[Entity]]): PlottableSubCategory = {
       val indicators = subCategory.indicators.filter(!disabledIndicators.contains(_))
 
       def groupedValue(entity: Entity): Option[Double] = {
@@ -111,7 +127,7 @@ object app {
 
   case object Profile extends Weight
 
-  final case class Weights(subCategoryWeights: Map[SubCategory[_], Weight] = Map(), disabledIndicators: Set[Indicator[_]] = Set.empty)
+  final case class Weights(subCategoryWeights: Map[SubCategory[Entity], Weight] = Map(), disabledIndicators: Set[Indicator[Entity]] = Set.empty)
 
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 
