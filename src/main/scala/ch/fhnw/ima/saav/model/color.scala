@@ -1,6 +1,8 @@
 package ch.fhnw.ima.saav
 package model
 
+import ch.fhnw.ima.saav.model.app.PlottableEntity
+
 object color {
 
   // org.scalajs.dom.ext.Color doesn't support hex value access
@@ -20,5 +22,10 @@ object color {
   val DefaultColor = WebColor("#000000")
 
   val DisabledColor = WebColor("#777777")
+
+  def autoColorMap(entities: Seq[PlottableEntity]): Map[PlottableEntity, WebColor] =
+    entities.zipWithIndex.map {
+      case (e, i) => (e, SolarizedPalette(i % SolarizedPalette.size))
+    }.toMap.withDefaultValue(color.DefaultColor)
 
 }

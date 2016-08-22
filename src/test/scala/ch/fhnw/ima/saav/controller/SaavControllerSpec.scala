@@ -7,13 +7,11 @@ import ch.fhnw.ima.saav.model.domain._
 import diode.RootModelRW
 import org.scalatest._
 
-import scala.collection.immutable.ListSet
-
 class SaavControllerSpec extends FunSpec with Matchers {
 
   def analysisHandler = new AnalysisHandler(new RootModelRW(SaavModel().model))
 
-  def selectionAndPinningHandler(initialModel: SelectionAndPinning) = new SelectionAndPinningHandler(new RootModelRW(initialModel))
+  def entityHandler(entities: Seq[PlottableEntity]) = new EntityHandler(new RootModelRW(entities))
 
   def failOnUnexpectedAction = fail("Unexpected action result")
 
@@ -45,58 +43,76 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val analysis = AnalysisBuilder.projectAnalysisBuilder.build
       val result = analysisHandler.handle(AnalysisReadyAction(analysis))
       result.newModelOpt match {
-        case Some(Right(DataModel(actualAnalysis, _, selectedEntities, None))) =>
-          actualAnalysis shouldBe analysis
-          selectedEntities.toSeq == analysis.entities
+        case Some(Right(PlottableQualityDataModel(rankedEntities, categories))) =>
+          rankedEntities.size == analysis.entities.size
         case _ => failOnUnexpectedAction
       }
     }
   }
 
   describe(s"Handling ${UpdateEntitySelectionAction.getClass.getSimpleName}") {
+
     it("should wire selected entities") {
-      val handler = selectionAndPinningHandler(SelectionAndPinning())
-      val selectedEntities = Seq(PlottableEntity(Person("x"), value = None), PlottableEntity(Person("y"), value = None))
+      val allEntities = Seq(PlottableEntity(Person("x")), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val handler = entityHandler(allEntities)
+      val selectedEntities = allEntities.map(_.entity).toSet
       val result = handler.handle(UpdateEntitySelectionAction(selectedEntities, isSelected = true))
       result.newModelOpt match {
-        case Some(SelectionAndPinning(actualSelectedEntities, actualPinned)) =>
-          actualSelectedEntities.toSeq == selectedEntities.map(_.entity)
-          actualPinned shouldBe empty
+        case Some(entities) =>
+          entities.count(_.isSelected) == allEntities.size
+          entities.count(_.isPinned) == 0
         case _ => failOnUnexpectedAction
       }
     }
+
     it("should clear pinning if entity is no longer selected") {
-      val anEntity = Person("x")
-      val handler = selectionAndPinningHandler(SelectionAndPinning(pinned = Some(anEntity)))
-      val result = handler.handle(UpdateEntitySelectionAction(Seq(), isSelected = false))
+      val allEntities = Seq(PlottableEntity(Person("x"), isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val handler = entityHandler(allEntities)
+      val result = handler.handle(UpdateEntitySelectionAction(Set(), isSelected = false))
       result.newModelOpt match {
-        case Some(SelectionAndPinning(actualSelectedEntities, actualPinned)) =>
-          actualSelectedEntities shouldBe empty
-          actualPinned shouldBe empty
+        case Some(entities) =>
+          entities.count(_.isSelected) == 0
+          entities.count(_.isPinned) == 0
         case _ => failOnUnexpectedAction
       }
     }
+
     it("should not touch pinning if entity is still selected") {
-      val anEntity = PlottableEntity(Person("x"), value = None)
-      val handler = selectionAndPinningHandler(SelectionAndPinning(pinned = Some(anEntity.entity)))
-      val result = handler.handle(UpdateEntitySelectionAction(Seq(anEntity), isSelected = true))
+      val anEntity = Person("x")
+      val allEntities = Seq(PlottableEntity(anEntity, isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val handler = entityHandler(allEntities)
+      val result = handler.handle(UpdateEntitySelectionAction(Set(anEntity), isSelected = true))
       result.newModelOpt match {
-        case Some(SelectionAndPinning(actualSelectedEntities, actualPinned)) =>
-          actualSelectedEntities shouldBe ListSet(anEntity.entity)
-          actualPinned shouldBe Some(anEntity.entity)
+        case Some(entities) =>
+          entities.filter(_.isSelected).map(_.entity) == Seq(anEntity)
+          entities.filter(_.isPinned).map(_.entity) == Seq(anEntity)
         case _ => failOnUnexpectedAction
       }
     }
+
   }
 
   describe(s"Handling ${UpdateEntityPinningAction.getClass.getSimpleName}") {
+
     it("should wire a pinned entity") {
-      val handler = selectionAndPinningHandler(SelectionAndPinning())
-      val pinnedEntity = Some(PlottableEntity(Person("x"), value = None))
-      val result = handler.handle(UpdateEntityPinningAction(pinnedEntity))
+      val anEntity = Person("x")
+      val allEntities: Seq[PlottableEntity] = Seq(PlottableEntity(anEntity), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val handler = entityHandler(allEntities)
+      val result = handler.handle(UpdateEntityPinningAction(Some(anEntity)))
       result.newModelOpt match {
-        case Some(SelectionAndPinning(_, actualPinnedEntity)) =>
-          actualPinnedEntity shouldBe pinnedEntity.map(_.entity)
+        case Some(entities) =>
+          entities.filter(_.isPinned).map(_.entity) == Seq(anEntity)
+        case _ => failOnUnexpectedAction
+      }
+    }
+
+    it("should clear pinning") {
+      val allEntities = Seq(PlottableEntity(Person("x"), isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val handler = entityHandler(allEntities)
+      val result = handler.handle(UpdateEntityPinningAction(None))
+      result.newModelOpt match {
+        case Some(entities) =>
+          entities.count(_.isPinned) == 0
         case _ => failOnUnexpectedAction
       }
     }

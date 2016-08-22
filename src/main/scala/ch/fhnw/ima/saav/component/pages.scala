@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
-import ch.fhnw.ima.saav.model.app.{DataModel, PlottableQualityDataModel, SaavModel}
+import ch.fhnw.ima.saav.model.app.{PlottableQualityDataModel, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -92,12 +92,10 @@ object pages {
 
   object PageWithDataComponent {
 
-    case class Props(proxy: ModelProxy[DataModel])
+    case class Props(proxy: ModelProxy[PlottableQualityDataModel])
 
     private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
       .render_P(p => {
-
-        val qualityDataModelProxy = p.proxy.zoom(PlottableQualityDataModel(_))
 
         <.div(
           <.div(css.row,
@@ -107,23 +105,23 @@ object pages {
           ),
           <.div(css.row,
             <.div(css.colXs12, css.vSpaced,
-              CanvasComponent(qualityDataModelProxy)
+              CanvasComponent(p.proxy)
             )
           ),
           <.div(css.row,
             <.div(css.colXs12, css.vSpaced,
-              SvgPlotComponent(qualityDataModelProxy)
+              SvgPlotComponent(p.proxy)
             )
           ),
           <.div(css.row,
-            <.div(css.colXs3, LegendComponent(qualityDataModelProxy.zoom(_.rankedEntities))),
-            <.div(css.colXs9, D3Component(qualityDataModelProxy))
+            <.div(css.colXs3, LegendComponent(p.proxy.zoom(_.rankedEntities))),
+            <.div(css.colXs9, D3Component(p.proxy))
           )
         )
       })
       .build
 
-    def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
+    def apply(proxy: ModelProxy[PlottableQualityDataModel]) = component(Props(proxy))
 
   }
 

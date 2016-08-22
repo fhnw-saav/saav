@@ -4,12 +4,10 @@ package model
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain._
 
-import scala.collection.immutable.ListSet
-
 /** Application models (incl. presentation state). */
 object app {
 
-  case class SaavModel(model: Either[NoDataModel, DataModel] = Left(NoDataModel(ImportNotStarted())))
+  case class SaavModel(model: Either[NoDataModel, PlottableQualityDataModel] = Left(NoDataModel(ImportNotStarted())))
 
   case class NoDataModel(importState: ImportState)
 
@@ -21,39 +19,39 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  // TODO: Refactor into PlottableQualityDataModel
-  case class DataModel(
-    analysis: Analysis[Entity],
-    colors: Map[Entity, WebColor] = Map().withDefaultValue(DefaultColor),
-    selectedEntities: ListSet[Entity],
-    pinnedEntity: Option[Entity] = None
-  )
+  //   TODO: Refactor into PlottableQualityDataModel
+  //  case class DataModel(
+  //    analysis: Analysis[Entity],
+  //    colors: Map[Entity, WebColor] = Map().withDefaultValue(DefaultColor),
+  //    selectedEntities: ListSet[Entity],
+  //    pinnedEntity: Option[Entity] = None
+  //  )
 
   final case class PlottableQualityDataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory])
 
   object PlottableQualityDataModel {
 
-    def apply(dataModel: DataModel, weights: Weights = Weights()): PlottableQualityDataModel = {
+    def apply(analysis: Analysis[Entity], weights: Weights = Weights()): PlottableQualityDataModel = {
 
-      val categories = dataModel.analysis.categories.map { c =>
-        PlottableCategory(dataModel.analysis.entities, c, dataModel.analysis.reviews, weights)
+      val categories = analysis.categories.map { c =>
+        PlottableCategory(analysis.entities, c, analysis.reviews, weights)
       }
 
-      val rankedEntities = dataModel.analysis.entities.map { e =>
-        val dm = dataModel
-        val selected = dm.selectedEntities
-        val pinned = dm.pinnedEntity
-        val colors = dm.colors
+      val rankedEntities = analysis.entities.map { e =>
         val value = median(categories.flatMap(_.groupedValues(e)))
-        PlottableEntity(e, selected.contains(e), colors(e), pinned.contains(e), value)
+        PlottableEntity(e, value = value)
       }.sortBy(_.value)
 
-      PlottableQualityDataModel(rankedEntities, categories)
+      // colorize _after_ ranking to get optimally distinct colors
+      val colors = autoColorMap(rankedEntities)
+      val rankedAndAutoColoredEntities = rankedEntities.map(e => e.copy(color = colors(e)))
+
+      PlottableQualityDataModel(rankedAndAutoColoredEntities, categories)
     }
 
   }
 
-  final case class PlottableEntity(entity: Entity, isSelected: Boolean = false, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double]) {
+  final case class PlottableEntity(entity: Entity, isSelected: Boolean = true, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double] = None) {
     def name = entity.name
   }
 
@@ -88,7 +86,7 @@ object app {
 
   object PlottableCategory {
 
-    def apply(entities: Seq[Entity], category: Category[Entity], reviews: Seq[Review], weights: Weights) : PlottableCategory = {
+    def apply(entities: Seq[Entity], category: Category[Entity], reviews: Seq[Review], weights: Weights): PlottableCategory = {
 
       val subCategories = category.subCategories.map(sc => PlottableSubCategory(entities, sc, reviews, weights.disabledIndicators))
 

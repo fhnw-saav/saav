@@ -8,7 +8,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.extra.components.TriStateCheckbox
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, _}
-import org.scalajs.dom.raw.{HTMLInputElement, HTMLTableCellElement}
+import org.scalajs.dom.raw.HTMLInputElement
 
 import scala.language.postfixOps
 import scalacss.ScalaCssReact._
@@ -19,17 +19,17 @@ object LegendComponent {
 
   class Backend($: BackendScope[Props, Unit]) {
 
-    def autoColorize(entities: Seq[PlottableEntity]) = {
-      $.props >>= (_.proxy.dispatch(AutoColorizeAction(entities)))
+    def autoColorize = {
+      $.props >>= (_.proxy.dispatch(AutoColorizeAction()))
     }
 
-    def updateEntityColor(entity: PlottableEntity)(e: SyntheticEvent[HTMLInputElement]) = {
+    def updateEntityColor(plottableEntity: PlottableEntity)(e: SyntheticEvent[HTMLInputElement]) = {
       val newColor = WebColor(e.target.value)
-      $.props >>= (_.proxy.dispatch(UpdateEntityColorAction(entity, newColor)))
+      $.props >>= (_.proxy.dispatch(UpdateEntityColorAction(plottableEntity.entity, newColor)))
     }
 
-    def toggleEntitySelection(entity: PlottableEntity) = {
-      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(Seq(entity), !entity.isSelected)))
+    def toggleEntitySelection(plottableEntity: PlottableEntity) = {
+      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(Set(plottableEntity.entity), !plottableEntity.isSelected)))
     }
 
     def updateAllEntitySelections() = {
@@ -38,19 +38,19 @@ object LegendComponent {
           case TriStateCheckbox.Checked => false
           case _ => true
         }
-        p.proxy.dispatch(UpdateEntitySelectionAction(p.proxy.value, isSelected = newSelected))
+        p.proxy.dispatch(UpdateEntitySelectionAction(p.proxy.value.map(_.entity).toSet, isSelected = newSelected))
       }
     }
 
-    def toggleEntityPinning(entity: PlottableEntity)(e: ReactEvent) = {
+    def toggleEntityPinning(plottableEntity: PlottableEntity)(e: ReactEvent) = {
       // only control pinning if the click happens in a blank table row area (i.e NOT on the checkbox, color widget)
-      if (e.target.isInstanceOf[HTMLTableCellElement]) {
-        $.props >>= { p =>
-          val pinnedEntity = if (entity.isPinned) None else Some(entity)
-          p.proxy.dispatch(UpdateEntityPinningAction(pinnedEntity))
-        }
-      } else {
+      if (e.target.isInstanceOf[HTMLInputElement]) {
         Callback.empty
+      } else {
+        $.props >>= { p =>
+          val pinnedOrNone = if (plottableEntity.isPinned) None else Some(plottableEntity.entity)
+          p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
+        }
       }
     }
 
@@ -61,7 +61,7 @@ object LegendComponent {
       val autoColorizeGlyph = <.i(
         css.glyph.magic,
         ^.cursor.pointer,
-        ^.onClick --> autoColorize(entities.filter(_.isSelected)),
+        ^.onClick --> autoColorize,
         ^.title := "Auto-Colorize")
 
       <.tr(
@@ -120,10 +120,6 @@ object LegendComponent {
 
   private final val component = ReactComponentB[Props](LegendComponent.getClass.getSimpleName)
     .renderBackend[Backend]
-    .componentDidMount(scope => {
-      val entities = scope.props.proxy.value
-      scope.props.proxy.dispatch(AutoColorizeAction(entities))
-    })
     .build
 
   def apply(proxy: ModelProxy[Seq[PlottableEntity]]) = {
