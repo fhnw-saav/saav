@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.model.app.{PlottableEntity, PlottableQualityDataModel}
+import ch.fhnw.ima.saav.model.app.{PlottableCategory, PlottableEntity, PlottableQualityDataModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
@@ -9,8 +9,7 @@ object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[PlottableQualityDataModel])
 
-  // TODO: Once PlottableCategory is a case class, use (PlottableCategory, PlottableEntity) pair here
-  type HoveredPoint = Option[(String, PlottableEntity)]
+  type HoveredPoint = Option[(PlottableCategory, PlottableEntity)]
 
   case class State(hoveredPoint: HoveredPoint = None)
 
@@ -59,13 +58,14 @@ object SvgPlotComponent {
             (entity, entityIndex) <- entities.zipWithIndex
             y = (entityIndex * entityPointDistance) + lineStartY + (entityPointDistance / 2)
           } yield {
-            val pinnedOrHovered = if (entity.isPinned || s.hoveredPoint.contains((category.name, entity))) "black" else "transparent"
+            val isHovered = s.hoveredPoint.contains((category, entity))
+            val pinnedOrHovered = if (entity.isPinned || isHovered) "black" else "transparent"
             <.svg.circle(
               ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
               ^.svg.fill := entity.color.hexValue,
               ^.svg.strokeWidth := 2,
               ^.svg.stroke := pinnedOrHovered,
-              ^.onMouseOver --> setHoveredPoint(Some((category.name, entity))),
+              ^.onMouseOver --> setHoveredPoint(Some((category, entity))),
               ^.onMouseOut --> clearHoveredPoint()
             )
           }

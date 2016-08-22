@@ -152,7 +152,7 @@ object CanvasComponent {
       var index = 0
       for (category <- model.categories) {
         val x = layout.getCriteriaAxisX(category)
-        val value = category.groupedValue(plottableEntity.entity).get * (layout.getCategoryAxisBotY - layout.getCategoryAxisTopY) / 100.0
+        val value = category.groupedValues(plottableEntity.entity).get * (layout.getCategoryAxisBotY - layout.getCategoryAxisTopY) / 100.0
         val y = layout.getCategoryAxisBotY - value
 
         if (index == 0) ctx.moveTo(x, y) else ctx.lineTo(x, y)
@@ -168,7 +168,7 @@ object CanvasComponent {
       for (category <- model.categories) {
         for (subCategory <- category.subCategories) {
           val x = layout.getSubCriteriaAxisX(subCategory)
-          val value = subCategory.groupedValue(plottableEntity.entity).get * (layout.getSubCategoryAxisBotY - layout.getSubCategoryAxisTopY) / 100.0
+          val value = subCategory.groupedValues(plottableEntity.entity).get * (layout.getSubCategoryAxisBotY - layout.getSubCategoryAxisTopY) / 100.0
           val y = layout.getSubCategoryAxisBotY - value
 
           if (index == 0) ctx.moveTo(x, y) else ctx.lineTo(x, y)

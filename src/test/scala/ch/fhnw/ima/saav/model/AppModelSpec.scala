@@ -14,7 +14,7 @@ class AppModelSpec extends FlatSpec {
       println(category.name)
 
       model.rankedEntities.foreach { plottableEntity =>
-        category.groupedValue(plottableEntity.entity)
+        category.groupedValues(plottableEntity.entity)
       }
 
       for (subCategory <- category.subCategories) {
@@ -22,7 +22,7 @@ class AppModelSpec extends FlatSpec {
         println(subCategory.name)
 
         model.rankedEntities.foreach { plottableEntity =>
-          subCategory.groupedValue(plottableEntity.entity)
+          subCategory.groupedValues(plottableEntity.entity)
         }
 
       }

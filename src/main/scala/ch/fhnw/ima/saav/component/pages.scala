@@ -97,7 +97,7 @@ object pages {
     private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
       .render_P(p => {
 
-        val qualityDataModelProxy = p.proxy.zoom(new PlottableQualityDataModel(_))
+        val qualityDataModelProxy = p.proxy.zoom(PlottableQualityDataModel(_))
 
         <.div(
           <.div(css.row,

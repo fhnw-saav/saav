@@ -29,63 +29,88 @@ object app {
     pinnedEntity: Option[Entity] = None
   )
 
-  class PlottableQualityDataModel(private val dataModel: DataModel, private val weights: Weights = Weights()) {
+  final case class PlottableQualityDataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory])
 
-    val categories: Seq[PlottableCategory] = dataModel.analysis.categories.map { c =>
-      new PlottableCategory(c, dataModel.analysis.reviews, weights)
-    }
+  object PlottableQualityDataModel {
 
-    val rankedEntities: Seq[PlottableEntity] = dataModel.analysis.entities.map { e =>
-      val dm = dataModel
-      val selected = dm.selectedEntities
-      val pinned = dm.pinnedEntity
-      val colors = dm.colors
-      val value = median(categories.flatMap(_.groupedValue(e)))
-      PlottableEntity(e, selected.contains(e), colors(e), pinned.contains(e), value)
-    }.sortBy(_.value)
+    def apply(dataModel: DataModel, weights: Weights = Weights()): PlottableQualityDataModel = {
 
-  }
-
-  case class PlottableEntity(entity: Entity, isSelected: Boolean = false, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double]) {
-    val name = entity.name
-  }
-
-  class PlottableSubCategory(private[app] val subCategory: SubCategory[Entity], private val reviews: Seq[Review], private val disabledIndicators: Set[Indicator[_]]) {
-
-    val name = subCategory.name
-
-    val indicators = subCategory.indicators.filter(!disabledIndicators.contains(_))
-
-    def groupedValue(entity: Entity): Option[Double] = {
-      val values = for {
-        review <- reviews
-        indicator <- indicators
-        values <- indicator.values.get((entity, review))
-      } yield values
-      median(values)
-    }
-
-  }
-
-  class PlottableCategory(category: Category[Entity], reviews: Seq[Review], weights: Weights) {
-
-    val name = category.name
-
-    val subCategories = category.subCategories.map(sc => new PlottableSubCategory(sc, reviews, weights.disabledIndicators))
-
-    def groupedValue(entity: Entity): Option[Double] = {
-      val valuesWithWeights = for {
-        subCategory <- subCategories
-        value <- subCategory.groupedValue(entity)
-        weight = weights.subCategoryWeights.getOrElse(subCategory.subCategory, Quality(1f))
-        weightValue <- weight match {
-          case Quality(wv) => Some(wv)
-          case _ => None
-        }
-      } yield {
-        (value, weightValue)
+      val categories = dataModel.analysis.categories.map { c =>
+        PlottableCategory(dataModel.analysis.entities, c, dataModel.analysis.reviews, weights)
       }
-      weightedMedian(valuesWithWeights)
+
+      val rankedEntities = dataModel.analysis.entities.map { e =>
+        val dm = dataModel
+        val selected = dm.selectedEntities
+        val pinned = dm.pinnedEntity
+        val colors = dm.colors
+        val value = median(categories.flatMap(_.groupedValues(e)))
+        PlottableEntity(e, selected.contains(e), colors(e), pinned.contains(e), value)
+      }.sortBy(_.value)
+
+      PlottableQualityDataModel(rankedEntities, categories)
+    }
+
+  }
+
+  final case class PlottableEntity(entity: Entity, isSelected: Boolean = false, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double]) {
+    def name = entity.name
+  }
+
+  final case class PlottableSubCategory(subCategory: SubCategory[Entity], groupedValues: Map[Entity, Option[Double]]) {
+
+    def name = subCategory.name
+
+  }
+
+  object PlottableSubCategory {
+
+    def apply(entities: Seq[Entity], subCategory: SubCategory[Entity], reviews: Seq[Review], disabledIndicators: Set[Indicator[_]]): PlottableSubCategory = {
+      val indicators = subCategory.indicators.filter(!disabledIndicators.contains(_))
+
+      def groupedValue(entity: Entity): Option[Double] = {
+        val values = for {
+          review <- reviews
+          indicator <- indicators
+          values <- indicator.values.get((entity, review))
+        } yield values
+        median(values)
+      }
+
+      val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
+
+      PlottableSubCategory(subCategory, groupedValues)
+    }
+
+  }
+
+  final case class PlottableCategory(name: String, subCategories: Seq[PlottableSubCategory], groupedValues: Map[Entity, Option[Double]])
+
+  object PlottableCategory {
+
+    def apply(entities: Seq[Entity], category: Category[Entity], reviews: Seq[Review], weights: Weights) : PlottableCategory = {
+
+      val subCategories = category.subCategories.map(sc => PlottableSubCategory(entities, sc, reviews, weights.disabledIndicators))
+
+      def groupedValue(entity: Entity): Option[Double] = {
+        val valuesWithWeights = for {
+          subCategory <- subCategories
+          value <- subCategory.groupedValues(entity)
+          weight = weights.subCategoryWeights.getOrElse(subCategory.subCategory, Quality(1f))
+          weightValue <- weight match {
+            case Quality(wv) => Some(wv)
+            case _ => None
+          }
+        } yield {
+          (value, weightValue)
+        }
+        weightedMedian(valuesWithWeights)
+      }
+
+      val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
+
+      PlottableCategory(category.name, subCategories, groupedValues)
+
     }
 
   }
