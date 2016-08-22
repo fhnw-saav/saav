@@ -44,7 +44,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val result = analysisHandler.handle(AnalysisReadyAction(analysis))
       result.newModelOpt match {
         case Some(Right(PlottableQualityDataModel(rankedEntities, categories))) =>
-          rankedEntities.size == analysis.entities.size
+          rankedEntities.size shouldBe analysis.entities.size
         case _ => failOnUnexpectedAction
       }
     }
@@ -59,8 +59,8 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val result = handler.handle(UpdateEntitySelectionAction(selectedEntities, isSelected = true))
       result.newModelOpt match {
         case Some(entities) =>
-          entities.count(_.isSelected) == allEntities.size
-          entities.count(_.isPinned) == 0
+          entities.count(_.isSelected) shouldBe allEntities.size
+          entities.count(_.isPinned) shouldBe 0
         case _ => failOnUnexpectedAction
       }
     }
@@ -68,24 +68,28 @@ class SaavControllerSpec extends FunSpec with Matchers {
     it("should clear pinning if entity is no longer selected") {
       val allEntities = Seq(PlottableEntity(Person("x"), isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
       val handler = entityHandler(allEntities)
-      val result = handler.handle(UpdateEntitySelectionAction(Set(), isSelected = false))
+      val result = handler.handle(UpdateEntitySelectionAction(allEntities.map(_.entity).toSet, isSelected = false))
       result.newModelOpt match {
         case Some(entities) =>
-          entities.count(_.isSelected) == 0
-          entities.count(_.isPinned) == 0
+          entities.count(_.isSelected) shouldBe 0
+          entities.count(_.isPinned) shouldBe 0
         case _ => failOnUnexpectedAction
       }
     }
 
     it("should not touch pinning if entity is still selected") {
       val anEntity = Person("x")
-      val allEntities = Seq(PlottableEntity(anEntity, isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val allEntities = Seq(
+        PlottableEntity(anEntity, isPinned = true, isSelected = true),
+        PlottableEntity(Person("y"), isSelected = false),
+        PlottableEntity(Person("z"), isSelected = false)
+      )
       val handler = entityHandler(allEntities)
       val result = handler.handle(UpdateEntitySelectionAction(Set(anEntity), isSelected = true))
       result.newModelOpt match {
         case Some(entities) =>
-          entities.filter(_.isSelected).map(_.entity) == Seq(anEntity)
-          entities.filter(_.isPinned).map(_.entity) == Seq(anEntity)
+          entities.filter(_.isSelected).map(_.entity) shouldBe Seq(anEntity)
+          entities.filter(_.isPinned).map(_.entity) shouldBe Seq(anEntity)
         case _ => failOnUnexpectedAction
       }
     }
@@ -101,7 +105,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val result = handler.handle(UpdateEntityPinningAction(Some(anEntity)))
       result.newModelOpt match {
         case Some(entities) =>
-          entities.filter(_.isPinned).map(_.entity) == Seq(anEntity)
+          entities.filter(_.isPinned).map(_.entity) shouldBe Seq(anEntity)
         case _ => failOnUnexpectedAction
       }
     }
@@ -112,7 +116,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val result = handler.handle(UpdateEntityPinningAction(None))
       result.newModelOpt match {
         case Some(entities) =>
-          entities.count(_.isPinned) == 0
+          entities.count(_.isPinned) shouldBe 0
         case _ => failOnUnexpectedAction
       }
     }
