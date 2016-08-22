@@ -139,25 +139,6 @@ object FileImportComponent {
 
   private def importMockData(proxy: ModelProxy[NoDataModel]) = {
     val builder = new AnalysisBuilder[Project]
-    val indicatorScope = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
-
-    val reviewOne = Review("Review 1")
-    val reviewTwo = Review("Review 2")
-
-    val r = Random
-
-    for (i <- 1 to 10) {
-      val project = Project(s"Project $i")
-      indicatorScope.addValue(project, reviewOne, r.nextInt(100))
-      indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
-    }
-
-    val analysis = builder.build
-    proxy.dispatch(AnalysisReadyAction(analysis))
-  }
-
-  private def importMockData2(proxy: ModelProxy[NoDataModel]) = {
-    val builder = new AnalysisBuilder[Project]
 
     populateIndicator(builder, "Methodologie", "Klare Fragestellung und Zielsetzung", "Indikator 1")
     populateIndicator(builder, "Methodologie", "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", "Indikator 1")
@@ -192,7 +173,6 @@ object FileImportComponent {
     proxy.dispatch(AnalysisReadyAction(analysis))
   }
 
-//  private def populateIndicator(indicator: IndicatorBuilder) = {
   private def populateIndicator(builder: AnalysisBuilder[Project], categoryName: String, subCategoryName: String, indicatorName: String) = {
     val indicatorScope = builder.category(categoryName).subCategory(subCategoryName).indicator(indicatorName)
 
@@ -220,8 +200,7 @@ object FileImportComponent {
                 <.h1("Drag and drop"),
                 <.p("To import data from CSV file")
               )),
-            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockData(p.proxy), "Quick, some mock data, please!")),
-            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockData2(p.proxy), "Quick, some realistic mock data, please!"))
+            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockData(p.proxy), "Quick, some mock data, please!"))
           )
         case ImportInProgress(progress) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
