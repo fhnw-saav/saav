@@ -19,14 +19,6 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  //   TODO: Refactor into PlottableQualityDataModel
-  //  case class DataModel(
-  //    analysis: Analysis[Entity],
-  //    colors: Map[Entity, WebColor] = Map().withDefaultValue(DefaultColor),
-  //    selectedEntities: ListSet[Entity],
-  //    pinnedEntity: Option[Entity] = None
-  //  )
-
   final case class PlottableQualityDataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory])
 
   object PlottableQualityDataModel {
@@ -40,7 +32,7 @@ object app {
       val rankedEntities = analysis.entities.map { e =>
         val value = median(categories.flatMap(_.groupedValues(e)))
         PlottableEntity(e, value = value)
-      }.sortBy(_.value)
+      }.sortBy(_.value).reverse
 
       // colorize _after_ ranking to get optimally distinct colors
       val colors = autoColorMap(rankedEntities)

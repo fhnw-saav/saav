@@ -5,40 +5,7 @@ import ch.fhnw.ima.saav.model.domain.Entity.{Organisation, Person, Project}
 
 object domain {
 
-  final case class Analysis[E <: Entity](categories: Seq[Category[E]], entities: Seq[E], reviews: Seq[Review]) {
-
-    def groupedValue(entity: E, indicator: Indicator[E]): Option[Double] = {
-      val values = reviews.flatMap(review => indicator.values.get((entity, review)))
-      median(values)
-    }
-
-    def groupedValue(entity: E, subCategory: SubCategory[E]): Option[Double] = {
-      val values = subCategory.indicators.flatMap(groupedValue(entity, _))
-      median(values)
-    }
-
-    def groupedValue(entity: E, category: Category[E]): Option[Double] = {
-      val values = category.subCategories.flatMap(groupedValue(entity, _))
-      median(values)
-    }
-
-    def groupedValue(entity: E): Option[Double] = {
-      val values = categories.flatMap(groupedValue(entity, _))
-      median(values)
-    }
-
-    private def median(values: Seq[Double]) = {
-      val sortedValues = values.sorted
-      sortedValues.size match {
-        case 0 => None
-        case length if length % 2 == 0 =>
-          val i = (length - 1) / 2
-          Some((sortedValues(i) + sortedValues(i + 1)) / 2)
-        case length => Some(sortedValues(length / 2))
-      }
-    }
-
-  }
+  final case class Analysis[E <: Entity](categories: Seq[Category[E]], entities: Seq[E], reviews: Seq[Review])
 
   final case class Category[E <: Entity](name: String, subCategories: Seq[SubCategory[E]])
 

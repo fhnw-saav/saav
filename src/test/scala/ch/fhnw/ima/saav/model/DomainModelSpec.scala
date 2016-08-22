@@ -103,53 +103,6 @@ class DomainModelSpec extends FlatSpec {
     assert(indicator.values((entityThree, reviewTwo)) == 32)
   }
 
-  "An analysis" should "group values by indicator/sub-category/category using median" in {
-
-    val project = Project("Project")
-
-    val reviewOne = Review("Review 1")
-    val reviewTwo = Review("Review 2")
-
-    // build a hierarchy with some test values
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
-        .category("Category 1")
-            .subCategory("Sub-Category 11")
-              .indicator("Indicator 111")
-                .addValue(project, reviewOne, 1)
-                .addValue(project, reviewTwo, 2)
-                .build
-              .indicator("Indicator 112")
-                .addValue(project, reviewTwo, 3)
-                .build
-              .indicator("Indicator 113")
-                .build
-              .build
-            .build
-        .category("Category 2").build
-        .build
-
-    // retrieve entity references to look-up values
-    val category1 = analysis.categories(0)
-    val category2 = analysis.categories(1)
-
-    val subCategory11 = category1.subCategories(0)
-    val indicator111 = subCategory11.indicators(0)
-    val indicator112 = subCategory11.indicators(1)
-    val indicator113 = subCategory11.indicators(2)
-
-    // grouping by indicator
-    assert(analysis.groupedValue(project, indicator111) == Option(1.5), "Grouping by indicator: Even number of values")
-    assert(analysis.groupedValue(project, indicator112) == Option(3), "Grouping by indicator: Odd number of values")
-    assert(analysis.groupedValue(project, indicator113).isEmpty, "Grouping by indicator: No values")
-
-    // grouping by sub-category
-    assert(analysis.groupedValue(project, subCategory11) == Option(2.25), "Grouping by sub-category")
-
-    // grouping by category
-    assert(analysis.groupedValue(project, category1) == Option(2.25), "Grouping by category")
-    assert(analysis.groupedValue(project, category2) == Option.empty, "Grouping by category with no values")
-  }
-
   it should "be truly immutable" in {
     val builder = AnalysisBuilder.projectAnalysisBuilder
     val analysis = builder.build
