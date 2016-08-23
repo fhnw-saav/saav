@@ -55,7 +55,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
     it("should wire selected entities") {
       val allEntities = Seq(PlottableEntity(Person("x")), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
       val handler = entityHandler(allEntities)
-      val selectedEntities = allEntities.map(_.entity).toSet
+      val selectedEntities = allEntities.map(_.id).toSet
       val result = handler.handle(UpdateEntitySelectionAction(selectedEntities, isSelected = true))
       result.newModelOpt match {
         case Some(entities) =>
@@ -68,7 +68,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
     it("should clear pinning if entity is no longer selected") {
       val allEntities = Seq(PlottableEntity(Person("x"), isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
       val handler = entityHandler(allEntities)
-      val result = handler.handle(UpdateEntitySelectionAction(allEntities.map(_.entity).toSet, isSelected = false))
+      val result = handler.handle(UpdateEntitySelectionAction(allEntities.map(_.id).toSet, isSelected = false))
       result.newModelOpt match {
         case Some(entities) =>
           entities.count(_.isSelected) shouldBe 0
@@ -88,8 +88,8 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val result = handler.handle(UpdateEntitySelectionAction(Set(anEntity), isSelected = true))
       result.newModelOpt match {
         case Some(entities) =>
-          entities.filter(_.isSelected).map(_.entity) shouldBe Seq(anEntity)
-          entities.filter(_.isPinned).map(_.entity) shouldBe Seq(anEntity)
+          entities.filter(_.isSelected).map(_.id) shouldBe Seq(anEntity)
+          entities.filter(_.isPinned).map(_.id) shouldBe Seq(anEntity)
         case _ => failOnUnexpectedAction
       }
     }
@@ -105,7 +105,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val result = handler.handle(UpdateEntityPinningAction(Some(anEntity)))
       result.newModelOpt match {
         case Some(entities) =>
-          entities.filter(_.isPinned).map(_.entity) shouldBe Seq(anEntity)
+          entities.filter(_.isPinned).map(_.id) shouldBe Seq(anEntity)
         case _ => failOnUnexpectedAction
       }
     }

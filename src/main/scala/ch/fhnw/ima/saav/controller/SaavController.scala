@@ -54,14 +54,14 @@ object SaavController {
         updated(newEntities)
       case UpdateEntityColorAction(entity, color) =>
         val entities = value.map {
-          case e if e.entity == entity => e.copy(color = color)
+          case e if e.id == entity => e.copy(color = color)
           case e => e
         }
         updated(entities)
       case UpdateEntitySelectionAction(selection, isSelected) =>
         val oldEntities = value
         val newEntities = oldEntities.map { e =>
-          if (selection.contains(e.entity)) {
+          if (selection.contains(e.id)) {
             val newIsPinned = e.isPinned && isSelected
             e.copy(
               isSelected = isSelected,
@@ -75,7 +75,7 @@ object SaavController {
       case UpdateEntityPinningAction(pinnedEntity) =>
         val oldEntities = value
         val newEntities = oldEntities.map {
-          case e if pinnedEntity.contains(e.entity) => e.copy(isPinned = true)
+          case e if pinnedEntity.contains(e.id) => e.copy(isPinned = true)
           case e => e.copy(isPinned = false)
         }
         updated(newEntities)

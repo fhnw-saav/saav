@@ -49,13 +49,13 @@ class AppModelSpec extends FunSpec with Matchers {
 
       // ranking (highest global median first)
       model.rankedEntities.size shouldBe 3
-      model.rankedEntities(0).entity shouldBe entityTwo
+      model.rankedEntities(0).id shouldBe entityTwo
       model.rankedEntities(0).value shouldBe Some(100)
 
-      model.rankedEntities(1).entity shouldBe entityOne
+      model.rankedEntities(1).id shouldBe entityOne
       model.rankedEntities(1).value shouldBe Some(22.25)
 
-      model.rankedEntities(2).entity shouldBe entityThree
+      model.rankedEntities(2).id shouldBe entityThree
       model.rankedEntities(2).value shouldBe Some(0)
 
       model.categories.size shouldBe 2
@@ -91,13 +91,13 @@ class AppModelSpec extends FunSpec with Matchers {
 
       // ranking (highest global median first)
       newModel.rankedEntities.size shouldBe 3
-      newModel.rankedEntities(0).entity shouldBe entityTwo
+      newModel.rankedEntities(0).id shouldBe entityTwo
       newModel.rankedEntities(0).value shouldBe Some(99)
 
-      newModel.rankedEntities(1).entity shouldBe entityOne
+      newModel.rankedEntities(1).id shouldBe entityOne
       newModel.rankedEntities(1).value shouldBe Some(42.5)
 
-      newModel.rankedEntities(2).entity shouldBe entityThree
+      newModel.rankedEntities(2).id shouldBe entityThree
       newModel.rankedEntities(2).value shouldBe None
 
       newModel.categories.size shouldBe 2

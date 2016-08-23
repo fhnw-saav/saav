@@ -25,11 +25,11 @@ object LegendComponent {
 
     def updateEntityColor(plottableEntity: PlottableEntity)(e: SyntheticEvent[HTMLInputElement]) = {
       val newColor = WebColor(e.target.value)
-      $.props >>= (_.proxy.dispatch(UpdateEntityColorAction(plottableEntity.entity, newColor)))
+      $.props >>= (_.proxy.dispatch(UpdateEntityColorAction(plottableEntity.id, newColor)))
     }
 
     def toggleEntitySelection(plottableEntity: PlottableEntity) = {
-      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(Set(plottableEntity.entity), !plottableEntity.isSelected)))
+      $.props >>= (_.proxy.dispatch(UpdateEntitySelectionAction(Set(plottableEntity.id), !plottableEntity.isSelected)))
     }
 
     def updateAllEntitySelections() = {
@@ -38,7 +38,7 @@ object LegendComponent {
           case TriStateCheckbox.Checked => false
           case _ => true
         }
-        p.proxy.dispatch(UpdateEntitySelectionAction(p.proxy.value.map(_.entity).toSet, isSelected = newSelected))
+        p.proxy.dispatch(UpdateEntitySelectionAction(p.proxy.value.map(_.id).toSet, isSelected = newSelected))
       }
     }
 
@@ -48,7 +48,7 @@ object LegendComponent {
         Callback.empty
       } else {
         $.props >>= { p =>
-          val pinnedOrNone = if (plottableEntity.isPinned) None else Some(plottableEntity.entity)
+          val pinnedOrNone = if (plottableEntity.isPinned) None else Some(plottableEntity.id)
           p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
         }
       }

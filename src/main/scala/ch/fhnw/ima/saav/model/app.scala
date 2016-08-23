@@ -23,11 +23,11 @@ object app {
 
     def updateWeights(analysis: Analysis[Entity], weights: Weights): PlottableQualityDataModel = {
 
-      val entityMap: Map[Entity, PlottableEntity] = rankedEntities.map(e => e.entity -> e).toMap
+      val entityMap: Map[Entity, PlottableEntity] = rankedEntities.map(e => e.id -> e).toMap
       val newModel = PlottableQualityDataModel(analysis, weights)
 
       val newRankedEntities = newModel.rankedEntities.map { e =>
-        val template = entityMap(e.entity)
+        val template = entityMap(e.id)
         e.copy(color = template.color, isSelected = template.isSelected, isPinned = template.isPinned)
       }
 
@@ -59,14 +59,12 @@ object app {
 
   }
 
-  final case class PlottableEntity(entity: Entity, isSelected: Boolean = true, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double] = None) {
-    def name = entity.name
+  final case class PlottableEntity(id: Entity, isSelected: Boolean = true, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double] = None) {
+    def name = id.name
   }
 
-  final case class PlottableSubCategory(subCategory: SubCategory[Entity], groupedValues: Map[Entity, Option[Double]]) {
-
-    def name = subCategory.name
-
+  final case class PlottableSubCategory(id: SubCategory[Entity], groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator[Entity]]) {
+    def name = id.name
   }
 
   object PlottableSubCategory {
@@ -85,7 +83,7 @@ object app {
 
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
 
-      PlottableSubCategory(subCategory, groupedValues)
+      PlottableSubCategory(subCategory, groupedValues, indicators)
     }
 
   }
@@ -102,7 +100,7 @@ object app {
         val valuesWithWeights = for {
           subCategory <- subCategories
           value <- subCategory.groupedValues(entity)
-          weight = weights.subCategoryWeights.getOrElse(subCategory.subCategory, Quality(1f))
+          weight = weights.subCategoryWeights.getOrElse(subCategory.id, Quality(1f))
           weightValue <- weight match {
             case Quality(wv) => Some(wv)
             case _ => None
