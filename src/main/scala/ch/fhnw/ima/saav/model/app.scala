@@ -7,7 +7,7 @@ import ch.fhnw.ima.saav.model.domain._
 /** Application models (incl. presentation state). */
 object app {
 
-  case class SaavModel(model: Either[NoDataModel, PlottableQualityDataModel] = Left(NoDataModel(ImportNotStarted())))
+  case class SaavModel(model: Either[NoDataModel, DataModel] = Left(NoDataModel(ImportNotStarted())))
 
   case class NoDataModel(importState: ImportState)
 
@@ -19,12 +19,12 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  final case class PlottableQualityDataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory]) {
+  final case class DataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory]) {
 
-    def updateWeights(analysis: Analysis, weights: Weights): PlottableQualityDataModel = {
+    def updateWeights(analysis: Analysis, weights: Weights): DataModel = {
 
       val entityMap: Map[Entity, PlottableEntity] = rankedEntities.map(e => e.id -> e).toMap
-      val newModel = PlottableQualityDataModel(analysis, weights)
+      val newModel = DataModel(analysis, weights)
 
       val newRankedEntities = newModel.rankedEntities.map { e =>
         val template = entityMap(e.id)
@@ -37,9 +37,9 @@ object app {
 
   }
 
-  object PlottableQualityDataModel {
+  object DataModel {
 
-    def apply(analysis: Analysis, weights: Weights = Weights()): PlottableQualityDataModel = {
+    def apply(analysis: Analysis, weights: Weights = Weights()): DataModel = {
 
       val categories = analysis.categories.map { c =>
         PlottableCategory(analysis.entities, c, analysis.reviews, weights)
@@ -54,7 +54,7 @@ object app {
       val colors = autoColorMap(rankedEntities)
       val rankedAndAutoColoredEntities = rankedEntities.map(e => e.copy(color = colors(e)))
 
-      PlottableQualityDataModel(rankedAndAutoColoredEntities, categories)
+      DataModel(rankedAndAutoColoredEntities, categories)
     }
 
   }

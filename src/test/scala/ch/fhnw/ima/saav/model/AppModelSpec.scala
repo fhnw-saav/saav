@@ -42,7 +42,7 @@ class AppModelSpec extends FunSpec with Matchers {
       .build
     .build
 
-    val model = PlottableQualityDataModel(analysis)
+    val model = DataModel(analysis)
 
     it("should aggregate medians across all categories and sub-categories") {
 

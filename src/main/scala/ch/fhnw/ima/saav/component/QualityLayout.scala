@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.model.app.{PlottableCategory, PlottableQualityDataModel, PlottableSubCategory}
+import ch.fhnw.ima.saav.model.app.{DataModel, PlottableCategory, PlottableSubCategory}
 
 /**
   * This class computes all the relevant layout parameters.
@@ -20,7 +20,7 @@ class QualityLayout {
   private val criteriaAxesMap = new scala.collection.mutable.HashMap[PlottableCategory, Int]
   private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[PlottableSubCategory, Int]
 
-  def this(model: PlottableQualityDataModel, width: Int, height: Int) {
+  def this(model: DataModel, width: Int, height: Int) {
     this()
 
     // Compute general parameters
@@ -74,11 +74,11 @@ class QualityLayout {
   def getSubCriteriaAxisX(subCategory: PlottableSubCategory): Int = subCriteriaAxesMap(subCategory)
 
 
-  private def computeCriteriaCount(model: PlottableQualityDataModel) = {
+  private def computeCriteriaCount(model: DataModel) = {
     model.categories.size
   }
 
-  private def computeAxisCount(model: PlottableQualityDataModel) = {
+  private def computeAxisCount(model: DataModel) = {
     var count = 0
     for (category <- model.categories) {
       count += category.subCategories.size

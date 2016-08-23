@@ -1,13 +1,13 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.model.app.{PlottableCategory, PlottableEntity, PlottableQualityDataModel}
+import ch.fhnw.ima.saav.model.app.{DataModel, PlottableCategory, PlottableEntity}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
 object SvgPlotComponent {
 
-  case class Props(proxy: ModelProxy[PlottableQualityDataModel])
+  case class Props(proxy: ModelProxy[DataModel])
 
   type HoveredPoint = Option[(PlottableCategory, PlottableEntity)]
 
@@ -49,7 +49,7 @@ object SvgPlotComponent {
     }
 
 
-    private def constructCoordinateSystem(model: PlottableQualityDataModel, plotHeight: Int, layout: QualityLayout) = {
+    private def constructCoordinateSystem(model: DataModel, plotHeight: Int, layout: QualityLayout) = {
 
       // create the criteria boxes
       val boxes = for (category <- model.categories) yield {
@@ -86,7 +86,7 @@ object SvgPlotComponent {
   }
 
 
-  private def constructEntities(model: PlottableQualityDataModel, layout: QualityLayout) = {
+  private def constructEntities(model: DataModel, layout: QualityLayout) = {
     val entities = for (plottableEntity <- model.rankedEntities) yield {
 
       var stroke = if (plottableEntity.isSelected) plottableEntity.color.hexValue else "#cccccc"
@@ -213,6 +213,6 @@ object SvgPlotComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(proxy: ModelProxy[PlottableQualityDataModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
 
 }

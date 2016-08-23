@@ -17,7 +17,7 @@ object SaavController {
 
   final case class AnalysisReadyAction(analysis: Analysis) extends Action
 
-  class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataModel, PlottableQualityDataModel]]) extends ActionHandler(modelRW) {
+  class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataModel, DataModel]]) extends ActionHandler(modelRW) {
 
     override def handle = {
       case AnalysisImportInProgressAction(progress) => updated(Left(NoDataModel(ImportInProgress(progress))))
@@ -27,7 +27,7 @@ object SaavController {
         }
         updated(Left(NoDataModel(ImportFailed(t))))
       case AnalysisReadyAction(analysis) =>
-        val model = PlottableQualityDataModel(analysis)
+        val model = DataModel(analysis)
         updated(Right(model))
 
     }

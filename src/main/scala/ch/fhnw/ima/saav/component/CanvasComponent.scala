@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.model.app.{PlottableCategory, PlottableQualityDataModel, PlottableSubCategory}
+import ch.fhnw.ima.saav.model.app.{DataModel, PlottableCategory, PlottableSubCategory}
 import ch.fhnw.ima.saav.model.color._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -24,7 +24,7 @@ import org.scalajs.dom.raw.HTMLCanvasElement
   */
 object CanvasComponent {
 
-  case class Props(proxy: ModelProxy[PlottableQualityDataModel])
+  case class Props(proxy: ModelProxy[DataModel])
 
   case class State(node: Option[HTMLCanvasElement] = None, e: Option[ReactMouseEvent] = None)
 
@@ -65,7 +65,7 @@ object CanvasComponent {
 
         // actual canvas drawing
         val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
-//        paintComponent(model, ctx, canvas.width, canvas.height, scope.nextState.e)
+        //        paintComponent(model, ctx, canvas.width, canvas.height, scope.nextState.e)
         paintComponent2(model, ctx, canvas.width, canvas.height, scope.nextState.e)
       }
 
@@ -84,7 +84,7 @@ object CanvasComponent {
     })
     .build
 
-  private def paintComponent(model: PlottableQualityDataModel, ctx: dom.CanvasRenderingContext2D, width: Int, height: Int, event: Option[ReactMouseEvent]): Unit = {
+  private def paintComponent(model: DataModel, ctx: dom.CanvasRenderingContext2D, width: Int, height: Int, event: Option[ReactMouseEvent]): Unit = {
 
     ctx.clearRect(0, 0, width, height)
 
@@ -107,7 +107,7 @@ object CanvasComponent {
 
   }
 
-  private def paintComponent2(model: PlottableQualityDataModel, ctx: dom.CanvasRenderingContext2D, width: Int, height: Int, event: Option[ReactMouseEvent]): Unit = {
+  private def paintComponent2(model: DataModel, ctx: dom.CanvasRenderingContext2D, width: Int, height: Int, event: Option[ReactMouseEvent]): Unit = {
 
     ctx.clearRect(0, 0, width, height)
 
@@ -122,7 +122,7 @@ object CanvasComponent {
       // draw the criteria boxes
       val (x, width) = layout.getCriteriaBox(category)
       ctx.fillStyle = "#eeeeee"
-      ctx.fillRect(x, layout.MARGIN, width, height - 2*layout.MARGIN)
+      ctx.fillRect(x, layout.MARGIN, width, height - 2 * layout.MARGIN)
 
       // draw the criteria axes
       drawAxis(ctx, layout.getCriteriaAxisX(category), layout.getCategoryAxisTopY, layout.getCategoryAxisBotY, "#cccccc")
@@ -190,11 +190,11 @@ object CanvasComponent {
     ctx.stroke()
   }
 
-  private def computeCriteriaCount(model: PlottableQualityDataModel) = {
+  private def computeCriteriaCount(model: DataModel) = {
     model.categories.size
   }
 
-  private def computeAxisCount(model: PlottableQualityDataModel) = {
+  private def computeAxisCount(model: DataModel) = {
     var count = 0
     for (category <- model.categories) {
       count += category.subCategories.size
@@ -206,7 +206,7 @@ object CanvasComponent {
     * This class computes all the relevant layout parameters.
     */
 
-  class Layout () {
+  class Layout() {
     val MARGIN = 10
     val PADDING = 20
     val VERTICAL_AXIS_GAP = 40
@@ -220,7 +220,7 @@ object CanvasComponent {
     private val criteriaAxesMap = new scala.collection.mutable.HashMap[PlottableCategory, Int]
     private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[PlottableSubCategory, Int]
 
-    def this(model: PlottableQualityDataModel, width: Int, height: Int) {
+    def this(model: DataModel, width: Int, height: Int) {
       this()
 
       // Compute general parameters
@@ -228,9 +228,9 @@ object CanvasComponent {
       val criteriaCount = computeCriteriaCount(model)
       val axisCount = computeAxisCount(model)
 
-      val axisSpacing = (width - ((criteriaCount+1) * MARGIN) - (criteriaCount * 2 * PADDING)) / (axisCount - criteriaCount)
+      val axisSpacing = (width - ((criteriaCount + 1) * MARGIN) - (criteriaCount * 2 * PADDING)) / (axisCount - criteriaCount)
 
-      val axisHeight = (height - 2*PADDING - VERTICAL_AXIS_GAP) / 2
+      val axisHeight = (height - 2 * PADDING - VERTICAL_AXIS_GAP) / 2
 
       // Compute axes y positions
 
@@ -247,7 +247,7 @@ object CanvasComponent {
       for (category <- model.categories) {
 
         x = x + MARGIN
-        val criteriaWidth = 2*PADDING + ((category.subCategories.size-1) * axisSpacing)
+        val criteriaWidth = 2 * PADDING + ((category.subCategories.size - 1) * axisSpacing)
 
         criteriaBoxesMap(category) = (x, criteriaWidth)
         criteriaAxesMap(category) = x + (criteriaWidth / 2)
@@ -265,16 +265,21 @@ object CanvasComponent {
     }
 
     def getCategoryAxisTopY = criteriaAxisTopY
+
     def getCategoryAxisBotY = criteriaAxisBotY
+
     def getSubCategoryAxisTopY = subCriteriaAxisTopY
+
     def getSubCategoryAxisBotY = subCriteriaAxisBotY
 
     def getCriteriaBox(category: PlottableCategory): (Int, Int) = criteriaBoxesMap(category)
+
     def getCriteriaAxisX(category: PlottableCategory): Int = criteriaAxesMap(category)
+
     def getSubCriteriaAxisX(subCategory: PlottableSubCategory): Int = subCriteriaAxesMap(subCategory)
   }
 
 
-  def apply(proxy: ModelProxy[PlottableQualityDataModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
 
 }

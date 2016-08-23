@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.model.app.{PlottableEntity, PlottableQualityDataModel}
+import ch.fhnw.ima.saav.model.app.{DataModel, PlottableEntity}
 import ch.fhnw.ima.saav.model.color.WebColor
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -26,7 +26,7 @@ object D3Component {
 
   case class State(node: Option[HTMLDivElement])
 
-  case class Props(proxy: ModelProxy[PlottableQualityDataModel])
+  case class Props(proxy: ModelProxy[DataModel])
 
   class Backend($: BackendScope[Props, State]) {
     def render() = <.div(css.svgContainer)
@@ -142,6 +142,6 @@ object D3Component {
 
   }
 
-  def apply(proxy: ModelProxy[PlottableQualityDataModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
 
 }

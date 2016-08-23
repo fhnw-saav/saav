@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
-import ch.fhnw.ima.saav.model.app.{PlottableQualityDataModel, SaavModel}
+import ch.fhnw.ima.saav.model.app.{DataModel, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -92,7 +92,7 @@ object pages {
 
   object PageWithDataComponent {
 
-    case class Props(proxy: ModelProxy[PlottableQualityDataModel])
+    case class Props(proxy: ModelProxy[DataModel])
 
     private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
       .render_P(p => {
@@ -121,7 +121,7 @@ object pages {
       })
       .build
 
-    def apply(proxy: ModelProxy[PlottableQualityDataModel]) = component(Props(proxy))
+    def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
 
   }
 
