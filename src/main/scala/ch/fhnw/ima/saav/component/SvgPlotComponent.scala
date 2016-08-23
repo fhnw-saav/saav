@@ -98,29 +98,36 @@ object SvgPlotComponent {
     private def constructEntities(model: DataModel, layout: QualityLayout) = {
       val entities = for (plottableEntity <- model.rankedEntities) yield {
 
-        var stroke =
-          if (plottableEntity.isPinned) "black"
-          else if (plottableEntity.isSelected) plottableEntity.color.hexValue
-          else "#cccccc"
-
-        var strokeWidth = if (plottableEntity.isSelected) 2 else 1
+        var (strokeColor, strokeWidth) =
+          if (plottableEntity.isSelected)
+            if (plottableEntity.isPinned)
+              ("black", 4)
+            else
+              (plottableEntity.color.hexValue, 2)
+          else
+            ("#cccccc", 1)
 
         // create the criteria values lines
 
         var coordString = "M"
         var index = 0
-        for (category <- model.categories) {
-          val x = layout.getCriteriaAxisX(category)
-          val value = category.groupedValues(plottableEntity.id).get * (layout.getCategoryAxisBotY - layout.getCategoryAxisTopY) / 100.0
-          val y = layout.getCategoryAxisBotY - value
 
-          if (index == 1) coordString += " L"
-          coordString += " " + x + " " + y
+        var valueCoordinates =
+          for (category <- model.categories) yield {
+            val x = layout.getCriteriaAxisX(category)
+            val value = category.groupedValues(plottableEntity.id).get * (layout.getCategoryAxisBotY - layout.getCategoryAxisTopY) / 100.0
+            val y = layout.getCategoryAxisBotY - value
 
-          index += 1
-        }
+            if (index == 1) coordString += " L"
+            coordString += " " + x + " " + y
+
+            index += 1
+
+            (x, y)
+          }
+
         val criteriaValuesLine = <.svg.path(^.svg.d := coordString,
-          ^.svg.stroke := stroke, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
+          ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
           ^.onClick --> toggleEntityPinning(plottableEntity)
         )
 
@@ -128,24 +135,45 @@ object SvgPlotComponent {
 
         coordString = "M"
         index = 0
+
         for (category <- model.categories) {
-          for (subCategory <- category.subCategories) {
-            val x = layout.getSubCriteriaAxisX(subCategory)
-            val value = subCategory.groupedValues(plottableEntity.id).get * (layout.getSubCategoryAxisBotY - layout.getSubCategoryAxisTopY) / 100.0
-            val y = layout.getSubCategoryAxisBotY - value
+          val valueSubCoordinates =
+            for (subCategory <- category.subCategories) yield {
+              val x = layout.getSubCriteriaAxisX(subCategory)
+              val value = subCategory.groupedValues(plottableEntity.id).get * (layout.getSubCategoryAxisBotY - layout.getSubCategoryAxisTopY) / 100.0
+              val y = layout.getSubCategoryAxisBotY - value
 
-            if (index == 1) coordString += " L"
-            coordString += " " + x + " " + y
+              if (index == 1) coordString += " L"
+              coordString += " " + x + " " + y
 
-            index += 1
-          }
+              index += 1
+
+              (x, y)
+            }
+
+          valueCoordinates = valueCoordinates ++ valueSubCoordinates
         }
+
         val subCriteriaValuesLine = <.svg.path(^.svg.d := coordString,
-          ^.svg.stroke := stroke, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
+          ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
           ^.onClick --> toggleEntityPinning(plottableEntity)
         )
 
-        <.svg.g(criteriaValuesLine, subCriteriaValuesLine)
+        // Create the circles if entity is pinned
+
+        if (plottableEntity.isSelected && plottableEntity.isPinned) {
+          val circles = for ((x, y) <- valueCoordinates) yield {
+            <.svg.circle(
+              ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
+              ^.svg.fill := "black",
+              ^.svg.strokeWidth := 0
+            )
+          }
+          <.svg.g(criteriaValuesLine, subCriteriaValuesLine, circles)
+        } else {
+          <.svg.g(criteriaValuesLine, subCriteriaValuesLine)
+        }
+
 
       }
 
