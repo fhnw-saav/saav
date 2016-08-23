@@ -1,14 +1,13 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.model.domain.Entity.Project
-import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Entity, Review}
 
 import scala.util.Random
 
 package object model {
 
   def mockAnalysis = {
-    val builder = AnalysisBuilder.projectAnalysisBuilder
+    val builder = AnalysisBuilder()
 
     populateIndicator(builder, "Methodologie", "Klare Fragestellung und Zielsetzung", "Indikator 1")
     populateIndicator(builder, "Methodologie", "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", "Indikator 1")
@@ -46,18 +45,18 @@ package object model {
   def alphabetSoupAnalysis = {
     val review = Review("Review")
 
-    val helloWorld = Project("Hello World")
-    val foo = Project("Foo")
-    val bar = Project("Bar")
-    val baz = Project("Baz")
-    val obama = Project("Obama")
-    val clinton = Project("Clinton")
-    val trump = Project("Trump")
-    val chuchichaeschtli = Project("Chuchichäschtli")
+    val helloWorld = Entity("Hello World")
+    val foo = Entity("Foo")
+    val bar = Entity("Bar")
+    val baz = Entity("Baz")
+    val obama = Entity("Obama")
+    val clinton = Entity("Clinton")
+    val trump = Entity("Trump")
+    val chuchichaeschtli = Entity("Chuchichäschtli")
 
     val entities = Seq(helloWorld, foo, bar, baz, obama, clinton, trump, chuchichaeschtli)
 
-    val builder = AnalysisBuilder.projectAnalysisBuilder
+    val builder = AnalysisBuilder()
     val category1 = builder.category("Category A")
 
     val subCategory11 = category1.subCategory("Length")
@@ -88,22 +87,11 @@ package object model {
       wordCountIndicator.addValue(e, review, wordCount)
     }
 
-    vowelIndicatorScope.build
-    consonantIndicatorScope.build
-    subCategory12.build
-    lengthIndicatorScope.build
-    subCategory11.build
-    category1.build
-
-    wordCountIndicator.build
-    subCategory21.build
-    category2.build
-
     builder.build
 
   }
 
-  private def populateIndicator(builder: AnalysisBuilder[Project], categoryName: String, subCategoryName: String, indicatorName: String) = {
+  private def populateIndicator(builder: AnalysisBuilder, categoryName: String, subCategoryName: String, indicatorName: String) = {
     val indicatorScope = builder.category(categoryName).subCategory(subCategoryName).indicator(indicatorName)
 
     val reviewOne = Review("Review 1")
@@ -112,7 +100,7 @@ package object model {
     val r = Random
 
     for (i <- 1 to 10) {
-      val project = Project(s"Project $i")
+      val project = Entity(s"Project $i")
       indicatorScope.addValue(project, reviewOne, r.nextInt(100))
       indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
     }

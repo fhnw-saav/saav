@@ -1,13 +1,12 @@
 package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.model.domain.Entity.Project
-import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Entity, Review}
 import org.scalatest.FlatSpec
 
 class DomainModelSpec extends FlatSpec {
 
   "An analysis builder" should "add categories" in {
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
         .category("Category A").build
         .category("Category B").build
         .build
@@ -16,7 +15,7 @@ class DomainModelSpec extends FlatSpec {
   }
 
   it should "re-use existing categories" in {
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
         .category("Category").build
         .category("Category").build
         .build
@@ -25,7 +24,7 @@ class DomainModelSpec extends FlatSpec {
   }
 
   it should "add sub-categories" in {
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
         .category("Category")
           .subCategory("Sub-Category A").build
           .subCategory("Sub-Category B").build
@@ -36,7 +35,7 @@ class DomainModelSpec extends FlatSpec {
   }
 
   it should "re-use existing sub-categories" in {
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
         .category("Category")
           .subCategory("Sub-Category").build
           .subCategory("Sub-Category").build
@@ -47,7 +46,7 @@ class DomainModelSpec extends FlatSpec {
   }
 
   it should "add indicators" in {
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
         .category("Category")
           .subCategory("Sub-Category")
               .indicator("Indicator A").build
@@ -60,7 +59,7 @@ class DomainModelSpec extends FlatSpec {
   }
 
   it should "re-use existing indicators" in {
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
         .category("Category")
           .subCategory("Sub-Category")
             .indicator("Indicator").build
@@ -73,12 +72,12 @@ class DomainModelSpec extends FlatSpec {
   }
 
   it should "add values" in {
-    val builder = new AnalysisBuilder[Project]
+    val builder = AnalysisBuilder()
     val indicatorScope = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
 
-    val entityOne = Project("Project 1")
-    val entityTwo = Project("Project 2")
-    val entityThree = Project("Project 3")
+    val entityOne = Entity("Project 1")
+    val entityTwo = Entity("Project 2")
+    val entityThree = Entity("Project 3")
 
     val reviewOne = Review("Review 1")
     val reviewTwo = Review("Review 2")
@@ -104,7 +103,7 @@ class DomainModelSpec extends FlatSpec {
   }
 
   it should "be truly immutable" in {
-    val builder = AnalysisBuilder.projectAnalysisBuilder
+    val builder = AnalysisBuilder()
     val analysis = builder.build
 
     builder.category("Category")
@@ -114,13 +113,13 @@ class DomainModelSpec extends FlatSpec {
 
   it should "contain entities in insertion order" in {
 
-    val project1 = Project("Project 1")
-    val project2 = Project("Project 2")
-    val project3 = Project("Project 3")
+    val project1 = Entity("Project 1")
+    val project2 = Entity("Project 2")
+    val project3 = Entity("Project 3")
 
     val review = Review("Review")
 
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
       .category("Category")
         .subCategory("Sub-Category")
           .indicator("Indicator")

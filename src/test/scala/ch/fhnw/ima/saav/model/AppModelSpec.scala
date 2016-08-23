@@ -2,7 +2,6 @@ package ch.fhnw.ima.saav.model
 
 import ch.fhnw.ima.saav.Seq
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.Entity.Project
 import ch.fhnw.ima.saav.model.domain._
 import org.scalatest.{FunSpec, Matchers}
 
@@ -10,13 +9,13 @@ class AppModelSpec extends FunSpec with Matchers {
 
   describe(s"A PlottableQualityDataModel") {
 
-    val entityOne = Project("P1")
-    val entityTwo = Project("P2")
-    val entityThree = Project("P3")
+    val entityOne = Entity("P1")
+    val entityTwo = Entity("P2")
+    val entityThree = Entity("P3")
 
     val review = Review("Review")
 
-    val analysis = AnalysisBuilder.projectAnalysisBuilder
+    val analysis = AnalysisBuilder()
       .category("Cat 1")
         .subCategory("Sub-Cat 11")
           .indicator("Indicator 111")
@@ -41,7 +40,7 @@ class AppModelSpec extends FunSpec with Matchers {
           .build
         .build
       .build
-    .build.asInstanceOf[Analysis[Entity]] // TODO: Fix co-variance
+    .build
 
     val model = PlottableQualityDataModel(analysis)
 

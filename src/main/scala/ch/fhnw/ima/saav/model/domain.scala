@@ -1,48 +1,24 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.domain.Entity.{Organisation, Person, Project}
-
 object domain {
 
-  final case class Analysis[E <: Entity](categories: Seq[Category[E]], entities: Seq[E], reviews: Seq[Review])
+  final case class Analysis(categories: Seq[Category], entities: Seq[Entity], reviews: Seq[Review])
 
-  final case class Category[E <: Entity](name: String, subCategories: Seq[SubCategory[E]])
+  final case class Category(name: String, subCategories: Seq[SubCategory])
 
-  final case class SubCategory[E <: Entity](name: String, indicators: Seq[Indicator[E]])
+  final case class SubCategory(name: String, indicators: Seq[Indicator])
 
-  final case class Indicator[E <: Entity](name: String, values: Map[(E, Review), Double])
+  final case class Indicator(name: String, values: Map[(Entity, Review), Double])
 
   final case class Review(name: String)
 
-  sealed abstract class Entity() {
-    def name: String
-  }
+  final case class Entity(name: String)
 
-  object Entity {
-
-    final case class Project(name: String) extends Entity
-
-    final case class Person(name: String) extends Entity
-
-    final case class Organisation(name: String) extends Entity
-
-  }
-
-  object AnalysisBuilder {
-
-    def projectAnalysisBuilder = AnalysisBuilder[Project]()
-
-    def personAnalysisBuilder = AnalysisBuilder[Person]()
-
-    def organisationAnalysisBuilder = AnalysisBuilder[Organisation]()
-
-  }
-
-  final case class AnalysisBuilder[E <: Entity]() {
+  final case class AnalysisBuilder() {
 
     private var categoryBuilders: Seq[CategoryBuilderImpl] = Seq()
-    private var entities: Seq[E] = Seq()
+    private var entities: Seq[Entity] = Seq()
     private var reviews: Seq[Review] = Seq()
 
     def category(categoryName: String): CategoryBuilder = {
@@ -56,15 +32,15 @@ object domain {
       }
     }
 
-    def build: Analysis[E] = {
+    def build: Analysis = {
       val categories = categoryBuilders.map(_.toCategory)
-      Analysis[E](categories, entities.distinct, reviews.distinct)
+      Analysis(categories, entities.distinct, reviews.distinct)
     }
 
     trait CategoryBuilder {
       def subCategory(name: String): SubCategoryBuilder
 
-      def build: AnalysisBuilder[E]
+      def build: AnalysisBuilder
     }
 
     private class CategoryBuilderImpl(val name: String, var subCategoryBuilders: Seq[SubCategoryBuilderImpl] = Seq()) extends CategoryBuilder {
@@ -112,15 +88,15 @@ object domain {
 
     trait IndicatorBuilder {
 
-      def addValue(entity: E, review: Review, value: Double): IndicatorBuilder
+      def addValue(entity: Entity, review: Review, value: Double): IndicatorBuilder
 
       def build: SubCategoryBuilder
 
     }
 
-    private class IndicatorBuilderImpl(private val subCategoryBuilder: SubCategoryBuilder, val name: String, var values: Map[(E, Review), Double] = Map()) extends IndicatorBuilder {
+    private class IndicatorBuilderImpl(private val subCategoryBuilder: SubCategoryBuilder, val name: String, var values: Map[(Entity, Review), Double] = Map()) extends IndicatorBuilder {
 
-      override def addValue(entity: E, review: Review, value: Double): IndicatorBuilder = {
+      override def addValue(entity: Entity, review: Review, value: Double): IndicatorBuilder = {
         values += (entity, review) -> value
         // track entities and reviews in insertion order
         entities :+= entity

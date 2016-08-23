@@ -2,7 +2,6 @@ package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisHandler, _}
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.Entity.Person
 import ch.fhnw.ima.saav.model.domain._
 import diode.RootModelRW
 import org.scalatest._
@@ -40,7 +39,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
 
   describe(s"Handling ${AnalysisReadyAction.getClass.getSimpleName}") {
     it("should wire a data model") {
-      val analysis = AnalysisBuilder.projectAnalysisBuilder.build
+      val analysis = AnalysisBuilder().build
       val result = analysisHandler.handle(AnalysisReadyAction(analysis))
       result.newModelOpt match {
         case Some(Right(PlottableQualityDataModel(rankedEntities, categories))) =>
@@ -53,7 +52,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
   describe(s"Handling ${UpdateEntitySelectionAction.getClass.getSimpleName}") {
 
     it("should wire selected entities") {
-      val allEntities = Seq(PlottableEntity(Person("x")), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val allEntities = Seq(PlottableEntity(Entity("x")), PlottableEntity(Entity("y")), PlottableEntity(Entity("z")))
       val handler = entityHandler(allEntities)
       val selectedEntities = allEntities.map(_.id).toSet
       val result = handler.handle(UpdateEntitySelectionAction(selectedEntities, isSelected = true))
@@ -66,7 +65,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
     }
 
     it("should clear pinning if entity is no longer selected") {
-      val allEntities = Seq(PlottableEntity(Person("x"), isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val allEntities = Seq(PlottableEntity(Entity("x"), isPinned = true), PlottableEntity(Entity("y")), PlottableEntity(Entity("z")))
       val handler = entityHandler(allEntities)
       val result = handler.handle(UpdateEntitySelectionAction(allEntities.map(_.id).toSet, isSelected = false))
       result.newModelOpt match {
@@ -78,11 +77,11 @@ class SaavControllerSpec extends FunSpec with Matchers {
     }
 
     it("should not touch pinning if entity is still selected") {
-      val anEntity = Person("x")
+      val anEntity = Entity("x")
       val allEntities = Seq(
         PlottableEntity(anEntity, isPinned = true, isSelected = true),
-        PlottableEntity(Person("y"), isSelected = false),
-        PlottableEntity(Person("z"), isSelected = false)
+        PlottableEntity(Entity("y"), isSelected = false),
+        PlottableEntity(Entity("z"), isSelected = false)
       )
       val handler = entityHandler(allEntities)
       val result = handler.handle(UpdateEntitySelectionAction(Set(anEntity), isSelected = true))
@@ -99,8 +98,8 @@ class SaavControllerSpec extends FunSpec with Matchers {
   describe(s"Handling ${UpdateEntityPinningAction.getClass.getSimpleName}") {
 
     it("should wire a pinned entity") {
-      val anEntity = Person("x")
-      val allEntities: Seq[PlottableEntity] = Seq(PlottableEntity(anEntity), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val anEntity = Entity("x")
+      val allEntities: Seq[PlottableEntity] = Seq(PlottableEntity(anEntity), PlottableEntity(Entity("y")), PlottableEntity(Entity("z")))
       val handler = entityHandler(allEntities)
       val result = handler.handle(UpdateEntityPinningAction(Some(anEntity)))
       result.newModelOpt match {
@@ -111,7 +110,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
     }
 
     it("should clear pinning") {
-      val allEntities = Seq(PlottableEntity(Person("x"), isPinned = true), PlottableEntity(Person("y")), PlottableEntity(Person("z")))
+      val allEntities = Seq(PlottableEntity(Entity("x"), isPinned = true), PlottableEntity(Entity("y")), PlottableEntity(Entity("z")))
       val handler = entityHandler(allEntities)
       val result = handler.handle(UpdateEntityPinningAction(None))
       result.newModelOpt match {

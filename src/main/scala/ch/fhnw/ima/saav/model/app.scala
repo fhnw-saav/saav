@@ -21,7 +21,7 @@ object app {
 
   final case class PlottableQualityDataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory]) {
 
-    def updateWeights(analysis: Analysis[Entity], weights: Weights): PlottableQualityDataModel = {
+    def updateWeights(analysis: Analysis, weights: Weights): PlottableQualityDataModel = {
 
       val entityMap: Map[Entity, PlottableEntity] = rankedEntities.map(e => e.id -> e).toMap
       val newModel = PlottableQualityDataModel(analysis, weights)
@@ -39,7 +39,7 @@ object app {
 
   object PlottableQualityDataModel {
 
-    def apply(analysis: Analysis[Entity], weights: Weights = Weights()): PlottableQualityDataModel = {
+    def apply(analysis: Analysis, weights: Weights = Weights()): PlottableQualityDataModel = {
 
       val categories = analysis.categories.map { c =>
         PlottableCategory(analysis.entities, c, analysis.reviews, weights)
@@ -63,13 +63,13 @@ object app {
     def name = id.name
   }
 
-  final case class PlottableSubCategory(id: SubCategory[Entity], groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator[Entity]]) {
+  final case class PlottableSubCategory(id: SubCategory, groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator]) {
     def name = id.name
   }
 
   object PlottableSubCategory {
 
-    def apply(entities: Seq[Entity], subCategory: SubCategory[Entity], reviews: Seq[Review], disabledIndicators: Set[Indicator[Entity]]): PlottableSubCategory = {
+    def apply(entities: Seq[Entity], subCategory: SubCategory, reviews: Seq[Review], disabledIndicators: Set[Indicator]): PlottableSubCategory = {
       val indicators = subCategory.indicators.filter(!disabledIndicators.contains(_))
 
       def groupedValue(entity: Entity): Option[Double] = {
@@ -92,7 +92,7 @@ object app {
 
   object PlottableCategory {
 
-    def apply(entities: Seq[Entity], category: Category[Entity], reviews: Seq[Review], weights: Weights): PlottableCategory = {
+    def apply(entities: Seq[Entity], category: Category, reviews: Seq[Review], weights: Weights): PlottableCategory = {
 
       val subCategories = category.subCategories.map(sc => PlottableSubCategory(entities, sc, reviews, weights.disabledIndicators))
 
@@ -125,7 +125,7 @@ object app {
 
   case object Profile extends Weight
 
-  final case class Weights(subCategoryWeights: Map[SubCategory[Entity], Weight] = Map(), disabledIndicators: Set[Indicator[Entity]] = Set.empty)
+  final case class Weights(subCategoryWeights: Map[SubCategory, Weight] = Map(), disabledIndicators: Set[Indicator] = Set.empty)
 
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 

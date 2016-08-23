@@ -4,8 +4,7 @@ import ch.fhnw.ima.saav.component.bootstrap.Button
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.Entity.Project
-import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Review}
+import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Entity, Review}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB}
@@ -36,7 +35,7 @@ object FileImportComponent {
   private def handleProgress(proxy: ModelProxy[NoDataModel])(progress: Float): Unit =
     proxy.dispatch(AnalysisImportInProgressAction(progress)).runNow()
 
-  private def handleReady(proxy: ModelProxy[NoDataModel])(analysis: Analysis[Project]): Unit =
+  private def handleReady(proxy: ModelProxy[NoDataModel])(analysis: Analysis): Unit =
     proxy.dispatch(AnalysisReadyAction(analysis)).runNow()
 
   private def handleError(proxy: ModelProxy[NoDataModel])(t: Throwable): Unit =
@@ -65,9 +64,9 @@ object FileImportComponent {
     Callback.empty
   }
 
-  private def parseModel(url: String, handleProgress: Float => Any, handleReady: Analysis[Project] => Any, handleError: Throwable => Any): Unit = {
+  private def parseModel(url: String, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
     d3.csv(url, (rows: js.Array[Row]) => {
-      val builder = AnalysisBuilder.projectAnalysisBuilder
+      val builder = AnalysisBuilder()
 
       // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
       // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
@@ -76,7 +75,7 @@ object FileImportComponent {
   }
 
 
-  def parseRowBatchAsync(builder: AnalysisBuilder[Project], rows: Seq[Row], batchIndex: Int, handleProgress: Float => Any, handleReady: Analysis[Project] => Any, handleError: Throwable => Any): Unit = {
+  def parseRowBatchAsync(builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
 
     val batchSize = 10
 
@@ -115,11 +114,11 @@ object FileImportComponent {
 
   }
 
-  def parseRow(builder: AnalysisBuilder[Project], row: Row): AnalysisBuilder[Project] = {
+  def parseRow(builder: AnalysisBuilder, row: Row): AnalysisBuilder = {
 
     val keyIt = row.keys.iterator
 
-    val project = Project(row(keyIt.next()))
+    val project = Entity(row(keyIt.next()))
     val hierarchyLevels = row(keyIt.next()).split(":::")
     val category = hierarchyLevels(0)
     val subCategory = hierarchyLevels(1)

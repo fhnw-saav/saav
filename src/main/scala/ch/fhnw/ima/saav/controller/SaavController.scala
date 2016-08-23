@@ -15,7 +15,7 @@ object SaavController {
 
   final case class AnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
 
-  final case class AnalysisReadyAction[E <: Entity](analysis: Analysis[E]) extends Action
+  final case class AnalysisReadyAction(analysis: Analysis) extends Action
 
   class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataModel, PlottableQualityDataModel]]) extends ActionHandler(modelRW) {
 

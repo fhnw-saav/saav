@@ -1,7 +1,6 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.FileImportComponent.Row
-import ch.fhnw.ima.saav.model.domain.Entity.Project
 import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder}
 import org.scalatest.FlatSpec
 
@@ -19,7 +18,7 @@ class FileImportComponentSpec extends FlatSpec {
 
     val row: Row = createTestRow(projectName, categoryName, subCategoryName, indicatorName)
 
-    val builder = AnalysisBuilder.projectAnalysisBuilder
+    val builder = AnalysisBuilder()
 
     FileImportComponent.parseRow(builder, row)
 
@@ -41,11 +40,11 @@ class FileImportComponentSpec extends FlatSpec {
     // poor man's synchronization (all that we got in JS)
     var done = false
 
-    val builder = AnalysisBuilder.projectAnalysisBuilder
+    val builder = AnalysisBuilder()
 
     val handleProgress = (progress: Float) => assert(Math.round(100 * progress) == Math.round(100 * (10f / rowCount)))
 
-    val handleReady = (analysis: Analysis[Project]) => {
+    val handleReady = (analysis: Analysis) => {
       assert(analysis.entities.length == rowCount)
       done = true
     }
