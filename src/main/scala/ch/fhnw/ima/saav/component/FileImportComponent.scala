@@ -2,6 +2,7 @@ package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.bootstrap.Button
 import ch.fhnw.ima.saav.controller.SaavController.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
+import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.Entity.Project
 import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Review}
@@ -12,7 +13,6 @@ import org.scalajs.dom.DragEvent
 import org.singlespaced.d3js.d3
 
 import scala.scalajs.js
-import scala.util.Random
 import scalacss.ScalaCssReact._
 
 /**
@@ -137,55 +137,12 @@ object FileImportComponent {
 
   }
 
-  private def importMockData(proxy: ModelProxy[NoDataModel]) = {
-    val builder = new AnalysisBuilder[Project]
-
-    populateIndicator(builder, "Methodologie", "Klare Fragestellung und Zielsetzung", "Indikator 1")
-    populateIndicator(builder, "Methodologie", "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", "Indikator 1")
-    populateIndicator(builder, "Methodologie", "Ergebnisoffene Anlage des Projektes", "Indikator 1")
-    populateIndicator(builder, "Methodologie", "Reflexion über die vielfachen Voraussetzungen", "Indikator 1")
-    populateIndicator(builder, "Methodologie", "Gebrauch klarer, verständlicher Wissenschaftssprache", "Indikator 1")
-    populateIndicator(builder, "Methodologie", "Bewusstsein für ethische und rechtliche Anforderungen in der Forschung", "Indikator 1")
-
-    populateIndicator(builder, "Integration", "Situierung des Projektes zum Forschungsstand", "Indikator 1")
-    populateIndicator(builder, "Integration", "Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten", "Indikator 1")
-    populateIndicator(builder, "Integration", "Situierung des Projektes zu vorherrschenden Deutungen, Schulen, Paradigmen", "Indikator 1")
-    populateIndicator(builder, "Integration", "Erweiterung des Kenntnisstandes bestehender Forschungsfelder", "Indikator 1")
-    populateIndicator(builder, "Integration", "Eröffnung neuer Forschungsfelder", "Indikator 1")
-
-    populateIndicator(builder, "Machbarkeit", "x1", "Indikator 1")
-    populateIndicator(builder, "Machbarkeit", "x2", "Indikator 1")
-    populateIndicator(builder, "Machbarkeit", "x3", "Indikator 1")
-
-    populateIndicator(builder, "Leistung", "x1", "Indikator 1")
-    populateIndicator(builder, "Leistung", "x2", "Indikator 1")
-    populateIndicator(builder, "Leistung", "x3", "Indikator 1")
-    populateIndicator(builder, "Leistung", "x4", "Indikator 1")
-
-    populateIndicator(builder, "Ver...", "x1", "Indikator 1")
-
-    populateIndicator(builder, "Inf...", "x1", "Indikator 1")
-
-    populateIndicator(builder, "Aus...", "x1", "Indikator 1")
-
-
-    val analysis = builder.build
-    proxy.dispatch(AnalysisReadyAction(analysis))
+  private def importMockAnalysis(proxy: ModelProxy[NoDataModel]) = Callback.lazily {
+    proxy.dispatch(AnalysisReadyAction(mockAnalysis))
   }
 
-  private def populateIndicator(builder: AnalysisBuilder[Project], categoryName: String, subCategoryName: String, indicatorName: String) = {
-    val indicatorScope = builder.category(categoryName).subCategory(subCategoryName).indicator(indicatorName)
-
-    val reviewOne = Review("Review 1")
-    val reviewTwo = Review("Review 2")
-
-    val r = Random
-
-    for (i <- 1 to 10) {
-      val project = Project(s"Project $i")
-      indicatorScope.addValue(project, reviewOne, r.nextInt(100))
-      indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
-    }
+  private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataModel]) = Callback.lazily {
+    proxy.dispatch(AnalysisReadyAction(alphabetSoupAnalysis))
   }
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
@@ -200,7 +157,8 @@ object FileImportComponent {
                 <.h1("Drag and drop"),
                 <.p("To import data from CSV file")
               )),
-            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockData(p.proxy), "Quick, some mock data, please!"))
+            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockAnalysis(p.proxy), "Quick, some mock data, please!")),
+            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importAlphabetSoupAnalysis(p.proxy), "Quick, some alphabet soup, please!"))
           )
         case ImportInProgress(progress) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
