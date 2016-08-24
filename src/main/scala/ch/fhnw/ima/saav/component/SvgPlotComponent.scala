@@ -97,7 +97,8 @@ object SvgPlotComponent {
     }
 
     private def constructEntities(model: DataModel, layout: QualityLayout) = {
-      val entities = for (plottableEntity <- model.rankedEntities) yield {
+      val entitiesInPaintingOrder = model.rankedEntities.sortBy(e => (e.isPinned, e.isSelected))
+      val entities = for (plottableEntity <- entitiesInPaintingOrder) yield {
 
         val (strokeColor, strokeWidth, cursor) =
           if (plottableEntity.isSelected)
