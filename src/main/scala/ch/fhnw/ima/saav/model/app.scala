@@ -22,8 +22,8 @@ object app {
   final case class EntitySelectionModel(selected: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
 
   final case class DataModel(
-    rankedEntities: Seq[PlottableEntity],
-    categories: Seq[PlottableCategory],
+    rankedEntities: Seq[GroupedEntity],
+    criteria: Seq[GroupedCriteria],
     selectionModel: EntitySelectionModel,
     colorMap: Map[Entity, WebColor]
   ) {
@@ -44,13 +44,13 @@ object app {
 
     def apply(analysis: Analysis, weights: Weights = Weights()): DataModel = {
 
-      val categories = analysis.categories.map { c =>
-        PlottableCategory(analysis.entities, c, analysis.reviews, weights)
+      val categories = analysis.criteria.map { c =>
+        GroupedCriteria(analysis.entities, c, analysis.reviews, weights)
       }
 
       val rankedEntities = analysis.entities.map { e =>
         val value = median(categories.flatMap(_.groupedValues(e)))
-        PlottableEntity(e, value = value)
+        GroupedEntity(e, value = value)
       }.sortBy(_.value).reverse
 
       val selectionModel = EntitySelectionModel(analysis.entities.toSet, None)
@@ -63,18 +63,18 @@ object app {
 
   }
 
-  final case class PlottableEntity(id: Entity, value: Option[Double] = None) {
+  final case class GroupedEntity(id: Entity, value: Option[Double] = None) {
     def name = id.name
   }
 
-  final case class PlottableSubCategory(id: SubCategory, groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator]) {
+  final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator]) {
     def name = id.name
   }
 
-  object PlottableSubCategory {
+  object GroupedSubCriteria {
 
-    def apply(entities: Seq[Entity], subCategory: SubCategory, reviews: Seq[Review], disabledIndicators: Set[Indicator]): PlottableSubCategory = {
-      val indicators = subCategory.indicators.filter(!disabledIndicators.contains(_))
+    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], disabledIndicators: Set[Indicator]): GroupedSubCriteria = {
+      val indicators = subCriteria.indicators.filter(!disabledIndicators.contains(_))
 
       def groupedValue(entity: Entity): Option[Double] = {
         val values = for {
@@ -87,24 +87,24 @@ object app {
 
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
 
-      PlottableSubCategory(subCategory, groupedValues, indicators)
+      GroupedSubCriteria(subCriteria, groupedValues, indicators)
     }
 
   }
 
-  final case class PlottableCategory(name: String, subCategories: Seq[PlottableSubCategory], groupedValues: Map[Entity, Option[Double]])
+  final case class GroupedCriteria(name: String, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]])
 
-  object PlottableCategory {
+  object GroupedCriteria {
 
-    def apply(entities: Seq[Entity], category: Category, reviews: Seq[Review], weights: Weights): PlottableCategory = {
+    def apply(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
-      val subCategories = category.subCategories.map(sc => PlottableSubCategory(entities, sc, reviews, weights.disabledIndicators))
+      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.disabledIndicators))
 
       def groupedValue(entity: Entity): Option[Double] = {
         val valuesWithWeights = for {
-          subCategory <- subCategories
-          value <- subCategory.groupedValues(entity)
-          weight = weights.subCategoryWeights.getOrElse(subCategory.id, Quality(1f))
+          subCriterion <- subCriteria
+          value <- subCriterion.groupedValues(entity)
+          weight = weights.subCriteriaWeights.getOrElse(subCriterion.id, Quality(1f))
           weightValue <- weight match {
             case Quality(wv) => Some(wv)
             case _ => None
@@ -117,7 +117,7 @@ object app {
 
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
 
-      PlottableCategory(category.name, subCategories, groupedValues)
+      GroupedCriteria(criteria.name, subCriteria, groupedValues)
 
     }
 
@@ -129,7 +129,7 @@ object app {
 
   case object Profile extends Weight
 
-  final case class Weights(subCategoryWeights: Map[SubCategory, Weight] = Map(), disabledIndicators: Set[Indicator] = Set.empty)
+  final case class Weights(subCriteriaWeights: Map[SubCriteria, Weight] = Map(), disabledIndicators: Set[Indicator] = Set.empty)
 
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 

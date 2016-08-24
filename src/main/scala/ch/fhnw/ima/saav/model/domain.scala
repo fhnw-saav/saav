@@ -3,11 +3,11 @@ package model
 
 object domain {
 
-  final case class Analysis(categories: Seq[Category], entities: Seq[Entity], reviews: Seq[Review])
+  final case class Analysis(criteria: Seq[Criteria], entities: Seq[Entity], reviews: Seq[Review])
 
-  final case class Category(name: String, subCategories: Seq[SubCategory])
+  final case class Criteria(name: String, subCriteria: Seq[SubCriteria])
 
-  final case class SubCategory(name: String, indicators: Seq[Indicator])
+  final case class SubCriteria(name: String, indicators: Seq[Indicator])
 
   final case class Indicator(name: String, values: Map[(Entity, Review), Double])
 
@@ -17,57 +17,57 @@ object domain {
 
   final case class AnalysisBuilder() {
 
-    private var categoryBuilders: Seq[CategoryBuilderImpl] = Seq()
+    private var criteriaBuilders: Seq[CriteriaBuilderImpl] = Seq()
     private var entities: Seq[Entity] = Seq()
     private var reviews: Seq[Review] = Seq()
 
-    def category(categoryName: String): CategoryBuilder = {
-      val existing = categoryBuilders.find(_.name == categoryName)
+    def criteria(criteriaName: String): CriteriaBuilder = {
+      val existing = criteriaBuilders.find(_.name == criteriaName)
       existing match {
         case Some(c) => c
         case None =>
-          val categoryBuilder = new CategoryBuilderImpl(categoryName)
-          categoryBuilders :+= categoryBuilder
-          categoryBuilder
+          val criteriaBuilder = new CriteriaBuilderImpl(criteriaName)
+          criteriaBuilders :+= criteriaBuilder
+          criteriaBuilder
       }
     }
 
     def build: Analysis = {
-      val categories = categoryBuilders.map(_.toCategory)
-      Analysis(categories, entities.distinct, reviews.distinct)
+      val criteria = criteriaBuilders.map(_.toCriteria)
+      Analysis(criteria, entities.distinct, reviews.distinct)
     }
 
-    trait CategoryBuilder {
-      def subCategory(name: String): SubCategoryBuilder
+    trait CriteriaBuilder {
+      def subCriteria(name: String): SubCriteriaBuilder
 
       def build: AnalysisBuilder
     }
 
-    private class CategoryBuilderImpl(val name: String, var subCategoryBuilders: Seq[SubCategoryBuilderImpl] = Seq()) extends CategoryBuilder {
+    private class CriteriaBuilderImpl(val name: String, var subCriteriaBuilders: Seq[SubCriteriaBuilderImpl] = Seq()) extends CriteriaBuilder {
 
-      override def subCategory(subCategoryName: String): SubCategoryBuilder = {
-        val existing = subCategoryBuilders.find(_.name == subCategoryName)
+      override def subCriteria(subCriteriaName: String): SubCriteriaBuilder = {
+        val existing = subCriteriaBuilders.find(_.name == subCriteriaName)
         existing match {
           case Some(c) => c
           case None =>
-            val subCategoryBuilder = new SubCategoryBuilderImpl(this, subCategoryName)
-            subCategoryBuilders :+= subCategoryBuilder
-            subCategoryBuilder
+            val subCriteriaBuilder = new SubCriteriaBuilderImpl(this, subCriteriaName)
+            subCriteriaBuilders :+= subCriteriaBuilder
+            subCriteriaBuilder
         }
       }
 
-      def toCategory = Category(name, subCategoryBuilders.map(_.toSubCategory))
+      def toCriteria = Criteria(name, subCriteriaBuilders.map(_.toSubCriteria))
 
       override def build = AnalysisBuilder.this
     }
 
-    trait SubCategoryBuilder {
+    trait SubCriteriaBuilder {
       def indicator(name: String): IndicatorBuilder
 
-      def build: CategoryBuilder
+      def build: CriteriaBuilder
     }
 
-    private class SubCategoryBuilderImpl(private val categoryBuilder: CategoryBuilder, val name: String, var indicatorBuilders: Seq[IndicatorBuilderImpl] = Seq()) extends SubCategoryBuilder {
+    private class SubCriteriaBuilderImpl(private val criteriaBuilder: CriteriaBuilder, val name: String, var indicatorBuilders: Seq[IndicatorBuilderImpl] = Seq()) extends SubCriteriaBuilder {
 
       override def indicator(indicatorName: String): IndicatorBuilder = {
         val existing = indicatorBuilders.find(_.name == indicatorName)
@@ -80,9 +80,9 @@ object domain {
         }
       }
 
-      def toSubCategory = SubCategory(name, indicatorBuilders.map(_.toIndicator))
+      def toSubCriteria = SubCriteria(name, indicatorBuilders.map(_.toIndicator))
 
-      def build = categoryBuilder
+      def build = criteriaBuilder
 
     }
 
@@ -90,11 +90,11 @@ object domain {
 
       def addValue(entity: Entity, review: Review, value: Double): IndicatorBuilder
 
-      def build: SubCategoryBuilder
+      def build: SubCriteriaBuilder
 
     }
 
-    private class IndicatorBuilderImpl(private val subCategoryBuilder: SubCategoryBuilder, val name: String, var values: Map[(Entity, Review), Double] = Map()) extends IndicatorBuilder {
+    private class IndicatorBuilderImpl(private val subCriteriaBuilder: SubCriteriaBuilder, val name: String, var values: Map[(Entity, Review), Double] = Map()) extends IndicatorBuilder {
 
       override def addValue(entity: Entity, review: Review, value: Double): IndicatorBuilder = {
         values += (entity, review) -> value
@@ -106,7 +106,7 @@ object domain {
 
       def toIndicator = Indicator(name, values)
 
-      def build = subCategoryBuilder
+      def build = subCriteriaBuilder
 
     }
 

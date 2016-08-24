@@ -1,8 +1,8 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
-import ch.fhnw.ima.saav.model.app.{DataModel, PlottableEntity}
-import ch.fhnw.ima.saav.model.domain.SubCategory
+import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity}
+import ch.fhnw.ima.saav.model.domain.SubCriteria
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
@@ -11,19 +11,19 @@ object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[DataModel])
 
-  case class State(hoveredSubCategory: Option[SubCategory] = None)
+  case class State(hoveredSubCriteria: Option[SubCriteria] = None)
 
   class Backend($: BackendScope[Props, State]) {
 
-    def setHoveredSubCategory(hoveredSubCategory: Option[SubCategory]) =
-      $.modState(s => State(hoveredSubCategory))
+    def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteria]) =
+      $.modState(s => State(hoveredSubCriteria))
 
-    def clearHoveredSubCategory() = $.modState(s => State(None))
+    def clearHoveredSubCriteria() = $.modState(s => State(None))
 
-    def toggleEntityPinning(plottableEntity: PlottableEntity) =
+    def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
-        val isPinned = p.proxy.value.selectionModel.pinned.contains(plottableEntity.id)
-        val pinnedOrNone = if (isPinned) None else Some(plottableEntity.id)
+        val isPinned = p.proxy.value.selectionModel.pinned.contains(groupedEntity.id)
+        val pinnedOrNone = if (isPinned) None else Some(groupedEntity.id)
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
 
@@ -42,7 +42,7 @@ object SvgPlotComponent {
 
       val layout = new QualityLayout(model, plotWidth, plotHeight)
 
-      val coordinateSystem = constructCoordinateSystem(model, s.hoveredSubCategory, plotHeight, layout)
+      val coordinateSystem = constructCoordinateSystem(model, s.hoveredSubCriteria, plotHeight, layout)
       val entities = constructEntities(model, layout)
 
       // Assemble everything
@@ -56,11 +56,11 @@ object SvgPlotComponent {
     }
 
 
-    private def constructCoordinateSystem(model: DataModel, hoveredSubCategory: Option[SubCategory], plotHeight: Int, layout: QualityLayout) = {
+    private def constructCoordinateSystem(model: DataModel, hoveredSubCriteria: Option[SubCriteria], plotHeight: Int, layout: QualityLayout) = {
 
       // create the criteria boxes
-      val boxes = for (category <- model.categories) yield {
-        val (x, width) = layout.getCriteriaBox(category)
+      val boxes = for (criteria <- model.criteria) yield {
+        val (x, width) = layout.getCriteriaBox(criteria)
         <.svg.rect(
           ^.svg.fill := "#eeeeee",
           ^.svg.x := x, ^.svg.y := layout.MARGIN,
@@ -68,26 +68,26 @@ object SvgPlotComponent {
       }
 
       // create the criteria axes
-      val criteriaAxes = for (category <- model.categories) yield {
-        val containsHoveredSubCategory = category.subCategories.count(sc => hoveredSubCategory.contains(sc.id)) > 0
-        val stroke = if (containsHoveredSubCategory) "black" else "#cccccc"
+      val criteriaAxes = for (criteria <- model.criteria) yield {
+        val containsHoveredSubCriteria = criteria.subCriteria.count(sc => hoveredSubCriteria.contains(sc.id)) > 0
+        val stroke = if (containsHoveredSubCriteria) "black" else "#cccccc"
         <.svg.line(
-          ^.svg.x1 := layout.getCriteriaAxisX(category), ^.svg.y1 := layout.getCategoryAxisTopY,
-          ^.svg.x2 := layout.getCriteriaAxisX(category), ^.svg.y2 := layout.getCategoryAxisBotY,
+          ^.svg.x1 := layout.getCriteriaAxisX(criteria), ^.svg.y1 := layout.getCriteriaAxisTopY,
+          ^.svg.x2 := layout.getCriteriaAxisX(criteria), ^.svg.y2 := layout.getCriteriaAxisBotY,
           ^.svg.stroke := stroke, ^.svg.strokeWidth := "1"
         )
       }
 
       // create the subcriteria axes
-      val subCriteriaAxes = for (category <- model.categories) yield {
-        val axes = for (subCategory <- category.subCategories) yield {
-          val stroke = if (hoveredSubCategory.contains(subCategory.id)) "black" else "#cccccc"
+      val subCriteriaAxes = for (criteria <- model.criteria) yield {
+        val axes = for (subCriteria <- criteria.subCriteria) yield {
+          val stroke = if (hoveredSubCriteria.contains(subCriteria.id)) "black" else "#cccccc"
           <.svg.line(
-            ^.svg.x1 := layout.getSubCriteriaAxisX(subCategory), ^.svg.y1 := layout.getSubCategoryAxisTopY,
-            ^.svg.x2 := layout.getSubCriteriaAxisX(subCategory), ^.svg.y2 := layout.getSubCategoryAxisBotY,
+            ^.svg.x1 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y1 := layout.getSubCriteriaAxisTopY,
+            ^.svg.x2 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y2 := layout.getSubCriteriaAxisBotY,
             ^.svg.stroke := stroke, ^.svg.strokeWidth := "1",
-            ^.onMouseOver --> setHoveredSubCategory(Some(subCategory.id)),
-            ^.onMouseOut --> clearHoveredSubCategory(),
+            ^.onMouseOver --> setHoveredSubCriteria(Some(subCriteria.id)),
+            ^.onMouseOut --> clearHoveredSubCriteria(),
             ^.cursor.pointer
           )
         }
@@ -99,18 +99,18 @@ object SvgPlotComponent {
 
     private def constructEntities(model: DataModel, layout: QualityLayout) = {
 
-      def isSelected(e: PlottableEntity) = model.selectionModel.selected.contains(e.id)
-      def isPinned(e: PlottableEntity) = model.selectionModel.pinned.contains(e.id)
+      def isSelected(e: GroupedEntity) = model.selectionModel.selected.contains(e.id)
+      def isPinned(e: GroupedEntity) = model.selectionModel.pinned.contains(e.id)
 
       val entitiesInPaintingOrder = model.rankedEntities.sortBy(e => (isPinned(e), isSelected(e)))
-      val entities = for (plottableEntity <- entitiesInPaintingOrder) yield {
+      val entities = for (groupedEntity <- entitiesInPaintingOrder) yield {
 
         val (strokeColor, strokeWidth, cursor) =
-          if (isSelected(plottableEntity))
-            if (isPinned(plottableEntity))
+          if (isSelected(groupedEntity))
+            if (isPinned(groupedEntity))
               ("black", 4, ^.cursor.pointer)
             else
-              (model.colorMap(plottableEntity.id).hexValue, 2, ^.cursor.pointer)
+              (model.colorMap(groupedEntity.id).hexValue, 2, ^.cursor.pointer)
           else
             ("#cccccc", 1, ^.cursor.default)
 
@@ -120,10 +120,10 @@ object SvgPlotComponent {
         var index = 0
 
         var valueCoordinates =
-          for (category <- model.categories) yield {
-            val x = layout.getCriteriaAxisX(category)
-            val value = category.groupedValues(plottableEntity.id).get * (layout.getCategoryAxisBotY - layout.getCategoryAxisTopY) / 100.0
-            val y = layout.getCategoryAxisBotY - value
+          for (criteria <- model.criteria) yield {
+            val x = layout.getCriteriaAxisX(criteria)
+            val value = criteria.groupedValues(groupedEntity.id).get * (layout.getCriteriaAxisBotY - layout.getCriteriaAxisTopY) / 100.0
+            val y = layout.getCriteriaAxisBotY - value
 
             if (index == 1) coordString += " L"
             coordString += " " + x + " " + y
@@ -135,7 +135,7 @@ object SvgPlotComponent {
 
         val criteriaValuesLine = <.svg.path(^.svg.d := coordString,
           ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-          ^.onClick --> toggleEntityPinning(plottableEntity),
+          ^.onClick --> toggleEntityPinning(groupedEntity),
           cursor
         )
 
@@ -144,12 +144,12 @@ object SvgPlotComponent {
         coordString = "M"
         index = 0
 
-        for (category <- model.categories) {
+        for (criteria <- model.criteria) {
           val valueSubCoordinates =
-            for (subCategory <- category.subCategories) yield {
-              val x = layout.getSubCriteriaAxisX(subCategory)
-              val value = subCategory.groupedValues(plottableEntity.id).get * (layout.getSubCategoryAxisBotY - layout.getSubCategoryAxisTopY) / 100.0
-              val y = layout.getSubCategoryAxisBotY - value
+            for (subCriteria <- criteria.subCriteria) yield {
+              val x = layout.getSubCriteriaAxisX(subCriteria)
+              val value = subCriteria.groupedValues(groupedEntity.id).get * (layout.getSubCriteriaAxisBotY - layout.getSubCriteriaAxisTopY) / 100.0
+              val y = layout.getSubCriteriaAxisBotY - value
 
               if (index == 1) coordString += " L"
               coordString += " " + x + " " + y
@@ -164,13 +164,13 @@ object SvgPlotComponent {
 
         val subCriteriaValuesLine = <.svg.path(^.svg.d := coordString,
           ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-          ^.onClick --> toggleEntityPinning(plottableEntity),
+          ^.onClick --> toggleEntityPinning(groupedEntity),
           cursor
         )
 
         // Create the circles if entity is pinned
 
-        if (isPinned(plottableEntity)) {
+        if (isPinned(groupedEntity)) {
           val circles = for ((x, y) <- valueCoordinates) yield {
             <.svg.circle(
               ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,

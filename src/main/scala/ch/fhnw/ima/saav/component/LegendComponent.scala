@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntitySelectionAction}
-import ch.fhnw.ima.saav.model.app.{DataModel, PlottableEntity}
+import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.Entity
 import diode.react.ModelProxy
@@ -65,7 +65,7 @@ object LegendComponent {
 
     val pinGlyph = <.i(css.glyph.pin, ^.title := "Pin")
 
-    def header(entities: Seq[PlottableEntity], allSelectionState: TriStateCheckbox.State) = {
+    def header(entities: Seq[GroupedEntity], allSelectionState: TriStateCheckbox.State) = {
 
       val autoColorizeGlyph = <.i(
         css.glyph.magic,

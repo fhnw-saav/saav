@@ -12,30 +12,30 @@ class FileImportComponentSpec extends FlatSpec {
   "A file import component" should "import a single row" in {
 
     val projectName = "project"
-    val categoryName = "testCategory"
-    val subCategoryName = "testSubCategory"
+    val criteriaName = "testCriteria"
+    val subCriteriaName = "testSubCriteria"
     val indicatorName = "testIndicator"
 
-    val row: Row = createTestRow(projectName, categoryName, subCategoryName, indicatorName)
+    val row: Row = createTestRow(projectName, criteriaName, subCriteriaName, indicatorName)
 
     val builder = AnalysisBuilder()
 
     FileImportComponent.parseRow(builder, row)
 
     val analysis = builder.build
-    assert(analysis.categories.size == 1)
-    assert(analysis.categories(0).name == categoryName)
-    assert(analysis.categories(0).subCategories.size == 1)
-    assert(analysis.categories(0).subCategories(0).name == subCategoryName)
-    assert(analysis.categories(0).subCategories(0).indicators.length == 1)
-    assert(analysis.categories(0).subCategories(0).indicators(0).name == indicatorName)
+    assert(analysis.criteria.size == 1)
+    assert(analysis.criteria(0).name == criteriaName)
+    assert(analysis.criteria(0).subCriteria.size == 1)
+    assert(analysis.criteria(0).subCriteria(0).name == subCriteriaName)
+    assert(analysis.criteria(0).subCriteria(0).indicators.length == 1)
+    assert(analysis.criteria(0).subCriteria(0).indicators(0).name == indicatorName)
 
   }
 
   it should "import multiple rows in batches" in {
 
     val rowCount: Int = 17
-    val rows = for (i <- 0 until rowCount) yield createTestRow(s"project-$i", s"category-$i", s"subCategory-$i", s"indicator-$i")
+    val rows = for (i <- 0 until rowCount) yield createTestRow(s"project-$i", s"criteria-$i", s"subCriteria-$i", s"indicator-$i")
 
     // poor man's synchronization (all that we got in JS)
     var done = false
@@ -57,10 +57,10 @@ class FileImportComponentSpec extends FlatSpec {
 
   }
 
-  private def createTestRow(project: String, category: String, subCategory: String, indicator: String): Row = {
+  private def createTestRow(project: String, criteria: String, subCriteria: String, indicator: String): Row = {
     Dictionary(
       ("Projekt", project),
-      ("Indikator", s"$category:::$subCategory:::$indicator"),
+      ("Indikator", s"$criteria:::$subCriteria:::$indicator"),
       ("Reviewer", "testReviewer"),
       ("Value", "42")
     )

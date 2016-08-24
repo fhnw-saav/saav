@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.model.app.{DataModel, PlottableCategory, PlottableSubCategory}
+import ch.fhnw.ima.saav.model.app.{DataModel, GroupedCriteria, GroupedSubCriteria}
 
 /**
   * This class computes all the relevant layout parameters.
@@ -16,9 +16,9 @@ class QualityLayout {
   private var subCriteriaAxisTopY = 0
   private var subCriteriaAxisBotY = 0
 
-  private val criteriaBoxesMap = new scala.collection.mutable.HashMap[PlottableCategory, (Int, Int)]
-  private val criteriaAxesMap = new scala.collection.mutable.HashMap[PlottableCategory, Int]
-  private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[PlottableSubCategory, Int]
+  private val criteriaBoxesMap = new scala.collection.mutable.HashMap[GroupedCriteria, (Int, Int)]
+  private val criteriaAxesMap = new scala.collection.mutable.HashMap[GroupedCriteria, Int]
+  private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[GroupedSubCriteria, Int]
 
   def this(model: DataModel, width: Int, height: Int) {
     this()
@@ -44,18 +44,17 @@ class QualityLayout {
 
     var index = 0
     var x = 0
-    for (category <- model.categories) {
+    for (criteria <- model.criteria) {
 
       x = x + MARGIN
-      val criteriaWidth = 2*PADDING + ((category.subCategories.size-1) * axisSpacing)
+      val criteriaWidth = 2*PADDING + ((criteria.subCriteria.size-1) * axisSpacing)
 
-      criteriaBoxesMap(category) = (x, criteriaWidth)
-      criteriaAxesMap(category) = x + (criteriaWidth / 2)
+      criteriaBoxesMap(criteria) = (x, criteriaWidth)
+      criteriaAxesMap(criteria) = x + (criteriaWidth / 2)
 
       var subIndex = 0
-      // intellij does not catch it if we forget the .subCategories
-      for (subCategory <- category.subCategories) {
-        subCriteriaAxesMap(subCategory) = x + PADDING + (subIndex * axisSpacing)
+      for (subCriteria <- criteria.subCriteria) {
+        subCriteriaAxesMap(subCriteria) = x + PADDING + (subIndex * axisSpacing)
         subIndex += 1
       }
 
@@ -64,24 +63,24 @@ class QualityLayout {
     }
   }
 
-  def getCategoryAxisTopY = criteriaAxisTopY
-  def getCategoryAxisBotY = criteriaAxisBotY
-  def getSubCategoryAxisTopY = subCriteriaAxisTopY
-  def getSubCategoryAxisBotY = subCriteriaAxisBotY
+  def getCriteriaAxisTopY = criteriaAxisTopY
+  def getCriteriaAxisBotY = criteriaAxisBotY
+  def getSubCriteriaAxisTopY = subCriteriaAxisTopY
+  def getSubCriteriaAxisBotY = subCriteriaAxisBotY
 
-  def getCriteriaBox(category: PlottableCategory): (Int, Int) = criteriaBoxesMap(category)
-  def getCriteriaAxisX(category: PlottableCategory): Int = criteriaAxesMap(category)
-  def getSubCriteriaAxisX(subCategory: PlottableSubCategory): Int = subCriteriaAxesMap(subCategory)
+  def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria)
+  def getCriteriaAxisX(criteria: GroupedCriteria): Int = criteriaAxesMap(criteria)
+  def getSubCriteriaAxisX(subCriteria: GroupedSubCriteria): Int = subCriteriaAxesMap(subCriteria)
 
 
   private def computeCriteriaCount(model: DataModel) = {
-    model.categories.size
+    model.criteria.size
   }
 
   private def computeAxisCount(model: DataModel) = {
     var count = 0
-    for (category <- model.categories) {
-      count += category.subCategories.size
+    for (criteria <- model.criteria) {
+      count += criteria.subCriteria.size
     }
     count
   }

@@ -5,75 +5,75 @@ import org.scalatest.FlatSpec
 
 class DomainModelSpec extends FlatSpec {
 
-  "An analysis builder" should "add categories" in {
+  "An analysis builder" should "add criteria" in {
     val analysis = AnalysisBuilder()
-        .category("Category A").build
-        .category("Category B").build
+        .criteria("Criteria A").build
+        .criteria("Criteria B").build
         .build
 
-    assert(analysis.categories.size == 2)
+    assert(analysis.criteria.size == 2)
   }
 
-  it should "re-use existing categories" in {
+  it should "re-use existing criteria" in {
     val analysis = AnalysisBuilder()
-        .category("Category").build
-        .category("Category").build
+        .criteria("Criteria").build
+        .criteria("Criteria").build
         .build
 
-    assert(analysis.categories.size == 1)
+    assert(analysis.criteria.size == 1)
   }
 
-  it should "add sub-categories" in {
+  it should "add sub-criteria" in {
     val analysis = AnalysisBuilder()
-        .category("Category")
-          .subCategory("Sub-Category A").build
-          .subCategory("Sub-Category B").build
+        .criteria("Criteria")
+          .subCriteria("Sub-Criteria A").build
+          .subCriteria("Sub-Criteria B").build
           .build
         .build
 
-    assert(analysis.categories.head.subCategories.size == 2)
+    assert(analysis.criteria.head.subCriteria.size == 2)
   }
 
-  it should "re-use existing sub-categories" in {
+  it should "re-use existing sub-criteria" in {
     val analysis = AnalysisBuilder()
-        .category("Category")
-          .subCategory("Sub-Category").build
-          .subCategory("Sub-Category").build
+        .criteria("Criteria")
+          .subCriteria("Sub-Criteria").build
+          .subCriteria("Sub-Criteria").build
           .build
         .build
 
-    assert(analysis.categories.head.subCategories.size == 1)
+    assert(analysis.criteria.head.subCriteria.size == 1)
   }
 
   it should "add indicators" in {
     val analysis = AnalysisBuilder()
-        .category("Category")
-          .subCategory("Sub-Category")
+        .criteria("Criteria")
+          .subCriteria("Sub-Criteria")
               .indicator("Indicator A").build
               .indicator("Indicator B").build
               .build
           .build
       .build
 
-    assert(analysis.categories.head.subCategories.head.indicators.size == 2)
+    assert(analysis.criteria.head.subCriteria.head.indicators.size == 2)
   }
 
   it should "re-use existing indicators" in {
     val analysis = AnalysisBuilder()
-        .category("Category")
-          .subCategory("Sub-Category")
+        .criteria("Criteria")
+          .subCriteria("Sub-Criteria")
             .indicator("Indicator").build
             .indicator("Indicator").build
             .build
           .build
         .build
 
-    assert(analysis.categories.head.subCategories.head.indicators.size == 1)
+    assert(analysis.criteria.head.subCriteria.head.indicators.size == 1)
   }
 
   it should "add values" in {
     val builder = AnalysisBuilder()
-    val indicatorScope = builder.category("Category").subCategory("Sub-Category").indicator("Indicator")
+    val indicatorScope = builder.criteria("Criteria").subCriteria("Sub-Criteria").indicator("Indicator")
 
     val entityOne = Entity("Project 1")
     val entityTwo = Entity("Project 2")
@@ -93,7 +93,7 @@ class DomainModelSpec extends FlatSpec {
     assert(analysis.entities.size == 3)
     assert(analysis.reviews.size == 2)
 
-    val indicator = analysis.categories(0).subCategories(0).indicators(0)
+    val indicator = analysis.criteria(0).subCriteria(0).indicators(0)
 
     assert(indicator.values((entityOne, reviewOne)) == 11)
     assert(indicator.values((entityOne, reviewTwo)) == 12)
@@ -106,9 +106,9 @@ class DomainModelSpec extends FlatSpec {
     val builder = AnalysisBuilder()
     val analysis = builder.build
 
-    builder.category("Category")
+    builder.criteria("Criteria")
 
-    assert(analysis.categories.isEmpty)
+    assert(analysis.criteria.isEmpty)
   }
 
   it should "contain entities in insertion order" in {
@@ -120,8 +120,8 @@ class DomainModelSpec extends FlatSpec {
     val review = Review("Review")
 
     val analysis = AnalysisBuilder()
-      .category("Category")
-        .subCategory("Sub-Category")
+      .criteria("Criteria")
+        .subCriteria("Sub-Criteria")
           .indicator("Indicator")
             .addValue(project3, review, 3)
             .addValue(project1, review, 1)

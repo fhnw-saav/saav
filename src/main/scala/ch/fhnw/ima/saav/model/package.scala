@@ -57,19 +57,19 @@ package object model {
     val entities = Seq(helloWorld, foo, bar, baz, obama, clinton, trump, chuchichaeschtli)
 
     val builder = AnalysisBuilder()
-    val category1 = builder.category("Category A")
+    val criteria1 = builder.criteria("Criteria A")
 
-    val subCategory11 = category1.subCategory("Length")
-    val lengthIndicatorScope = subCategory11.indicator("Length")
+    val subCriteria11 = criteria1.subCriteria("Length")
+    val lengthIndicatorScope = subCriteria11.indicator("Length")
 
-    val subCategory12 = category1.subCategory("Consonant vs. Vowel")
-    val consonantIndicatorScope = subCategory12.indicator("Consonant Count")
-    val vowelIndicatorScope = subCategory12.indicator("Vowel Count")
+    val subCriteria12 = criteria1.subCriteria("Consonant vs. Vowel")
+    val consonantIndicatorScope = subCriteria12.indicator("Consonant Count")
+    val vowelIndicatorScope = subCriteria12.indicator("Vowel Count")
 
-    val category2 = builder.category("Category B")
+    val criteria2 = builder.criteria("Criteria B")
 
-    val subCategory21 = category2.subCategory("Whitespace")
-    val wordCountIndicator = subCategory21.indicator("Word Count")
+    val subCriteria21 = criteria2.subCriteria("Whitespace")
+    val wordCountIndicator = subCriteria21.indicator("Word Count")
 
     def isVowel(c: Char) = "aeiouäöü".contains(c)
 
@@ -91,8 +91,8 @@ package object model {
 
   }
 
-  private def populateIndicator(builder: AnalysisBuilder, categoryName: String, subCategoryName: String, indicatorName: String) = {
-    val indicatorScope = builder.category(categoryName).subCategory(subCategoryName).indicator(indicatorName)
+  private def populateIndicator(builder: AnalysisBuilder, criteriaName: String, subCriteriaName: String, indicatorName: String) = {
+    val indicatorScope = builder.criteria(criteriaName).subCriteria(subCriteriaName).indicator(indicatorName)
 
     val reviewOne = Review("Review 1")
     val reviewTwo = Review("Review 2")

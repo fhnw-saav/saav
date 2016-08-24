@@ -120,15 +120,15 @@ object FileImportComponent {
 
     val project = Entity(row(keyIt.next()))
     val hierarchyLevels = row(keyIt.next()).split(":::")
-    val category = hierarchyLevels(0)
-    val subCategory = hierarchyLevels(1)
+    val criteria = hierarchyLevels(0)
+    val subCriteria = hierarchyLevels(1)
     val indicator = hierarchyLevels(2)
     val review = Review(row(keyIt.next()))
     val value = row(keyIt.next()).toDouble
 
     builder
-      .category(category)
-      .subCategory(subCategory)
+      .criteria(criteria)
+      .subCriteria(subCriteria)
       .indicator(indicator)
       .addValue(project, review, value)
 

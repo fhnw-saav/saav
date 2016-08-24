@@ -7,7 +7,7 @@ import org.scalatest.{FunSpec, Matchers}
 
 class AppModelSpec extends FunSpec with Matchers {
 
-  describe(s"A PlottableQualityDataModel") {
+  describe(s"A ${DataModel.getClass.getSimpleName}") {
 
     val entityOne = Entity("P1")
     val entityTwo = Entity("P2")
@@ -16,8 +16,8 @@ class AppModelSpec extends FunSpec with Matchers {
     val review = Review("Review")
 
     val analysis = AnalysisBuilder()
-      .category("Cat 1")
-        .subCategory("Sub-Cat 11")
+      .criteria("Cat 1")
+        .subCriteria("Sub-Cat 11")
           .indicator("Indicator 111")
             .addValue(entityOne, review, 1)
             .addValue(entityTwo, review, 101)
@@ -29,8 +29,8 @@ class AppModelSpec extends FunSpec with Matchers {
           .build
         .build
       .build
-      .category("Cat 2")
-        .subCategory("Sub-Cat 21")
+      .criteria("Cat 2")
+        .subCriteria("Sub-Cat 21")
           .indicator("Indicator 211")
             .addValue(entityOne, review, 42)
             .addValue(entityTwo, review, 99)
@@ -57,33 +57,33 @@ class AppModelSpec extends FunSpec with Matchers {
       model.rankedEntities(2).id shouldBe entityThree
       model.rankedEntities(2).value shouldBe Some(0)
 
-      model.categories.size shouldBe 2
+      model.criteria.size shouldBe 2
 
-      val categoryOne = model.categories(0)
-      categoryOne.groupedValues(entityTwo) shouldBe Some(101)
-      categoryOne.groupedValues(entityThree) shouldBe Some(0)
-      categoryOne.groupedValues(entityOne) shouldBe Some(2)
-      categoryOne.subCategories.size shouldBe 1
-      categoryOne.subCategories(0).groupedValues(entityOne) shouldBe Some(2)
-      categoryOne.subCategories(0).groupedValues(entityTwo) shouldBe Some(101)
-      categoryOne.subCategories(0).groupedValues(entityThree) shouldBe Some(0)
+      val criteriaOne = model.criteria(0)
+      criteriaOne.groupedValues(entityTwo) shouldBe Some(101)
+      criteriaOne.groupedValues(entityThree) shouldBe Some(0)
+      criteriaOne.groupedValues(entityOne) shouldBe Some(2)
+      criteriaOne.subCriteria.size shouldBe 1
+      criteriaOne.subCriteria(0).groupedValues(entityOne) shouldBe Some(2)
+      criteriaOne.subCriteria(0).groupedValues(entityTwo) shouldBe Some(101)
+      criteriaOne.subCriteria(0).groupedValues(entityThree) shouldBe Some(0)
 
 
-      val categoryTwo = model.categories(1)
-      categoryTwo.groupedValues(entityOne) shouldBe Some(42.5)
-      categoryTwo.groupedValues(entityTwo) shouldBe Some(99)
-      categoryTwo.groupedValues(entityThree) shouldBe None
-      categoryTwo.subCategories.size shouldBe 1
-      categoryTwo.subCategories(0).groupedValues(entityOne) shouldBe Some(42.5)
-      categoryTwo.subCategories(0).groupedValues(entityTwo) shouldBe Some(99)
-      categoryTwo.subCategories(0).groupedValues(entityThree) shouldBe None
+      val criteriaTwo = model.criteria(1)
+      criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
+      criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
+      criteriaTwo.groupedValues(entityThree) shouldBe None
+      criteriaTwo.subCriteria.size shouldBe 1
+      criteriaTwo.subCriteria(0).groupedValues(entityOne) shouldBe Some(42.5)
+      criteriaTwo.subCriteria(0).groupedValues(entityTwo) shouldBe Some(99)
+      criteriaTwo.subCriteria(0).groupedValues(entityThree) shouldBe None
 
     }
 
     it("should re-calculate aggregated medians when weights are updated") {
 
-      // disable all indicators below category 0
-      val someIndicators = analysis.categories(0).subCategories(0).indicators.toSet
+      // disable all indicators below criteria 0
+      val someIndicators = analysis.criteria(0).subCriteria(0).indicators.toSet
       val weights = Weights(disabledIndicators = someIndicators)
 
       val newModel = model.updateWeights(analysis, weights)
@@ -99,27 +99,27 @@ class AppModelSpec extends FunSpec with Matchers {
       newModel.rankedEntities(2).id shouldBe entityThree
       newModel.rankedEntities(2).value shouldBe None
 
-      newModel.categories.size shouldBe 2
+      newModel.criteria.size shouldBe 2
 
       // all indicators below disabled --> all values None
-      val categoryOne = newModel.categories(0)
-      categoryOne.groupedValues(entityTwo) shouldBe None
-      categoryOne.groupedValues(entityThree) shouldBe None
-      categoryOne.groupedValues(entityOne) shouldBe None
-      categoryOne.subCategories.size shouldBe 1
-      categoryOne.subCategories(0).groupedValues(entityOne) shouldBe None
-      categoryOne.subCategories(0).groupedValues(entityTwo) shouldBe None
-      categoryOne.subCategories(0).groupedValues(entityThree) shouldBe None
+      val criteriaOne = newModel.criteria(0)
+      criteriaOne.groupedValues(entityTwo) shouldBe None
+      criteriaOne.groupedValues(entityThree) shouldBe None
+      criteriaOne.groupedValues(entityOne) shouldBe None
+      criteriaOne.subCriteria.size shouldBe 1
+      criteriaOne.subCriteria(0).groupedValues(entityOne) shouldBe None
+      criteriaOne.subCriteria(0).groupedValues(entityTwo) shouldBe None
+      criteriaOne.subCriteria(0).groupedValues(entityThree) shouldBe None
 
       // weights unchanged --> same expectations as with defaults
-      val categoryTwo = newModel.categories(1)
-      categoryTwo.groupedValues(entityOne) shouldBe Some(42.5)
-      categoryTwo.groupedValues(entityTwo) shouldBe Some(99)
-      categoryTwo.groupedValues(entityThree) shouldBe None
-      categoryTwo.subCategories.size shouldBe 1
-      categoryTwo.subCategories(0).groupedValues(entityOne) shouldBe Some(42.5)
-      categoryTwo.subCategories(0).groupedValues(entityTwo) shouldBe Some(99)
-      categoryTwo.subCategories(0).groupedValues(entityThree) shouldBe None
+      val criteriaTwo = newModel.criteria(1)
+      criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
+      criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
+      criteriaTwo.groupedValues(entityThree) shouldBe None
+      criteriaTwo.subCriteria.size shouldBe 1
+      criteriaTwo.subCriteria(0).groupedValues(entityOne) shouldBe Some(42.5)
+      criteriaTwo.subCriteria(0).groupedValues(entityTwo) shouldBe Some(99)
+      criteriaTwo.subCriteria(0).groupedValues(entityThree) shouldBe None
 
     }
 
