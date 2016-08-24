@@ -86,7 +86,8 @@ object SvgPlotComponent {
             ^.svg.x2 := layout.getSubCriteriaAxisX(subCategory), ^.svg.y2 := layout.getSubCategoryAxisBotY,
             ^.svg.stroke := stroke, ^.svg.strokeWidth := "1",
             ^.onMouseOver --> setHoveredSubCategory(Some(subCategory.id)),
-            ^.onMouseOut --> clearHoveredSubCategory()
+            ^.onMouseOut --> clearHoveredSubCategory(),
+            ^.cursor.pointer
           )
         }
         <.svg.g(axes)
@@ -98,14 +99,14 @@ object SvgPlotComponent {
     private def constructEntities(model: DataModel, layout: QualityLayout) = {
       val entities = for (plottableEntity <- model.rankedEntities) yield {
 
-        var (strokeColor, strokeWidth) =
+        val (strokeColor, strokeWidth, cursor) =
           if (plottableEntity.isSelected)
             if (plottableEntity.isPinned)
-              ("black", 4)
+              ("black", 4, ^.cursor.pointer)
             else
-              (plottableEntity.color.hexValue, 2)
+              (plottableEntity.color.hexValue, 2, ^.cursor.pointer)
           else
-            ("#cccccc", 1)
+            ("#cccccc", 1, ^.cursor.default)
 
         // create the criteria values lines
 
@@ -128,7 +129,8 @@ object SvgPlotComponent {
 
         val criteriaValuesLine = <.svg.path(^.svg.d := coordString,
           ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-          ^.onClick --> toggleEntityPinning(plottableEntity)
+          ^.onClick --> toggleEntityPinning(plottableEntity),
+          cursor
         )
 
         // create the subcriteria values lines
@@ -156,17 +158,19 @@ object SvgPlotComponent {
 
         val subCriteriaValuesLine = <.svg.path(^.svg.d := coordString,
           ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-          ^.onClick --> toggleEntityPinning(plottableEntity)
+          ^.onClick --> toggleEntityPinning(plottableEntity),
+          cursor
         )
 
         // Create the circles if entity is pinned
 
-        if (plottableEntity.isSelected && plottableEntity.isPinned) {
+        if (plottableEntity.isPinned) {
           val circles = for ((x, y) <- valueCoordinates) yield {
             <.svg.circle(
               ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
               ^.svg.fill := "black",
-              ^.svg.strokeWidth := 0
+              ^.svg.strokeWidth := 0,
+              ^.cursor.pointer
             )
           }
           <.svg.g(criteriaValuesLine, subCriteriaValuesLine, circles)
