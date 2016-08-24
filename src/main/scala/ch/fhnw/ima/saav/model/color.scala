@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.app.PlottableEntity
+import ch.fhnw.ima.saav.model.domain.Entity
 
 object color {
 
@@ -23,7 +23,7 @@ object color {
 
   val DisabledColor = WebColor("#777777")
 
-  def autoColorMap(entities: Seq[PlottableEntity]): Map[PlottableEntity, WebColor] =
+  def autoColorMap(entities: Seq[Entity]): Map[Entity, WebColor] =
     entities.zipWithIndex.map {
       case (e, i) => (e, SolarizedPalette(i % SolarizedPalette.size))
     }.toMap.withDefaultValue(color.DefaultColor)

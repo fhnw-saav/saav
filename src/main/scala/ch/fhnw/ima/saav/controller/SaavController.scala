@@ -15,7 +15,7 @@ object SaavController {
 
   final case class AnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
 
-  final case class AnalysisReadyAction(analysis: Analysis) extends Action
+  final case class AnalysisReadyAction[E <: Entity](analysis: Analysis) extends Action
 
   class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataModel, DataModel]]) extends ActionHandler(modelRW) {
 
@@ -34,51 +34,46 @@ object SaavController {
 
   }
 
-  // Entity Update Actions
+  // Color Actions
 
-  final case class AutoColorizeAction() extends Action
+  final case class AutoColorizeAction(entities: Seq[Entity]) extends Action
 
   final case class UpdateEntityColorAction(entity: Entity, webColor: WebColor) extends Action
+
+  class ColorHandler[M](modelRW: ModelRW[M, Map[Entity, WebColor]]) extends ActionHandler(modelRW) {
+
+    override def handle = {
+      case AutoColorizeAction(entities) => updated(autoColorMap(entities))
+      case UpdateEntityColorAction(entity, color) => updated(value + (entity -> color))
+    }
+
+  }
+
+  // Entity Selection & Pinning
 
   final case class UpdateEntitySelectionAction(entities: Set[Entity], isSelected: Boolean) extends Action
 
   final case class UpdateEntityPinningAction(pinnedEntity: Option[Entity]) extends Action
 
-  class EntityHandler[M](modelRW: ModelRW[M, Seq[PlottableEntity]]) extends ActionHandler(modelRW) {
+  class SelectionAndPinningHandler[M](modelRW: ModelRW[M, EntitySelectionModel]) extends ActionHandler(modelRW) {
 
     override def handle = {
-      case AutoColorizeAction() =>
-        val selectedEntities = value.filter(_.isSelected)
-        val colors = autoColorMap(selectedEntities)
-        val newEntities = value.map(e => e.copy(color = colors(e)))
-        updated(newEntities)
-      case UpdateEntityColorAction(entity, color) =>
-        val entities = value.map {
-          case e if e.id == entity => e.copy(color = color)
-          case e => e
+      case UpdateEntitySelectionAction(entities, isSelected) =>
+        val newSelection = if (isSelected) {
+          value.selected ++ entities
+        } else {
+          value.selected -- entities
         }
-        updated(entities)
-      case UpdateEntitySelectionAction(selection, isSelected) =>
-        val oldEntities = value
-        val newEntities = oldEntities.map { e =>
-          if (selection.contains(e.id)) {
-            val newIsPinned = e.isPinned && isSelected
-            e.copy(
-              isSelected = isSelected,
-              isPinned = newIsPinned
-            )
+        // clear pinning upon de-selection
+        val newPinned: Option[Entity] = value.pinned.flatMap { currentlyPinned =>
+          if (newSelection.contains(currentlyPinned)) {
+            value.pinned
           } else {
-            e
+            None
           }
         }
-        updated(newEntities)
-      case UpdateEntityPinningAction(pinnedEntity) =>
-        val oldEntities = value
-        val newEntities = oldEntities.map {
-          case e if pinnedEntity.contains(e.id) => e.copy(isPinned = true)
-          case e => e.copy(isPinned = false)
-        }
-        updated(newEntities)
+        updated(EntitySelectionModel(newSelection, newPinned))
+      case UpdateEntityPinningAction(newPinned) => updated(value.copy(pinned = newPinned))
     }
 
   }
@@ -91,15 +86,23 @@ object SaavController {
 
     private val analysisHandler = new AnalysisHandler(zoomRW(_.model)((m, v) => m.copy(model = v)))
 
-    private val entityHandler = {
-      def get = (m: SaavModel) =>
-        m.model.right.toOption.map(_.rankedEntities).getOrElse(Seq())
-      def set = (m: SaavModel, v: Seq[PlottableEntity]) =>
-        m.copy(model = m.model.right.map(_.copy(rankedEntities = v)))
-      new EntityHandler(zoomRW(get)(set))
+    private val colorHandler = {
+      def modelGet = (m: SaavModel) =>
+        m.model.right.toOption.map(_.colorMap).getOrElse(Map())
+      def modelSet = (m: SaavModel, v: Map[Entity, WebColor]) =>
+        m.copy(model = m.model.right.map(_.copy(colorMap = v)))
+      new ColorHandler(zoomRW(modelGet)(modelSet))
     }
 
-    override protected val actionHandler = composeHandlers(analysisHandler, entityHandler)
+    private val selectionAndPinningHandler = {
+      def modelGet = (m: SaavModel) =>
+        m.model.right.toOption.map(_.selectionModel).get
+      def modelSet = (m: SaavModel, v: EntitySelectionModel) =>
+        m.copy(model = m.model.right.map(_.copy(selectionModel = v)))
+      new SelectionAndPinningHandler(zoomRW(modelGet)(modelSet))
+    }
+
+    override protected val actionHandler = composeHandlers(analysisHandler, colorHandler, selectionAndPinningHandler)
 
     override def handleError(msg: String): Unit = {
       val name = SaavController.getClass.getSimpleName

@@ -22,7 +22,8 @@ object SvgPlotComponent {
 
     def toggleEntityPinning(plottableEntity: PlottableEntity) =
       $.props >>= { p =>
-        val pinnedOrNone = if (plottableEntity.isPinned) None else Some(plottableEntity.id)
+        val isPinned = p.proxy.value.selectionModel.pinned.contains(plottableEntity.id)
+        val pinnedOrNone = if (isPinned) None else Some(plottableEntity.id)
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
 
@@ -97,15 +98,19 @@ object SvgPlotComponent {
     }
 
     private def constructEntities(model: DataModel, layout: QualityLayout) = {
-      val entitiesInPaintingOrder = model.rankedEntities.sortBy(e => (e.isPinned, e.isSelected))
+
+      def isSelected(e: PlottableEntity) = model.selectionModel.selected.contains(e.id)
+      def isPinned(e: PlottableEntity) = model.selectionModel.pinned.contains(e.id)
+
+      val entitiesInPaintingOrder = model.rankedEntities.sortBy(e => (isPinned(e), isSelected(e)))
       val entities = for (plottableEntity <- entitiesInPaintingOrder) yield {
 
         val (strokeColor, strokeWidth, cursor) =
-          if (plottableEntity.isSelected)
-            if (plottableEntity.isPinned)
+          if (isSelected(plottableEntity))
+            if (isPinned(plottableEntity))
               ("black", 4, ^.cursor.pointer)
             else
-              (plottableEntity.color.hexValue, 2, ^.cursor.pointer)
+              (model.colorMap(plottableEntity.id).hexValue, 2, ^.cursor.pointer)
           else
             ("#cccccc", 1, ^.cursor.default)
 
@@ -165,7 +170,7 @@ object SvgPlotComponent {
 
         // Create the circles if entity is pinned
 
-        if (plottableEntity.isPinned) {
+        if (isPinned(plottableEntity)) {
           val circles = for ((x, y) <- valueCoordinates) yield {
             <.svg.circle(
               ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,

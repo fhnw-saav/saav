@@ -96,26 +96,10 @@ object pages {
 
     private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
       .render_P(p => {
-
         <.div(
           <.div(css.row,
-            <.div(css.colXs12,
-              <.span(css.pullRight, PdfExportComponent())
-            )
-          ),
-          <.div(css.row,
-            <.div(css.colXs12, css.vSpaced,
-              CanvasComponent(p.proxy)
-            )
-          ),
-          <.div(css.row,
-            <.div(css.colXs12, css.vSpaced,
-              SvgPlotComponent(p.proxy)
-            )
-          ),
-          <.div(css.row,
-            <.div(css.colXs3, LegendComponent(p.proxy.zoom(_.rankedEntities))),
-            <.div(css.colXs9, D3Component(p.proxy))
+            <.div(css.colXs3, LegendComponent(p.proxy)),
+            <.div(css.colXs9, SvgPlotComponent(p.proxy))
           )
         )
       })

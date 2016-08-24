@@ -19,19 +19,22 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  final case class DataModel(rankedEntities: Seq[PlottableEntity], categories: Seq[PlottableCategory]) {
+  final case class EntitySelectionModel(selected: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
+
+  final case class DataModel(
+    rankedEntities: Seq[PlottableEntity],
+    categories: Seq[PlottableCategory],
+    selectionModel: EntitySelectionModel,
+    colorMap: Map[Entity, WebColor]
+  ) {
 
     def updateWeights(analysis: Analysis, weights: Weights): DataModel = {
 
-      val entityMap: Map[Entity, PlottableEntity] = rankedEntities.map(e => e.id -> e).toMap
+      // create new model to trigger value calculation with new weights
       val newModel = DataModel(analysis, weights)
 
-      val newRankedEntities = newModel.rankedEntities.map { e =>
-        val template = entityMap(e.id)
-        e.copy(color = template.color, isSelected = template.isSelected, isPinned = template.isPinned)
-      }
-
-      newModel.copy(rankedEntities = newRankedEntities)
+      // keep selections and colors of current model
+      newModel.copy(selectionModel = selectionModel, colorMap = colorMap)
 
     }
 
@@ -50,16 +53,17 @@ object app {
         PlottableEntity(e, value = value)
       }.sortBy(_.value).reverse
 
-      // colorize _after_ ranking to get optimally distinct colors
-      val colors = autoColorMap(rankedEntities)
-      val rankedAndAutoColoredEntities = rankedEntities.map(e => e.copy(color = colors(e)))
+      val selectionModel = EntitySelectionModel(analysis.entities.toSet, None)
 
-      DataModel(rankedAndAutoColoredEntities, categories)
+      // colorize _after_ ranking to get optimally distinct colors
+      val colorMap = autoColorMap(rankedEntities.map(_.id))
+
+      DataModel(rankedEntities, categories, selectionModel, colorMap)
     }
 
   }
 
-  final case class PlottableEntity(id: Entity, isSelected: Boolean = true, color: WebColor = DefaultColor, isPinned: Boolean = false, value: Option[Double] = None) {
+  final case class PlottableEntity(id: Entity, value: Option[Double] = None) {
     def name = id.name
   }
 
