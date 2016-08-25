@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
+import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityPinningAction}
 import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.domain.SubCriteria
 import diode.react.ModelProxy
@@ -29,34 +29,35 @@ object SvgPlotComponent {
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
 
-    def onSvgMouseEvent(isClicked: Boolean)(e: ReactMouseEvent) =
+    def onSvgMouseEvent(proxy: ModelProxy[DataModel], isClicked: Boolean)(e: ReactMouseEvent) =
       $.state >>= { s =>
+        s.svgElement match {
+          case Some(svg) =>
 
-        s.svgElement.foreach { svg =>
+            val pt = svg.createSVGPoint()
+            pt.x = e.clientX
+            pt.y = e.clientY
 
-          val pt = svg.createSVGPoint()
-          pt.x = e.clientX
-          pt.y = e.clientY
+            val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
 
-          val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+            val clicked = if (isClicked) ", Clicked" else ""
+            println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
 
-          val clicked = if (isClicked) ", Clicked" else ""
-          println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
+            // TODO: Replace with actually desired effect
+            if (isClicked) proxy.dispatch(AutoColorizeAction(Seq())) else Callback.empty
 
+          // (1) Change the global model (e.g. pinning or selection)
+          //     --> dispatch an action to the controller via proxy.dispatch
+          //     Details: http://ochrons.github.io/diode/UsageWithReact.html
+          //
+          // AND/OR
+          //
+          // (2) Change state local to component (e.g. hovering state)
+          //     --> modify state via $.modState
+          //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
+
+          case None => Callback.empty
         }
-
-        Callback.empty // TODO: Replace with actually desired effect
-
-        // (1) Change the global model (e.g. pinning or selection)
-        //     --> dispatch an action to the controller via proxy.dispatch
-        //     Details: http://ochrons.github.io/diode/UsageWithReact.html
-        //
-        // AND/OR
-        //
-        // (2) Change state local to component (e.g. hovering state)
-        //     --> modify state via $.modState
-        //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
-
       }
 
     def render(p: Props, s: State) = {
@@ -81,8 +82,8 @@ object SvgPlotComponent {
 
       <.svg.svg(
         ^.svg.viewBox := s"0 0 $plotWidth $plotHeight",
-        ^.onClick ==> onSvgMouseEvent(isClicked = true),
-        ^.onMouseMove ==> onSvgMouseEvent(isClicked = false),
+        ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
+        ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
         background,
         coordinateSystem,
         entities
