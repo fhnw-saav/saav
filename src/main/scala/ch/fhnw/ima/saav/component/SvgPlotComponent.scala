@@ -6,19 +6,20 @@ import ch.fhnw.ima.saav.model.domain.SubCriteria
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent}
+import org.scalajs.dom.raw.SVGSVGElement
 
 object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[DataModel])
 
-  case class State(hoveredSubCriteria: Option[SubCriteria] = None)
+  case class State(hoveredSubCriteria: Option[SubCriteria] = None, svgElement: Option[SVGSVGElement] = None)
 
   class Backend($: BackendScope[Props, State]) {
 
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteria]) =
       $.modState(s => State(hoveredSubCriteria))
 
-    def clearHoveredSubCriteria() = $.modState(s => State(None))
+    def clearHoveredSubCriteria() = $.modState(s => State(hoveredSubCriteria = None))
 
     def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
@@ -27,24 +28,35 @@ object SvgPlotComponent {
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
 
-    def onSvgMouseEvent(isClicked: Boolean)(e: ReactMouseEvent) = {
+    def onSvgMouseEvent(isClicked: Boolean)(e: ReactMouseEvent) =
+      $.state >>= { s =>
 
-      val clicked = if (isClicked) ", Clicked" else ""
-      println(s"SVG: ${e.clientX}/${e.clientY}$clicked")
+        s.svgElement.foreach { svg =>
 
-      Callback.empty // TODO: Replace with actually desired effect
+          val pt = svg.createSVGPoint()
+          pt.x = e.clientX
+          pt.y = e.clientY
 
-      // (1) Change the global model (e.g. pinning or selection)
-      //     --> dispatch an action to the controller via proxy.dispatch
-      //     Details: http://ochrons.github.io/diode/UsageWithReact.html
-      //
-      // AND/OR
-      //
-      // (2) Change state local to component (e.g. hovering state)
-      //     --> modify state via $.modState
-      //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
+          val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
 
-    }
+          val clicked = if (isClicked) ", Clicked" else ""
+          println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
+
+        }
+
+        Callback.empty // TODO: Replace with actually desired effect
+
+        // (1) Change the global model (e.g. pinning or selection)
+        //     --> dispatch an action to the controller via proxy.dispatch
+        //     Details: http://ochrons.github.io/diode/UsageWithReact.html
+        //
+        // AND/OR
+        //
+        // (2) Change state local to component (e.g. hovering state)
+        //     --> modify state via $.modState
+        //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
+
+      }
 
     def render(p: Props, s: State) = {
 
@@ -69,8 +81,7 @@ object SvgPlotComponent {
       <.svg.svg(
         ^.svg.viewBox := s"0 0 $plotWidth $plotHeight",
         ^.onClick ==> onSvgMouseEvent(isClicked = true),
-        ^.onMouseOver ==> onSvgMouseEvent(isClicked = false),
-        ^.onMouseOut ==> onSvgMouseEvent(isClicked = false),
+        ^.onMouseMove ==> onSvgMouseEvent(isClicked = false),
         background,
         coordinateSystem,
         entities
@@ -218,6 +229,11 @@ object SvgPlotComponent {
   private val component = ReactComponentB[Props](SvgPlotComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
+    .domType[SVGSVGElement]
+    .componentDidMount(scope => {
+      val svg = scope.getDOMNode()
+      scope.modState(s => s.copy(svgElement = Some(svg)))
+    })
     .build
 
   def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
