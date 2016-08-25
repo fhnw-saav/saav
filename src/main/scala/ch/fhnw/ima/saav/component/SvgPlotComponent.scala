@@ -17,9 +17,10 @@ object SvgPlotComponent {
   class Backend($: BackendScope[Props, State]) {
 
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteria]) =
-      $.modState(s => State(hoveredSubCriteria))
+      $.modState(s => s.copy(hoveredSubCriteria = hoveredSubCriteria))
 
-    def clearHoveredSubCriteria() = $.modState(s => State(hoveredSubCriteria = None))
+    def clearHoveredSubCriteria() =
+      $.modState(s => s.copy(hoveredSubCriteria = None))
 
     def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
