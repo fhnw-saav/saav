@@ -1,18 +1,20 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityPinningAction}
+import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
 import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.domain.SubCriteria
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom.raw.SVGSVGElement
 
 object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[DataModel])
 
-  case class State(hoveredSubCriteria: Option[SubCriteria] = None, svgElement: Option[SVGSVGElement] = None)
+  case class State(hoveredSubCriteria: Option[SubCriteria] = None)
+
+  val svgRef = Ref[SVGSVGElement]("svgRef")
 
   class Backend($: BackendScope[Props, State]) {
 
@@ -30,35 +32,31 @@ object SvgPlotComponent {
       }
 
     def onSvgMouseEvent(proxy: ModelProxy[DataModel], isClicked: Boolean)(e: ReactMouseEvent) =
-      $.state >>= { s =>
-        s.svgElement match {
-          case Some(svg) =>
+      svgRef($).map { svg =>
 
-            val pt = svg.createSVGPoint()
-            pt.x = e.clientX
-            pt.y = e.clientY
+        val pt = svg.createSVGPoint()
+        pt.x = e.clientX
+        pt.y = e.clientY
 
-            val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
 
-            val clicked = if (isClicked) ", Clicked" else ""
-            println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
+        val clicked = if (isClicked) ", Clicked" else ""
+        println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
 
-            // TODO: Replace with actually desired effect
-            if (isClicked) proxy.dispatch(AutoColorizeAction(Seq())) else Callback.empty
+        // TODO: Replace with actually desired effect
+        Callback.empty
 
-          // (1) Change the global model (e.g. pinning or selection)
-          //     --> dispatch an action to the controller via proxy.dispatch
-          //     Details: http://ochrons.github.io/diode/UsageWithReact.html
-          //
-          // AND/OR
-          //
-          // (2) Change state local to component (e.g. hovering state)
-          //     --> modify state via $.modState
-          //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
+        // (1) Change the global model (e.g. pinning or selection)
+        //     --> dispatch an action to the controller via proxy.dispatch
+        //     Details: http://ochrons.github.io/diode/UsageWithReact.html
+        //
+        // AND/OR
+        //
+        // (2) Change state local to component (e.g. hovering state)
+        //     --> modify state via $.modState
+        //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
 
-          case None => Callback.empty
-        }
-      }
+      }.getOrElse(Callback.empty)
 
     def render(p: Props, s: State) = {
 
@@ -81,6 +79,7 @@ object SvgPlotComponent {
       // Assemble everything
 
       <.svg.svg(
+        ^.ref := svgRef,
         ^.svg.viewBox := s"0 0 $plotWidth $plotHeight",
         ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
         ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
@@ -231,11 +230,6 @@ object SvgPlotComponent {
   private val component = ReactComponentB[Props](SvgPlotComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
-    .domType[SVGSVGElement]
-    .componentDidMount(scope => {
-      val svg = scope.getDOMNode()
-      scope.modState(s => s.copy(svgElement = Some(svg)))
-    })
     .build
 
   def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
