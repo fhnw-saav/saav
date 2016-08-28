@@ -1,15 +1,24 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.model.app.{DataModel, GroupedCriteria, GroupedSubCriteria}
+import ch.fhnw.ima.saav.model.domain.SubCriteria
 
 /**
   * This class computes all the relevant layout parameters.
   */
 
 class QualityLayout {
-  val MARGIN = 10
+  val MARGIN = 20
   val PADDING = 20
-  val VERTICAL_AXIS_GAP = 40
+  val VERTICAL_AXIS_GAP = 70
+  val HEADER_TEXT_GAP = 40
+
+  // TODO: these do not really belong here, should be part of the data model, probably be defined in the data itself
+  private var minValue: Double = 0
+  private var maxValue: Double = 0
+
+  private var boxTopY = 0
+  private var boxBotY = 0
 
   private var criteriaAxisTopY = 0
   private var criteriaAxisBotY = 0
@@ -20,6 +29,8 @@ class QualityLayout {
   private val criteriaAxesMap = new scala.collection.mutable.HashMap[GroupedCriteria, Int]
   private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[GroupedSubCriteria, Int]
 
+  private val subCriteriaDomainMap = new scala.collection.mutable.HashMap[SubCriteria, GroupedSubCriteria]
+
   def this(model: DataModel, width: Int, height: Int) {
     this()
 
@@ -28,17 +39,22 @@ class QualityLayout {
     val criteriaCount = computeCriteriaCount(model)
     val axisCount = computeAxisCount(model)
 
-    val axisSpacing = (width - ((criteriaCount+1) * MARGIN) - (criteriaCount * 2 * PADDING)) / (axisCount - criteriaCount)
+    val axisSpacing = Math.max((width - ((criteriaCount+1) * MARGIN) - (criteriaCount * 2 * PADDING)) / (axisCount - criteriaCount), 0)
 
-    val axisHeight = (height - 2*PADDING - VERTICAL_AXIS_GAP) / 2
+    val axisHeight = (height - HEADER_TEXT_GAP - 2*PADDING - VERTICAL_AXIS_GAP - MARGIN) / 2
+
+    // Compute boxes y positions
+
+    boxTopY = HEADER_TEXT_GAP
+    boxBotY = height - MARGIN
 
     // Compute axes y positions
 
-    criteriaAxisTopY = PADDING
-    criteriaAxisBotY = PADDING + axisHeight
+    criteriaAxisTopY = HEADER_TEXT_GAP + PADDING
+    criteriaAxisBotY = criteriaAxisTopY + axisHeight
 
-    subCriteriaAxisTopY = height - PADDING - axisHeight
-    subCriteriaAxisBotY = height - PADDING
+    subCriteriaAxisTopY = height - MARGIN - PADDING - axisHeight
+    subCriteriaAxisBotY = subCriteriaAxisTopY + axisHeight
 
     // Compute boxes and axes x positions
 
@@ -56,12 +72,36 @@ class QualityLayout {
       for (subCriteria <- criteria.subCriteria) {
         subCriteriaAxesMap(subCriteria) = x + PADDING + (subIndex * axisSpacing)
         subIndex += 1
+
+        subCriteriaDomainMap(subCriteria.id) = subCriteria
       }
 
       index += 1
       x = x + criteriaWidth
     }
+
+    // Compute boxes and axes x positions
+
+    for (criteria <- model.criteria) {
+     for (subCriteria <- criteria.subCriteria) {
+       for (entity <- model.rankedEntities) {
+         val value = subCriteria.groupedValues(entity.id).get
+         minValue = Math.min(minValue, value)
+         maxValue = Math.max(maxValue, value)
+       }
+      }
+    }
+
   }
+
+
+  // And now for the getters or something...
+
+  def getMinValue = minValue
+  def getMaxValue = maxValue
+
+  def getBoxTopY = boxTopY
+  def getBoxBotY = boxBotY
 
   def getCriteriaAxisTopY = criteriaAxisTopY
   def getCriteriaAxisBotY = criteriaAxisBotY
@@ -72,6 +112,11 @@ class QualityLayout {
   def getCriteriaAxisX(criteria: GroupedCriteria): Int = criteriaAxesMap(criteria)
   def getSubCriteriaAxisX(subCriteria: GroupedSubCriteria): Int = subCriteriaAxesMap(subCriteria)
 
+
+  // TODO: does not work if called from text element in component
+  def getAppSubCriteria(hoveredSubCriteria: Option[SubCriteria]): GroupedSubCriteria = {
+    subCriteriaDomainMap(hoveredSubCriteria.get)
+  }
 
   private def computeCriteriaCount(model: DataModel) = {
     model.criteria.size
