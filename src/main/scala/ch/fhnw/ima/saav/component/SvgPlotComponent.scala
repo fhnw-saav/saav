@@ -8,8 +8,6 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom.raw.SVGSVGElement
 
-import scala.util.Random
-
 object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[DataModel])
@@ -147,9 +145,12 @@ object SvgPlotComponent {
 
               closestEntity
             } else if ((cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
+/*
               var r = Random
               var index = r.nextInt(model.rankedEntities.size)
               Some(model.rankedEntities(index).id)
+*/
+              None
             } else {
               None
             }
