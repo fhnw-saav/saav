@@ -18,12 +18,23 @@ object SvgPlotComponent {
 
   class Backend($: BackendScope[Props, State]) {
 
-    // TODO: optimization, only fire the event if there is actually a change
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteria]) =
-      $.modState(s => s.copy(hoveredSubCriteria = hoveredSubCriteria))
+      $.state >>= { s =>
+        if (s.hoveredSubCriteria != hoveredSubCriteria) {
+          $.setState(s.copy(hoveredSubCriteria = hoveredSubCriteria))
+        } else {
+          Callback.empty
+        }
+      }
 
     def clearHoveredSubCriteria() =
-      $.modState(s => s.copy(hoveredSubCriteria = None))
+      $.state >>= { s =>
+        if (s.hoveredSubCriteria.isDefined) {
+          $.setState(s.copy(hoveredSubCriteria = None))
+        } else {
+          Callback.empty
+        }
+      }
 
     def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
@@ -34,71 +45,45 @@ object SvgPlotComponent {
 
     /**
       * The global mouse handler.
-      *
-      * @param proxy
-      * @param layout
-      * @param isClicked
-      * @param e
-      * @return
       */
     def onSvgMouseEvent(proxy: ModelProxy[DataModel], layout: QualityLayout, isClicked: Boolean)(e: ReactMouseEvent) =
-      svgRef($).map { svg =>
+    svgRef($).map { svg =>
 
-        val pt = svg.createSVGPoint()
-        pt.x = e.clientX
-        pt.y = e.clientY
+      val pt = svg.createSVGPoint()
+      pt.x = e.clientX
+      pt.y = e.clientY
 
-        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+      val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
 
-/*
-        val clicked = if (isClicked) ", Clicked" else ""
-        println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
-*/
-
-        //----------------
-        val model = proxy.value
-        if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
-          var xmin = Double.MaxValue
-          var closestSubCriteria: GroupedSubCriteria = null
-          for (criteria <- model.criteria) {
-            for (subCriteria <- criteria.subCriteria) {
-              val x = layout.getSubCriteriaAxisX(subCriteria)
-              val distance = Math.abs(x - cursorPt.x)
-              if (distance < xmin) {
-                xmin = distance
-                closestSubCriteria = subCriteria
-              }
+      val model = proxy.value
+      if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
+        var xmin = Double.MaxValue
+        var closestSubCriteria: GroupedSubCriteria = null
+        for (criteria <- model.criteria) {
+          for (subCriteria <- criteria.subCriteria) {
+            val x = layout.getSubCriteriaAxisX(subCriteria)
+            val distance = Math.abs(x - cursorPt.x)
+            if (distance < xmin) {
+              xmin = distance
+              closestSubCriteria = subCriteria
             }
           }
-
-          Callback.lazily(setHoveredSubCriteria(Some(closestSubCriteria.id)))
-        } else {
-          Callback.empty
         }
-        //----------------
 
-        // TODO: Replace with actually desired effect
-//        Callback.empty
+        setHoveredSubCriteria(Some(closestSubCriteria.id))
+      } else {
+        Callback.empty
+      }
 
-        // (1) Change the global model (e.g. pinning or selection)
-        //     --> dispatch an action to the controller via proxy.dispatch
-        //     Details: http://ochrons.github.io/diode/UsageWithReact.html
-        //
-        // AND/OR
-        //
-        // (2) Change state local to component (e.g. hovering state)
-        //     --> modify state via $.modState
-        //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
-
-      }.getOrElse(Callback.empty)
+    }.getOrElse(Callback.empty)
 
 
     /**
-      * The render loop
- *
+      * The render loop.
+      *
       * @param p global properties
       * @param s local state
-      * @return
+      * @return the virtual DOM to be rendered.
       */
     def render(p: Props, s: State) = {
 
@@ -135,10 +120,9 @@ object SvgPlotComponent {
 
     }
 
-
     /**
       * Constructs the boxes and the axes for the hierarchical parallel coordinate system.
- *
+      *
       * @param model the data model
       * @param hoveredSubCriteria the sub criteria that is currently probed
       * @param layout the layout parameters for the components
@@ -210,10 +194,6 @@ object SvgPlotComponent {
             ^.svg.x1 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y1 := layout.getSubCriteriaAxisTopY,
             ^.svg.x2 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y2 := layout.getSubCriteriaAxisBotY,
             ^.svg.stroke := stroke, ^.svg.strokeWidth := "1",
-/*
-            ^.onMouseOver --> setHoveredSubCriteria(Some(subCriteria.id)),
-            ^.onMouseOut --> clearHoveredSubCriteria(),
-*/
             ^.cursor.pointer
           )
         }
@@ -222,11 +202,11 @@ object SvgPlotComponent {
 
       // TODO: alignment, how do we get the bounding box of an SVG text element?
       val hoveredAxisLabel =
-        <.svg.text(
-          ^.svg.textAnchor := "middle",
-          ^.svg.x := hoveredAxisX,
-          ^.svg.y := layout.getSubCriteriaAxisTopY - layout.PADDING + 5, hoveredAxisName
-        )
+      <.svg.text(
+        ^.svg.textAnchor := "middle",
+        ^.svg.x := hoveredAxisX,
+        ^.svg.y := layout.getSubCriteriaAxisTopY - layout.PADDING + 5, hoveredAxisName
+      )
 
       <.svg.g(criteriaBoxesAndStuff, criteriaAxes, subCriteriaAxes, hoveredAxisLabel)
     }
@@ -234,8 +214,8 @@ object SvgPlotComponent {
 
     /**
       * Constructs the horizontal lines for the entities.
- *
-      * @param model the data model
+      *
+      * @param model  the data model
       * @param layout the layout of the components
       * @return a group of SVG elements containing the representation of the entities
       */
@@ -277,10 +257,10 @@ object SvgPlotComponent {
 
         val criteriaValuesLine =
           <.svg.path(^.svg.d := coordString,
-          ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-          ^.onClick --> toggleEntityPinning(groupedEntity),
-          cursor
-        )
+            ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
+            ^.onClick --> toggleEntityPinning(groupedEntity),
+            cursor
+          )
 
         // create the subcriteria values lines
 
@@ -307,10 +287,10 @@ object SvgPlotComponent {
 
         val subCriteriaValuesLine =
           <.svg.path(^.svg.d := coordString,
-          ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-          ^.onClick --> toggleEntityPinning(groupedEntity),
-          cursor
-        )
+            ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
+            ^.onClick --> toggleEntityPinning(groupedEntity),
+            cursor
+          )
 
         // Create the circles if entity is pinned
 
@@ -340,11 +320,11 @@ object SvgPlotComponent {
             if (containsHoveredSubCriteria) {
               criteriaValueLabel =
                 <.svg.text(
-                ^.svg.textAnchor := "middle",
-                ^.svg.x := layout.getCriteriaAxisX(criteria),
-                ^.svg.y := layout.getCriteriaAxisBotY + layout.PADDING - 5,
+                  ^.svg.textAnchor := "middle",
+                  ^.svg.x := layout.getCriteriaAxisX(criteria),
+                  ^.svg.y := layout.getCriteriaAxisBotY + layout.PADDING - 5,
                   criteria.groupedValues(groupedEntity.id).get
-              )
+                )
             }
 
             for (subCriteria <- criteria.subCriteria) {
@@ -354,7 +334,7 @@ object SvgPlotComponent {
                     ^.svg.textAnchor := "middle",
                     ^.svg.x := layout.getSubCriteriaAxisX(subCriteria),
                     ^.svg.y := layout.getSubCriteriaAxisBotY + layout.PADDING - 5,
-                    subCriteria.groupedValues(groupedEntity.id).get                  )
+                    subCriteria.groupedValues(groupedEntity.id).get)
               }
 
             }
