@@ -2,17 +2,19 @@ package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
 import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity, GroupedSubCriteria}
-import ch.fhnw.ima.saav.model.domain.SubCriteria
+import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom.raw.SVGSVGElement
 
+import scala.util.Random
+
 object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[DataModel])
 
-  case class State(hoveredSubCriteria: Option[SubCriteria] = None)
+  case class State(hoveredSubCriteria: Option[SubCriteria] = None, hoveredEntity: Option[Entity] = None)
 
   val svgRef = Ref[SVGSVGElement]("svgRef")
 
@@ -25,12 +27,20 @@ object SvgPlotComponent {
     def clearHoveredSubCriteria() =
       $.modState(s => s.copy(hoveredSubCriteria = None))
 
+
+    // TODO: optimization, only fire the event if there is actually a change
+    def setHoveredThings(hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) =
+      $.modState(s => s.copy(hoveredSubCriteria = hoveredSubCriteria, hoveredEntity = hoveredEntity))
+
+
+
     def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
         val isPinned = p.proxy.value.selectionModel.pinned.contains(groupedEntity.id)
         val pinnedOrNone = if (isPinned) None else Some(groupedEntity.id)
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
+
 
     /**
       * The global mouse handler.
@@ -56,6 +66,7 @@ object SvgPlotComponent {
 */
 
         //----------------
+/*
         val model = proxy.value
         if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
           var xmin = Double.MaxValue
@@ -72,6 +83,80 @@ object SvgPlotComponent {
           }
 
           Callback.lazily(setHoveredSubCriteria(Some(closestSubCriteria.id)))
+        } else {
+          Callback.empty
+        }
+*/
+        //----------------
+
+        val model = proxy.value
+
+        val probedSubCriteria = {
+          if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
+            var xmin = Double.MaxValue
+            var closestSubCriteria: GroupedSubCriteria = null
+            for (criteria <- model.criteria) {
+              for (subCriteria <- criteria.subCriteria) {
+                val x = layout.getSubCriteriaAxisX(subCriteria)
+                val distance = Math.abs(x - cursorPt.x)
+                if (distance < xmin) {
+                  xmin = distance
+                  closestSubCriteria = subCriteria
+                }
+              }
+            }
+            Some(closestSubCriteria.id)
+          } else {
+            None
+          }
+        }
+
+        val probedEntity = {
+          if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY) ||
+            (cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
+
+            if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY)) {
+
+              var minDistance = Double.MaxValue
+              var closestEntity: Option[Entity] = None
+
+              for (i <- 1 until model.criteria.size) {
+                val x1 = layout.getCriteriaAxisX(model.criteria(i-1))
+                val x2 = layout.getCriteriaAxisX(model.criteria(i))
+                if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
+                  for (entity <- model.selectionModel.selected) {
+                    val val1 = computeAxisValue(model.criteria(i-1).groupedValues(entity).get, layout, AxisType.Criteria)
+                    val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
+                    val y = layout.getCriteriaAxisBotY - cursorPt.y
+
+                    val interpolatedValue = val1 + ((cursorPt.x- x1) / (x2 - x1) * (val2 - val1))
+                    val distance = Math.abs(interpolatedValue - y)
+
+                    if (distance < minDistance) {
+                      minDistance = distance
+                      closestEntity = Some(entity)
+                    }
+                  }
+                }
+              }
+
+              closestEntity
+            } else if ((cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
+              var r = Random
+              var index = r.nextInt(model.rankedEntities.size)
+              Some(model.rankedEntities(index).id)
+            } else {
+              None
+            }
+
+          } else {
+            None
+          }
+        }
+
+
+        if (probedSubCriteria.isDefined || probedEntity.isDefined) {
+          Callback.lazily(setHoveredThings(probedSubCriteria, probedEntity))
         } else {
           Callback.empty
         }
@@ -95,7 +180,7 @@ object SvgPlotComponent {
 
     /**
       * The render loop
- *
+      *
       * @param p global properties
       * @param s local state
       * @return
@@ -119,7 +204,7 @@ object SvgPlotComponent {
       val layout = new QualityLayout(model, plotWidth, plotHeight)
 
       val coordinateSystem = constructCoordinateSystem(model, layout, s.hoveredSubCriteria)
-      val entities = constructEntities(model, layout, s.hoveredSubCriteria)
+      val entities = constructEntities(model, layout, s.hoveredSubCriteria, s.hoveredEntity)
 
       // Assemble everything
 
@@ -239,10 +324,11 @@ object SvgPlotComponent {
       * @param layout the layout of the components
       * @return a group of SVG elements containing the representation of the entities
       */
-    private def constructEntities(model: DataModel, layout: QualityLayout, hoveredSubCriteria: Option[SubCriteria]) = {
+    private def constructEntities(model: DataModel, layout: QualityLayout, hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) = {
 
       def isSelected(e: GroupedEntity) = model.selectionModel.selected.contains(e.id)
       def isPinned(e: GroupedEntity) = model.selectionModel.pinned.contains(e.id)
+      def isHovered(e: GroupedEntity) = hoveredEntity.contains(e.id)
 
       val entitiesInPaintingOrder = model.rankedEntities.sortBy(e => (isPinned(e), isSelected(e)))
       val entities = for (groupedEntity <- entitiesInPaintingOrder) yield {
@@ -251,6 +337,9 @@ object SvgPlotComponent {
           if (isSelected(groupedEntity))
             if (isPinned(groupedEntity))
               ("black", 4, ^.cursor.pointer)
+            else
+            if (isHovered(groupedEntity))
+              (model.colorMap(groupedEntity.id).hexValue, 4, ^.cursor.pointer)
             else
               (model.colorMap(groupedEntity.id).hexValue, 2, ^.cursor.pointer)
           else
