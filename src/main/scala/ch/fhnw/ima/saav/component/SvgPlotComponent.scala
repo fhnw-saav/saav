@@ -8,6 +8,8 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom.raw.SVGSVGElement
 
+import scala.collection.mutable
+
 object SvgPlotComponent {
 
   case class Props(proxy: ModelProxy[DataModel])
@@ -43,10 +45,10 @@ object SvgPlotComponent {
 
 
 
-    def toggleEntityPinning(groupedEntity: GroupedEntity) =
+    def toggleEntityPinning(entity: Entity) =
       $.props >>= { p =>
-        val isPinned = p.proxy.value.selectionModel.pinned.contains(groupedEntity.id)
-        val pinnedOrNone = if (isPinned) None else Some(groupedEntity.id)
+        val isPinned = p.proxy.value.selectionModel.pinned.contains(entity)
+        val pinnedOrNone = if (isPinned) None else Some(entity)
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
 
@@ -63,14 +65,9 @@ object SvgPlotComponent {
 
       val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
 
-/*
-        val clicked = if (isClicked) ", Clicked" else ""
-        println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
-*/
+      val model = proxy.value
 
-        //----------------
-/*
-        val model = proxy.value
+      val probedSubCriteria = {
         if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
           var xmin = Double.MaxValue
           var closestSubCriteria: GroupedSubCriteria = null
@@ -84,102 +81,79 @@ object SvgPlotComponent {
               }
             }
           }
-
-          Callback.lazily(setHoveredSubCriteria(Some(closestSubCriteria.id)))
+          Some(closestSubCriteria.id)
         } else {
-          Callback.empty
+          None
         }
-*/
-        //----------------
+      }
 
-        val model = proxy.value
+      val probedEntity = {
+        if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY) ||
+          (cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
 
-        val probedSubCriteria = {
-          if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
-            var xmin = Double.MaxValue
-            var closestSubCriteria: GroupedSubCriteria = null
-            for (criteria <- model.criteria) {
-              for (subCriteria <- criteria.subCriteria) {
-                val x = layout.getSubCriteriaAxisX(subCriteria)
-                val distance = Math.abs(x - cursorPt.x)
-                if (distance < xmin) {
-                  xmin = distance
-                  closestSubCriteria = subCriteria
-                }
-              }
-            }
-            Some(closestSubCriteria.id)
-          } else {
-            None
-          }
-        }
+          if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY)) {
 
-        val probedEntity = {
-          if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY) ||
-            (cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
+            var minDistance = Double.MaxValue
+            var closestEntity: Option[Entity] = None
 
-            if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY)) {
+            for (i <- 1 until model.criteria.size) {
+              val x1 = layout.getCriteriaAxisX(model.criteria(i-1))
+              val x2 = layout.getCriteriaAxisX(model.criteria(i))
+              if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
+                for (entity <- model.selectionModel.selected) {
+                  val val1 = computeAxisValue(model.criteria(i-1).groupedValues(entity).get, layout, AxisType.Criteria)
+                  val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
+                  val y = layout.getCriteriaAxisBotY - cursorPt.y
 
-              var minDistance = Double.MaxValue
-              var closestEntity: Option[Entity] = None
+                  val interpolatedValue = val1 + ((cursorPt.x- x1) / (x2 - x1) * (val2 - val1))
+                  val distance = Math.abs(interpolatedValue - y)
 
-              for (i <- 1 until model.criteria.size) {
-                val x1 = layout.getCriteriaAxisX(model.criteria(i-1))
-                val x2 = layout.getCriteriaAxisX(model.criteria(i))
-                if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
-                  for (entity <- model.selectionModel.selected) {
-                    val val1 = computeAxisValue(model.criteria(i-1).groupedValues(entity).get, layout, AxisType.Criteria)
-                    val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
-                    val y = layout.getCriteriaAxisBotY - cursorPt.y
-
-                    val interpolatedValue = val1 + ((cursorPt.x- x1) / (x2 - x1) * (val2 - val1))
-                    val distance = Math.abs(interpolatedValue - y)
-
-                    if (distance < minDistance) {
-                      minDistance = distance
-                      closestEntity = Some(entity)
-                    }
+                  if (distance < minDistance) {
+                    minDistance = distance
+                    closestEntity = Some(entity)
                   }
                 }
               }
-
-              closestEntity
-            } else if ((cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
-/*
-              var r = Random
-              var index = r.nextInt(model.rankedEntities.size)
-              Some(model.rankedEntities(index).id)
-*/
-              None
-            } else {
-              None
             }
 
+            closestEntity
+          } else if ((cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
+            // TODO: finish this with same algorithm as for criteria above
+            /*
+                          var r = Random
+                          var index = r.nextInt(model.rankedEntities.size)
+                          Some(model.rankedEntities(index).id)
+            */
+            None
           } else {
             None
           }
-        }
 
-
-        if (probedSubCriteria.isDefined || probedEntity.isDefined) {
-          Callback.lazily(setHoveredThings(probedSubCriteria, probedEntity))
         } else {
-          Callback.empty
+          None
         }
-        //----------------
+      }
 
-        // TODO: Replace with actually desired effect
-//        Callback.empty
 
-        // (1) Change the global model (e.g. pinning or selection)
-        //     --> dispatch an action to the controller via proxy.dispatch
-        //     Details: http://ochrons.github.io/diode/UsageWithReact.html
-        //
-        // AND/OR
-        //
-        // (2) Change state local to component (e.g. hovering state)
-        //     --> modify state via $.modState
-        //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
+      if (probedSubCriteria.isDefined || probedEntity.isDefined) {
+        setHoveredThings(probedSubCriteria, probedEntity) >> Callback(if (isClicked) toggleEntityPinning(probedEntity.get))
+      } else {
+        Callback.empty
+      }
+
+      //----------------
+      // TODO: Replace with actually desired effect
+      //        Callback.empty
+
+      // (1) Change the global model (e.g. pinning or selection)
+      //     --> dispatch an action to the controller via proxy.dispatch
+      //     Details: http://ochrons.github.io/diode/UsageWithReact.html
+      //
+      // AND/OR
+      //
+      // (2) Change state local to component (e.g. hovering state)
+      //     --> modify state via $.modState
+      //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
 
     }.getOrElse(Callback.empty)
 
@@ -351,6 +325,7 @@ object SvgPlotComponent {
         var coordString = "M"
         var index = 0
 
+/*
         var valueCoordinates =
           for (criteria <- model.criteria) yield {
             val x = layout.getCriteriaAxisX(criteria)
@@ -371,9 +346,61 @@ object SvgPlotComponent {
             ^.onClick --> toggleEntityPinning(groupedEntity),
             cursor
           )
+*/
+
+        //-------------------------
+
+
+        val valueCoordinates = mutable.ArrayBuffer[(Double, Double)]()
+
+        for (criteria <- model.criteria) {
+          val x: Double = layout.getCriteriaAxisX(criteria)
+          val value: Double = computeAxisValue(criteria.groupedValues(groupedEntity.id).get, layout, AxisType.Criteria)
+          val y: Double = layout.getCriteriaAxisBotY - value
+
+          var coords = (x, y)
+          valueCoordinates += coords
+        }
+
+        val criteriaLineSegments = for (i <- 1 until valueCoordinates.size) yield {
+          <.svg.line(
+            ^.svg.x1 := valueCoordinates(i-1)._1, ^.svg.y1 := valueCoordinates(i-1)._2,
+            ^.svg.x2 := valueCoordinates(i)._1, ^.svg.y2 := valueCoordinates(i)._2,
+            ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth
+          )
+        }
+
+        val criteriaValuesLine = <.svg.g(criteriaLineSegments)
+
+
+        val subCriteriaValueCoordinates = mutable.ArrayBuffer[(Double, Double)]()
+
+        for (criteria <- model.criteria) {
+          for (subCriteria <- criteria.subCriteria) yield {
+            val x: Double = layout.getSubCriteriaAxisX(subCriteria)
+            val value: Double = computeAxisValue(subCriteria.groupedValues(groupedEntity.id).get, layout, AxisType.Subcriteria)
+            val y: Double = layout.getSubCriteriaAxisBotY - value
+
+            val coords = (x, y)
+            subCriteriaValueCoordinates += coords
+          }
+        }
+
+        val subCriteriaLineSegments = for (i <- 1 until subCriteriaValueCoordinates.size) yield {
+          <.svg.line(
+            ^.svg.x1 := subCriteriaValueCoordinates(i-1)._1, ^.svg.y1 := subCriteriaValueCoordinates(i-1)._2,
+            ^.svg.x2 := subCriteriaValueCoordinates(i)._1, ^.svg.y2 := subCriteriaValueCoordinates(i)._2,
+            ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth
+          )
+        }
+
+        val subCriteriaValuesLine = <.svg.g(subCriteriaLineSegments)
+
+        //-------------------------
 
         // create the subcriteria values lines
 
+/*
         coordString = "M"
         index = 0
 
@@ -401,11 +428,12 @@ object SvgPlotComponent {
             ^.onClick --> toggleEntityPinning(groupedEntity),
             cursor
           )
+*/
 
         // Create the circles if entity is pinned
 
         val circles = if (isPinned(groupedEntity)) {
-          val c = for ((x, y) <- valueCoordinates) yield {
+          val c = for ((x, y) <- valueCoordinates++subCriteriaValueCoordinates) yield {
             <.svg.circle(
               ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
               ^.svg.fill := "black",

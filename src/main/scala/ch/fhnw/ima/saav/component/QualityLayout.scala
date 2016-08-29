@@ -80,7 +80,7 @@ class QualityLayout {
       x = x + criteriaWidth
     }
 
-    // Compute boxes and axes x positions
+    // Compute min and max values
 
     for (criteria <- model.criteria) {
      for (subCriteria <- criteria.subCriteria) {
