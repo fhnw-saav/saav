@@ -83,6 +83,7 @@ lazy val deployCommand = Command.command("deploy") {
     "reload" ::
     "makeSite" ::
     "ghpagesPushSite" ::
+    "git push" ::
     "git push --tags" ::
     "git checkout master" ::
     state
