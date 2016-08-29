@@ -6,7 +6,8 @@ lazy val saav = (project in file("."))
     name := Settings.name,
     scalaVersion := Settings.versions.scala,
     scalacOptions ++= Settings.scalacOptions,
-    ghpages.settings
+    ghpages.settings,
+    commands += deployCommand
   )
 
 // dependencies needed by Scala.js
@@ -73,3 +74,16 @@ lazy val cleanSite = taskKey[Unit]("Cleans contents of 'target/site'")
 cleanSite := IO.delete(siteDirectory.value)
 
 makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource)
+
+lazy val deployCommand = Command.command("deploy") {
+  state =>
+    "clean" ::
+    "release with-defaults" ::
+    "git checkout HEAD~1" ::
+    "reload" ::
+    "makeSite" ::
+    "ghpagesPushSite" ::
+    "git push --tags" ::
+    "git checkout master" ::
+    state
+}
