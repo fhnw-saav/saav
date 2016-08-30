@@ -36,9 +36,14 @@ object ProfileChartComponent {
         }
       }
 
-    // TODO: optimization, only fire the event if there is actually a change
-    def setHoveredThings(hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) =
-    $.modState(s => s.copy(hoveredSubCriteria = hoveredSubCriteria, hoveredEntity = hoveredEntity))
+    def setHoveredEntity(hoveredEntity: Option[Entity]) =
+      $.state >>= { s =>
+        if (s.hoveredEntity != hoveredEntity) {
+          $.setState(s.copy(hoveredEntity = hoveredEntity))
+        } else {
+          Callback.empty
+        }
+      }
 
     def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
@@ -122,11 +127,7 @@ object ProfileChartComponent {
         }
       }
 
-      if (probedSubCriteria.isDefined || probedEntity.isDefined) {
-        setHoveredThings(probedSubCriteria, probedEntity)
-      } else {
-        Callback.empty
-      }
+      setHoveredSubCriteria(probedSubCriteria) >> setHoveredEntity(probedEntity)
 
     }.getOrElse(Callback.empty)
 
