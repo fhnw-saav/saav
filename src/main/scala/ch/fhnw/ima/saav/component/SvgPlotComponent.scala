@@ -10,7 +10,7 @@ import org.scalajs.dom.raw.SVGSVGElement
 
 object SvgPlotComponent {
 
-  case class Props(proxy: ModelProxy[DataModel])
+  case class Props(proxy: ModelProxy[DataModel], layout: QualityLayout)
 
   case class State(hoveredSubCriteria: Option[SubCriteria] = None, hoveredEntity: Option[Entity] = None)
 
@@ -36,12 +36,9 @@ object SvgPlotComponent {
         }
       }
 
-
     // TODO: optimization, only fire the event if there is actually a change
     def setHoveredThings(hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) =
-      $.modState(s => s.copy(hoveredSubCriteria = hoveredSubCriteria, hoveredEntity = hoveredEntity))
-
-
+    $.modState(s => s.copy(hoveredSubCriteria = hoveredSubCriteria, hoveredEntity = hoveredEntity))
 
     def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
@@ -49,7 +46,6 @@ object SvgPlotComponent {
         val pinnedOrNone = if (isPinned) None else Some(groupedEntity.id)
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
-
 
     /**
       * The global mouse handler.
@@ -63,15 +59,10 @@ object SvgPlotComponent {
 
       val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
 
-/*
-        val clicked = if (isClicked) ", Clicked" else ""
-        println(s"SVG: ${cursorPt.x}/${cursorPt.y}$clicked")
-*/
+      val model = proxy.value
 
-        //----------------
-/*
-        val model = proxy.value
-        if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
+      val probedSubCriteria = {
+        if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
           var xmin = Double.MaxValue
           var closestSubCriteria: GroupedSubCriteria = null
           for (criteria <- model.criteria) {
@@ -84,105 +75,60 @@ object SvgPlotComponent {
               }
             }
           }
-
-          Callback.lazily(setHoveredSubCriteria(Some(closestSubCriteria.id)))
+          Some(closestSubCriteria.id)
         } else {
-          Callback.empty
+          None
         }
-*/
-        //----------------
+      }
 
-        val model = proxy.value
+      val probedEntity = {
+        if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY) ||
+          (cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
 
-        val probedSubCriteria = {
-          if ((cursorPt.y > layout.getBoxTopY) && (cursorPt.y < layout.getBoxBotY)) {
-            var xmin = Double.MaxValue
-            var closestSubCriteria: GroupedSubCriteria = null
-            for (criteria <- model.criteria) {
-              for (subCriteria <- criteria.subCriteria) {
-                val x = layout.getSubCriteriaAxisX(subCriteria)
-                val distance = Math.abs(x - cursorPt.x)
-                if (distance < xmin) {
-                  xmin = distance
-                  closestSubCriteria = subCriteria
-                }
-              }
-            }
-            Some(closestSubCriteria.id)
-          } else {
-            None
-          }
-        }
+          if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY)) {
 
-        val probedEntity = {
-          if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY) ||
-            (cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
+            var minDistance = Double.MaxValue
+            var closestEntity: Option[Entity] = None
 
-            if ((cursorPt.y > layout.getCriteriaAxisTopY) && (cursorPt.y < layout.getCriteriaAxisBotY)) {
+            for (i <- 1 until model.criteria.size) {
+              val x1 = layout.getCriteriaAxisX(model.criteria(i - 1))
+              val x2 = layout.getCriteriaAxisX(model.criteria(i))
+              if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
+                for (entity <- model.selectionModel.selected) {
+                  val val1 = computeAxisValue(model.criteria(i - 1).groupedValues(entity).get, layout, AxisType.Criteria)
+                  val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
+                  val y = layout.criteriaAxisBotY - cursorPt.y
 
-              var minDistance = Double.MaxValue
-              var closestEntity: Option[Entity] = None
+                  val interpolatedValue = val1 + ((cursorPt.x - x1) / (x2 - x1) * (val2 - val1))
+                  val distance = Math.abs(interpolatedValue - y)
 
-              for (i <- 1 until model.criteria.size) {
-                val x1 = layout.getCriteriaAxisX(model.criteria(i-1))
-                val x2 = layout.getCriteriaAxisX(model.criteria(i))
-                if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
-                  for (entity <- model.selectionModel.selected) {
-                    val val1 = computeAxisValue(model.criteria(i-1).groupedValues(entity).get, layout, AxisType.Criteria)
-                    val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
-                    val y = layout.getCriteriaAxisBotY - cursorPt.y
-
-                    val interpolatedValue = val1 + ((cursorPt.x- x1) / (x2 - x1) * (val2 - val1))
-                    val distance = Math.abs(interpolatedValue - y)
-
-                    if (distance < minDistance) {
-                      minDistance = distance
-                      closestEntity = Some(entity)
-                    }
+                  if (distance < minDistance) {
+                    minDistance = distance
+                    closestEntity = Some(entity)
                   }
                 }
               }
-
-              closestEntity
-            } else if ((cursorPt.y > layout.getSubCriteriaAxisTopY) && (cursorPt.y < layout.getSubCriteriaAxisBotY)) {
-/*
-              var r = Random
-              var index = r.nextInt(model.rankedEntities.size)
-              Some(model.rankedEntities(index).id)
-*/
-              None
-            } else {
-              None
             }
 
+            closestEntity
+          } else if ((cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
+            None
           } else {
             None
           }
-        }
 
-
-        if (probedSubCriteria.isDefined || probedEntity.isDefined) {
-          Callback.lazily(setHoveredThings(probedSubCriteria, probedEntity))
         } else {
-          Callback.empty
+          None
         }
-        //----------------
+      }
 
-        // TODO: Replace with actually desired effect
-//        Callback.empty
-
-        // (1) Change the global model (e.g. pinning or selection)
-        //     --> dispatch an action to the controller via proxy.dispatch
-        //     Details: http://ochrons.github.io/diode/UsageWithReact.html
-        //
-        // AND/OR
-        //
-        // (2) Change state local to component (e.g. hovering state)
-        //     --> modify state via $.modState
-        //     Details: https://github.com/japgolly/scalajs-react/blob/master/doc/USAGE.md#callbacks
+      if (probedSubCriteria.isDefined || probedEntity.isDefined) {
+        setHoveredThings(probedSubCriteria, probedEntity)
+      } else {
+        Callback.empty
+      }
 
     }.getOrElse(Callback.empty)
-
 
     /**
       * The render loop.
@@ -197,17 +143,13 @@ object SvgPlotComponent {
 
       val model = p.proxy.value
 
-      // only relevant for aspect ratio and e.g. relative stroke width (svg will be scaled within parent element)
-      val plotWidth = 1000
-      val plotHeight = 500
-
       val background = <.svg.rect(
         ^.svg.fill := "white",
         ^.svg.stroke := "black",
         ^.svg.x := "0", ^.svg.y := "0",
         ^.svg.width := "100%", ^.svg.height := "100%")
 
-      val layout = new QualityLayout(model, plotWidth, plotHeight)
+      val layout = p.layout
 
       val coordinateSystem = constructCoordinateSystem(model, layout, s.hoveredSubCriteria)
       val entities = constructEntities(model, layout, s.hoveredSubCriteria, s.hoveredEntity)
@@ -216,7 +158,7 @@ object SvgPlotComponent {
 
       <.svg.svg(
         ^.ref := svgRef,
-        ^.svg.viewBox := s"0 0 $plotWidth $plotHeight",
+        ^.svg.viewBox := s"0 0 ${layout.width} ${layout.height}",
         ^.onClick ==> onSvgMouseEvent(p.proxy, layout, isClicked = true),
         ^.onMouseMove ==> onSvgMouseEvent(p.proxy, layout, isClicked = false),
         background,
@@ -229,9 +171,9 @@ object SvgPlotComponent {
     /**
       * Constructs the boxes and the axes for the hierarchical parallel coordinate system.
       *
-      * @param model the data model
+      * @param model              the data model
       * @param hoveredSubCriteria the sub criteria that is currently probed
-      * @param layout the layout parameters for the components
+      * @param layout             the layout parameters for the components
       * @return a group of SVG elements that make up the coordinate system
       */
     private def constructCoordinateSystem(model: DataModel, layout: QualityLayout, hoveredSubCriteria: Option[SubCriteria]) = {
@@ -247,14 +189,14 @@ object SvgPlotComponent {
         val box = <.svg.rect(
           ^.svg.fill := "#eeeeee",
           ^.svg.stroke := boxStroke,
-          ^.svg.x := x, ^.svg.y := layout.getBoxTopY,
-          ^.svg.width := width, ^.svg.height := (layout.getBoxBotY - layout.getBoxTopY))
+          ^.svg.x := x, ^.svg.y := layout.boxTopY,
+          ^.svg.width := width, ^.svg.height := (layout.boxBotY - layout.boxTopY))
 
         val stroke = if (containsHoveredSubCriteria) "black" else "#cccccc"
 
         val axis = <.svg.line(
-          ^.svg.x1 := layout.getCriteriaAxisX(criteria), ^.svg.y1 := layout.getCriteriaAxisTopY,
-          ^.svg.x2 := layout.getCriteriaAxisX(criteria), ^.svg.y2 := layout.getCriteriaAxisBotY,
+          ^.svg.x1 := layout.getCriteriaAxisX(criteria), ^.svg.y1 := layout.criteriaAxisTopY,
+          ^.svg.x2 := layout.getCriteriaAxisX(criteria), ^.svg.y2 := layout.criteriaAxisBotY,
           ^.svg.stroke := stroke, ^.svg.strokeWidth := "1"
         )
 
@@ -262,7 +204,7 @@ object SvgPlotComponent {
           <.svg.text(
             ^.svg.textAnchor := "middle",
             ^.svg.x := layout.getCriteriaAxisX(criteria),
-            ^.svg.y := layout.getBoxTopY - layout.PADDING, criteria.name
+            ^.svg.y := layout.boxTopY - layout.padding, criteria.name
           )
 
         <.svg.g(box, axis, label)
@@ -274,12 +216,11 @@ object SvgPlotComponent {
         val containsHoveredSubCriteria = criteria.subCriteria.count(sc => hoveredSubCriteria.contains(sc.id)) > 0
         val stroke = if (containsHoveredSubCriteria) "black" else "#cccccc"
         <.svg.line(
-          ^.svg.x1 := layout.getCriteriaAxisX(criteria), ^.svg.y1 := layout.getCriteriaAxisTopY,
-          ^.svg.x2 := layout.getCriteriaAxisX(criteria), ^.svg.y2 := layout.getCriteriaAxisBotY,
+          ^.svg.x1 := layout.getCriteriaAxisX(criteria), ^.svg.y1 := layout.criteriaAxisTopY,
+          ^.svg.x2 := layout.getCriteriaAxisX(criteria), ^.svg.y2 := layout.criteriaAxisBotY,
           ^.svg.stroke := stroke, ^.svg.strokeWidth := "1"
         )
       }
-
 
       // create the subcriteria axes
 
@@ -297,8 +238,8 @@ object SvgPlotComponent {
 
           val stroke = if (hoveredSubCriteria.contains(subCriteria.id)) "black" else "#cccccc"
           <.svg.line(
-            ^.svg.x1 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y1 := layout.getSubCriteriaAxisTopY,
-            ^.svg.x2 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y2 := layout.getSubCriteriaAxisBotY,
+            ^.svg.x1 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y1 := layout.subCriteriaAxisTopY,
+            ^.svg.x2 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y2 := layout.subCriteriaAxisBotY,
             ^.svg.stroke := stroke, ^.svg.strokeWidth := "1",
             ^.cursor.pointer
           )
@@ -311,7 +252,7 @@ object SvgPlotComponent {
       <.svg.text(
         ^.svg.textAnchor := "middle",
         ^.svg.x := hoveredAxisX,
-        ^.svg.y := layout.getSubCriteriaAxisTopY - layout.PADDING + 5, hoveredAxisName
+        ^.svg.y := layout.subCriteriaAxisTopY - layout.padding + 5, hoveredAxisName
       )
 
       <.svg.g(criteriaBoxesAndStuff, criteriaAxes, subCriteriaAxes, hoveredAxisLabel)
@@ -338,8 +279,7 @@ object SvgPlotComponent {
           if (isSelected(groupedEntity))
             if (isPinned(groupedEntity))
               ("black", 4, ^.cursor.pointer)
-            else
-            if (isHovered(groupedEntity))
+            else if (isHovered(groupedEntity))
               (model.colorMap(groupedEntity.id).hexValue, 4, ^.cursor.pointer)
             else
               (model.colorMap(groupedEntity.id).hexValue, 2, ^.cursor.pointer)
@@ -355,7 +295,7 @@ object SvgPlotComponent {
           for (criteria <- model.criteria) yield {
             val x = layout.getCriteriaAxisX(criteria)
             val value = computeAxisValue(criteria.groupedValues(groupedEntity.id).get, layout, AxisType.Criteria)
-            val y = layout.getCriteriaAxisBotY - value
+            val y = layout.criteriaAxisBotY - value
 
             if (index == 1) coordString += " L"
             coordString += " " + x + " " + y
@@ -382,7 +322,7 @@ object SvgPlotComponent {
             for (subCriteria <- criteria.subCriteria) yield {
               val x = layout.getSubCriteriaAxisX(subCriteria)
               val value = computeAxisValue(subCriteria.groupedValues(groupedEntity.id).get, layout, AxisType.Subcriteria)
-              val y = layout.getSubCriteriaAxisBotY - value
+              val y = layout.subCriteriaAxisBotY - value
 
               if (index == 1) coordString += " L"
               coordString += " " + x + " " + y
@@ -432,7 +372,7 @@ object SvgPlotComponent {
                 <.svg.text(
                   ^.svg.textAnchor := "middle",
                   ^.svg.x := layout.getCriteriaAxisX(criteria),
-                  ^.svg.y := layout.getCriteriaAxisBotY + layout.PADDING - 5,
+                  ^.svg.y := layout.criteriaAxisBotY + layout.padding - 5,
                   criteria.groupedValues(groupedEntity.id).get
                 )
             }
@@ -443,7 +383,7 @@ object SvgPlotComponent {
                   <.svg.text(
                     ^.svg.textAnchor := "middle",
                     ^.svg.x := layout.getSubCriteriaAxisX(subCriteria),
-                    ^.svg.y := layout.getSubCriteriaAxisBotY + layout.PADDING - 5,
+                    ^.svg.y := layout.subCriteriaAxisBotY + layout.padding - 5,
                     subCriteria.groupedValues(groupedEntity.id).get)
               }
 
@@ -474,8 +414,8 @@ object SvgPlotComponent {
 
     private def computeAxisValue(value: Double, layout: QualityLayout, axisType: AxisType.Value): Double = {
       val (topY, botY) = axisType match {
-        case AxisType.Criteria => (layout.getCriteriaAxisTopY, layout.getCriteriaAxisBotY)
-        case AxisType.Subcriteria => (layout.getSubCriteriaAxisTopY, layout.getSubCriteriaAxisBotY)
+        case AxisType.Criteria => (layout.criteriaAxisTopY, layout.criteriaAxisBotY)
+        case AxisType.Subcriteria => (layout.subCriteriaAxisTopY, layout.subCriteriaAxisBotY)
       }
 
       value / (layout.getMaxValue - layout.getMinValue) * (botY - topY)
@@ -488,6 +428,9 @@ object SvgPlotComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[DataModel]) = {
+    val layout = new QualityLayout(proxy.value)
+    component(Props(proxy, layout))
+  }
 
 }
