@@ -17,8 +17,8 @@ class QualityLayout(model: DataModel) {
   private val verticalAxisGap = 70
   private val headerTextGap = 40
 
-  val minValue = model.minValue.getOrElse(0d)
-  val maxValue = model.maxValue.getOrElse(0d)
+  val minValue = Math.min(0, model.minValue.getOrElse(0d))
+  val maxValue = Math.max(0, model.maxValue.getOrElse(0d))
 
   private val criteriaBoxesMap = new scala.collection.mutable.HashMap[Criteria, (Int, Int)]
   private val criteriaAxesMap = new scala.collection.mutable.HashMap[Criteria, Int]

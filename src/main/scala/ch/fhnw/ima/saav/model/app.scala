@@ -28,8 +28,8 @@ object app {
     colorMap: Map[Entity, WebColor]
   ) {
 
-    val minValue = criteria.map(_.minValue).min
-    val maxValue = criteria.map(_.maxValue).max
+    val minValue = if (criteria.isEmpty) None else criteria.map(_.minValue).min
+    val maxValue = if (criteria.isEmpty) None else criteria.map(_.maxValue).max
 
     def updateWeights(analysis: Analysis, weights: Weights): DataModel = {
 
@@ -72,8 +72,8 @@ object app {
 
   final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator]) {
     def name = id.name
-    val minValue = groupedValues.unzip._2.min
-    val maxValue = groupedValues.unzip._2.max
+    val minValue = groupedValues.values.min
+    val maxValue = groupedValues.values.max
   }
 
   object GroupedSubCriteria {
