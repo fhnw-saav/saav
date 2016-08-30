@@ -5,9 +5,13 @@ object domain {
 
   final case class Analysis(criteria: Seq[Criteria], entities: Seq[Entity], reviews: Seq[Review])
 
-  final case class Criteria(name: String, subCriteria: Seq[SubCriteria])
+  final case class Criteria(name: String, subCriteria: Seq[SubCriteria]) {
+    override lazy val hashCode = super.hashCode()
+  }
 
-  final case class SubCriteria(name: String, indicators: Seq[Indicator])
+  final case class SubCriteria(name: String, indicators: Seq[Indicator]) {
+    override lazy val hashCode = super.hashCode()
+  }
 
   final case class Indicator(name: String, values: Map[(Entity, Review), Double])
 

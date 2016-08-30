@@ -92,7 +92,9 @@ object app {
 
   }
 
-  final case class GroupedCriteria(name: String, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]])
+  final case class GroupedCriteria(id: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]]) {
+    def name = id.name
+  }
 
   object GroupedCriteria {
 
@@ -117,7 +119,7 @@ object app {
 
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
 
-      GroupedCriteria(criteria.name, subCriteria, groupedValues)
+      GroupedCriteria(criteria, subCriteria, groupedValues)
 
     }
 

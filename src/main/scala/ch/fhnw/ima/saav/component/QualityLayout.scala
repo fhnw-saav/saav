@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.model.app.{DataModel, GroupedCriteria, GroupedSubCriteria}
-import ch.fhnw.ima.saav.model.domain.SubCriteria
+import ch.fhnw.ima.saav.model.domain.{Criteria, SubCriteria}
 
 /**
   * This class computes all the relevant layout parameters.
@@ -25,9 +25,9 @@ class QualityLayout {
   private var subCriteriaAxisTopY = 0
   private var subCriteriaAxisBotY = 0
 
-  private val criteriaBoxesMap = new scala.collection.mutable.HashMap[GroupedCriteria, (Int, Int)]
-  private val criteriaAxesMap = new scala.collection.mutable.HashMap[GroupedCriteria, Int]
-  private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[GroupedSubCriteria, Int]
+  private val criteriaBoxesMap = new scala.collection.mutable.HashMap[Criteria, (Int, Int)]
+  private val criteriaAxesMap = new scala.collection.mutable.HashMap[Criteria, Int]
+  private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[SubCriteria, Int]
 
   private val subCriteriaDomainMap = new scala.collection.mutable.HashMap[SubCriteria, GroupedSubCriteria]
 
@@ -65,12 +65,12 @@ class QualityLayout {
       x = x + MARGIN
       val criteriaWidth = 2*PADDING + ((criteria.subCriteria.size-1) * axisSpacing)
 
-      criteriaBoxesMap(criteria) = (x, criteriaWidth)
-      criteriaAxesMap(criteria) = x + (criteriaWidth / 2)
+      criteriaBoxesMap(criteria.id) = (x, criteriaWidth)
+      criteriaAxesMap(criteria.id) = x + (criteriaWidth / 2)
 
       var subIndex = 0
       for (subCriteria <- criteria.subCriteria) {
-        subCriteriaAxesMap(subCriteria) = x + PADDING + (subIndex * axisSpacing)
+        subCriteriaAxesMap(subCriteria.id) = x + PADDING + (subIndex * axisSpacing)
         subIndex += 1
 
         subCriteriaDomainMap(subCriteria.id) = subCriteria
@@ -108,9 +108,9 @@ class QualityLayout {
   def getSubCriteriaAxisTopY = subCriteriaAxisTopY
   def getSubCriteriaAxisBotY = subCriteriaAxisBotY
 
-  def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria)
-  def getCriteriaAxisX(criteria: GroupedCriteria): Int = criteriaAxesMap(criteria)
-  def getSubCriteriaAxisX(subCriteria: GroupedSubCriteria): Int = subCriteriaAxesMap(subCriteria)
+  def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria.id)
+  def getCriteriaAxisX(criteria: GroupedCriteria): Int = criteriaAxesMap(criteria.id)
+  def getSubCriteriaAxisX(subCriteria: GroupedSubCriteria): Int = subCriteriaAxesMap(subCriteria.id)
 
 
   // TODO: does not work if called from text element in component
