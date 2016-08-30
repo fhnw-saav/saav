@@ -1,12 +1,12 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
-import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity, GroupedSubCriteria}
+import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
-import org.scalajs.dom.raw.SVGSVGElement
+import org.scalajs.dom.raw.{SVGPoint, SVGSVGElement}
 
 object ProfileChartComponent {
 
@@ -63,73 +63,78 @@ object ProfileChartComponent {
       pt.y = e.clientY
 
       val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
-
       val model = proxy.value
+      val hoveredSubCriteria = findClosestSubCriteria(model, cursorPt, layout)
+      val hoveredEntity = findClosestEntity(model, cursorPt, layout)
 
-      val probedSubCriteria = {
-        if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
-          var xmin = Double.MaxValue
-          var closestSubCriteria: GroupedSubCriteria = null
-          for (criteria <- model.criteria) {
-            for (subCriteria <- criteria.subCriteria) {
-              val x = layout.getSubCriteriaAxisX(subCriteria)
-              val distance = Math.abs(x - cursorPt.x)
-              if (distance < xmin) {
-                xmin = distance
-                closestSubCriteria = subCriteria
-              }
+      setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity)
+
+    }.getOrElse(Callback.empty)
+
+    private def findClosestSubCriteria(model: DataModel, cursorPt: SVGPoint, layout: QualityLayout): Option[SubCriteria] = {
+
+      if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
+        var xmin = Double.MaxValue
+        var closestSubCriteria: Option[SubCriteria] = None
+        for (criteria <- model.criteria) {
+          for (subCriteria <- criteria.subCriteria) {
+            val x = layout.getSubCriteriaAxisX(subCriteria)
+            val distance = Math.abs(x - cursorPt.x)
+            if (distance < xmin) {
+              xmin = distance
+              closestSubCriteria = Some(subCriteria.id)
             }
           }
-          Some(closestSubCriteria.id)
-        } else {
-          None
         }
+        closestSubCriteria
+      } else {
+        None
       }
 
-      val probedEntity = {
-        if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY) ||
-          (cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
+    }
 
-          if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY)) {
+    private def findClosestEntity(model: DataModel, cursorPt: SVGPoint, layout: QualityLayout): Option[Entity] = {
 
-            var minDistance = Double.MaxValue
-            var closestEntity: Option[Entity] = None
+      if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY) ||
+        (cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
 
-            for (i <- 1 until model.criteria.size) {
-              val x1 = layout.getCriteriaAxisX(model.criteria(i - 1))
-              val x2 = layout.getCriteriaAxisX(model.criteria(i))
-              if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
-                for (entity <- model.selectionModel.selected) {
-                  val val1 = computeAxisValue(model.criteria(i - 1).groupedValues(entity).get, layout, AxisType.Criteria)
-                  val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
-                  val y = layout.criteriaAxisBotY - cursorPt.y
+        if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY)) {
 
-                  val interpolatedValue = val1 + ((cursorPt.x - x1) / (x2 - x1) * (val2 - val1))
-                  val distance = Math.abs(interpolatedValue - y)
+          var minDistance = Double.MaxValue
+          var closestEntity: Option[Entity] = None
 
-                  if (distance < minDistance) {
-                    minDistance = distance
-                    closestEntity = Some(entity)
-                  }
+          for (i <- 1 until model.criteria.size) {
+            val x1 = layout.getCriteriaAxisX(model.criteria(i - 1))
+            val x2 = layout.getCriteriaAxisX(model.criteria(i))
+            if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
+              for (entity <- model.selectionModel.selected) {
+                val val1 = computeAxisValue(model.criteria(i - 1).groupedValues(entity).get, layout, AxisType.Criteria)
+                val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
+                val y = layout.criteriaAxisBotY - cursorPt.y
+
+                val interpolatedValue = val1 + ((cursorPt.x - x1) / (x2 - x1) * (val2 - val1))
+                val distance = Math.abs(interpolatedValue - y)
+
+                if (distance < minDistance) {
+                  minDistance = distance
+                  closestEntity = Some(entity)
                 }
               }
             }
-
-            closestEntity
-          } else if ((cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
-            None
-          } else {
-            None
           }
 
+          closestEntity
+        } else if ((cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
+          None
         } else {
           None
         }
+
+      } else {
+        None
       }
 
-      setHoveredSubCriteria(probedSubCriteria) >> setHoveredEntity(probedEntity)
-
-    }.getOrElse(Callback.empty)
+    }
 
     /**
       * The render loop.
