@@ -1,16 +1,17 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
-import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity}
+import ch.fhnw.ima.saav.model.QualityLayout
+import ch.fhnw.ima.saav.model.app.{AppModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom.raw.{SVGPoint, SVGSVGElement}
 
-object ProfileChartComponent {
+object QualityChartComponent {
 
-  case class Props(proxy: ModelProxy[DataModel], layout: QualityLayout)
+  case class Props(proxy: ModelProxy[AppModel])
 
   case class State(hoveredSubCriteria: Option[SubCriteria] = None, hoveredEntity: Option[Entity] = None)
 
@@ -55,7 +56,7 @@ object ProfileChartComponent {
     /**
       * The global mouse handler.
       */
-    def onSvgMouseEvent(proxy: ModelProxy[DataModel], layout: QualityLayout, isClicked: Boolean)(e: ReactMouseEvent) =
+    def onSvgMouseEvent(proxy: ModelProxy[AppModel], layout: QualityLayout, isClicked: Boolean)(e: ReactMouseEvent) =
     svgRef($).map { svg =>
 
       val pt = svg.createSVGPoint()
@@ -71,7 +72,7 @@ object ProfileChartComponent {
 
     }.getOrElse(Callback.empty)
 
-    private def findClosestSubCriteria(model: DataModel, cursorPt: SVGPoint, layout: QualityLayout): Option[SubCriteria] = {
+    private def findClosestSubCriteria(model: AppModel, cursorPt: SVGPoint, layout: QualityLayout): Option[SubCriteria] = {
 
       if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
         var xmin = Double.MaxValue
@@ -93,7 +94,7 @@ object ProfileChartComponent {
 
     }
 
-    private def findClosestEntity(model: DataModel, cursorPt: SVGPoint, layout: QualityLayout): Option[Entity] = {
+    private def findClosestEntity(model: AppModel, cursorPt: SVGPoint, layout: QualityLayout): Option[Entity] = {
 
       if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY) ||
         (cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
@@ -155,7 +156,7 @@ object ProfileChartComponent {
         ^.svg.x := "0", ^.svg.y := "0",
         ^.svg.width := "100%", ^.svg.height := "100%")
 
-      val layout = p.layout
+      val layout = p.proxy.value.qualityLayout
 
       val coordinateSystem = constructCoordinateSystem(model, layout, s.hoveredSubCriteria)
       val entities = constructEntities(model, layout, s.hoveredSubCriteria, s.hoveredEntity)
@@ -182,7 +183,7 @@ object ProfileChartComponent {
       * @param layout             the layout parameters for the components
       * @return a group of SVG elements that make up the coordinate system
       */
-    private def constructCoordinateSystem(model: DataModel, layout: QualityLayout, hoveredSubCriteria: Option[SubCriteria]) = {
+    private def constructCoordinateSystem(model: AppModel, layout: QualityLayout, hoveredSubCriteria: Option[SubCriteria]) = {
 
       // create the criteria boxes
 
@@ -272,7 +273,7 @@ object ProfileChartComponent {
       * @param layout the layout of the components
       * @return a group of SVG elements containing the representation of the entities
       */
-    private def constructEntities(model: DataModel, layout: QualityLayout, hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) = {
+    private def constructEntities(model: AppModel, layout: QualityLayout, hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) = {
 
       def isSelected(e: GroupedEntity) = model.selectionModel.selected.contains(e.id)
       def isPinned(e: GroupedEntity) = model.selectionModel.pinned.contains(e.id)
@@ -429,14 +430,11 @@ object ProfileChartComponent {
 
   }
 
-  private val component = ReactComponentB[Props](ProfileChartComponent.getClass.getSimpleName)
+  private val component = ReactComponentB[Props](QualityChartComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
     .build
 
-  def apply(proxy: ModelProxy[DataModel]) = {
-    val layout = new QualityLayout(proxy.value)
-    component(Props(proxy, layout))
-  }
+  def apply(proxy: ModelProxy[AppModel]) = component(Props(proxy))
 
 }

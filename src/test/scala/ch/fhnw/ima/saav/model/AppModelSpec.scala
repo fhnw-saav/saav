@@ -7,7 +7,7 @@ import org.scalatest.{FunSpec, Matchers}
 
 class AppModelSpec extends FunSpec with Matchers {
 
-  describe(s"A ${DataModel.getClass.getSimpleName}") {
+  describe(s"A ${AppModel.getClass.getSimpleName}") {
 
     val entityOne = Entity("P1")
     val entityTwo = Entity("P2")
@@ -42,7 +42,7 @@ class AppModelSpec extends FunSpec with Matchers {
       .build
     .build
 
-    val model = DataModel(analysis)
+    val model = AppModel(analysis)
 
     it("should aggregate medians across all categories and sub-categories") {
 

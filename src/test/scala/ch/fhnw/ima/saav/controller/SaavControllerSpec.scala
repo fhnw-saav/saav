@@ -19,7 +19,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
     it("should wire a progress value") {
       val result = analysisHandler.handle(AnalysisImportInProgressAction(0.9f))
       result.newModelOpt match {
-        case Some(Left(NoDataModel(ImportInProgress(progress)))) =>
+        case Some(Left(NoDataAppModel(ImportInProgress(progress)))) =>
           progress shouldBe 0.9f
         case _ => failOnUnexpectedAction
       }
@@ -33,7 +33,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val throwable = new Throwable("test")
       val result = analysisHandler.handle(AnalysisImportFailedAction(throwable, logToConsole = false))
       result.newModelOpt match {
-        case Some(Left(NoDataModel(ImportFailed(t)))) =>
+        case Some(Left(NoDataAppModel(ImportFailed(t)))) =>
           t shouldBe throwable
         case _ => failOnUnexpectedAction
       }
@@ -43,11 +43,11 @@ class SaavControllerSpec extends FunSpec with Matchers {
 
   describe(s"Handling ${AnalysisReadyAction.getClass.getSimpleName}") {
 
-    it("should wire a data model") {
+    it("should wire a model") {
       val analysis = AnalysisBuilder().build
       val result = analysisHandler.handle(AnalysisReadyAction(analysis))
       result.newModelOpt match {
-        case Some(Right(DataModel(rankedEntities, _, _, _))) =>
+        case Some(Right(AppModel(rankedEntities, _, _, _, _, _, _))) =>
           rankedEntities.size shouldBe analysis.entities.size
         case _ => failOnUnexpectedAction
       }

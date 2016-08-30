@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
-import ch.fhnw.ima.saav.model.app.{DataModel, SaavModel}
+import ch.fhnw.ima.saav.model.app.{AppModel, SaavModel}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -92,20 +92,20 @@ object pages {
 
   object PageWithDataComponent {
 
-    case class Props(proxy: ModelProxy[DataModel])
+    case class Props(proxy: ModelProxy[AppModel])
 
     private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
       .render_P(p => {
         <.div(
           <.div(css.row,
             <.div(css.colXs3, LegendComponent(p.proxy)),
-            <.div(css.colXs9, ProfileChartComponent(p.proxy))
+            <.div(css.colXs9, QualityChartComponent(p.proxy))
           )
         )
       })
       .build
 
-    def apply(proxy: ModelProxy[DataModel]) = component(Props(proxy))
+    def apply(proxy: ModelProxy[AppModel]) = component(Props(proxy))
 
   }
 

@@ -1,12 +1,12 @@
-package ch.fhnw.ima.saav.component
+package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.model.app.{DataModel, GroupedCriteria, GroupedSubCriteria}
+import ch.fhnw.ima.saav.model.app.{GroupedCriteria, GroupedSubCriteria}
 import ch.fhnw.ima.saav.model.domain.{Criteria, SubCriteria}
 
 /**
-  * This class computes all the relevant layout parameters.
+  * Computes layout parameters for presenting quality aspects of given criteria.
   */
-class QualityLayout(model: DataModel) {
+class QualityLayout(criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
   // only relevant for aspect ratio and e.g. relative stroke width (svg will be scaled within parent element)
   val width = 1000
@@ -17,8 +17,8 @@ class QualityLayout(model: DataModel) {
   private val verticalAxisGap = 70
   private val headerTextGap = 40
 
-  val minValue = Math.min(0, model.minValue.getOrElse(0d))
-  val maxValue = Math.max(0, model.maxValue.getOrElse(0d))
+  val minValue = Math.min(0, minValueOption.getOrElse(0d))
+  val maxValue = Math.max(0, maxValueOption.getOrElse(0d))
 
   private val criteriaBoxesMap = new scala.collection.mutable.HashMap[Criteria, (Int, Int)]
   private val criteriaAxesMap = new scala.collection.mutable.HashMap[Criteria, Int]
@@ -27,8 +27,8 @@ class QualityLayout(model: DataModel) {
 
   // Compute general parameters
 
-  val criteriaCount = model.criteria.size
-  val axisCount = model.criteria.foldLeft(0)((count, c) => count + c.subCriteria.size)
+  val criteriaCount = criteria.size
+  val axisCount = criteria.foldLeft(0)((count, c) => count + c.subCriteria.size)
   val axisSpacing = Math.max((width - ((criteriaCount + 1) * margin) - (criteriaCount * 2 * padding)) / (axisCount - criteriaCount), 0)
   val axisHeight = (height - headerTextGap - 2 * padding - verticalAxisGap - margin) / 2
 
@@ -49,16 +49,16 @@ class QualityLayout(model: DataModel) {
 
   private var index = 0
   private var x = 0
-  for (criteria <- model.criteria) {
+  for (criterion <- criteria) {
 
     x = x + margin
-    val criteriaWidth = 2 * padding + ((criteria.subCriteria.size - 1) * axisSpacing)
+    val criteriaWidth = 2 * padding + ((criterion.subCriteria.size - 1) * axisSpacing)
 
-    criteriaBoxesMap(criteria.id) = (x, criteriaWidth)
-    criteriaAxesMap(criteria.id) = x + (criteriaWidth / 2)
+    criteriaBoxesMap(criterion.id) = (x, criteriaWidth)
+    criteriaAxesMap(criterion.id) = x + (criteriaWidth / 2)
 
     var subIndex = 0
-    for (subCriteria <- criteria.subCriteria) {
+    for (subCriteria <- criterion.subCriteria) {
       subCriteriaAxesMap(subCriteria.id) = x + padding + (subIndex * axisSpacing)
       subIndex += 1
 

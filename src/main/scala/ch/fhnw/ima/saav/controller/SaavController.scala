@@ -17,17 +17,17 @@ object SaavController {
 
   final case class AnalysisReadyAction[E <: Entity](analysis: Analysis) extends Action
 
-  class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataModel, DataModel]]) extends ActionHandler(modelRW) {
+  class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
 
     override def handle = {
-      case AnalysisImportInProgressAction(progress) => updated(Left(NoDataModel(ImportInProgress(progress))))
+      case AnalysisImportInProgressAction(progress) => updated(Left(NoDataAppModel(ImportInProgress(progress))))
       case a@AnalysisImportFailedAction(t, logToConsole) =>
         if (logToConsole) {
           logException(this.getClass.getSimpleName, String.valueOf(a), t)
         }
-        updated(Left(NoDataModel(ImportFailed(t))))
+        updated(Left(NoDataAppModel(ImportFailed(t))))
       case AnalysisReadyAction(analysis) =>
-        val model = DataModel(analysis)
+        val model = AppModel(analysis)
         updated(Right(model))
 
     }

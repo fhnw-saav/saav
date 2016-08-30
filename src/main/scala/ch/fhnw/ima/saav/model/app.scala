@@ -7,9 +7,9 @@ import ch.fhnw.ima.saav.model.domain._
 /** Application models (incl. presentation state). */
 object app {
 
-  case class SaavModel(model: Either[NoDataModel, DataModel] = Left(NoDataModel(ImportNotStarted())))
+  case class SaavModel(model: Either[NoDataAppModel, AppModel] = Left(NoDataAppModel(ImportNotStarted())))
 
-  case class NoDataModel(importState: ImportState)
+  case class NoDataAppModel(importState: ImportState)
 
   sealed trait ImportState
 
@@ -21,20 +21,20 @@ object app {
 
   final case class EntitySelectionModel(selected: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
 
-  final case class DataModel(
+  final case class AppModel(
     rankedEntities: Seq[GroupedEntity],
     criteria: Seq[GroupedCriteria],
     selectionModel: EntitySelectionModel,
-    colorMap: Map[Entity, WebColor]
+    colorMap: Map[Entity, WebColor],
+    minValue: Option[Double],
+    maxValue: Option[Double],
+    qualityLayout: QualityLayout
   ) {
 
-    val minValue = if (criteria.isEmpty) None else criteria.map(_.minValue).min
-    val maxValue = if (criteria.isEmpty) None else criteria.map(_.maxValue).max
-
-    def updateWeights(analysis: Analysis, weights: Weights): DataModel = {
+    def updateWeights(analysis: Analysis, weights: Weights): AppModel = {
 
       // create new model to trigger value calculation with new weights
-      val newModel = DataModel(analysis, weights)
+      val newModel = AppModel(analysis, weights)
 
       // keep selections and colors of current model
       newModel.copy(selectionModel = selectionModel, colorMap = colorMap)
@@ -43,16 +43,16 @@ object app {
 
   }
 
-  object DataModel {
+  object AppModel {
 
-    def apply(analysis: Analysis, weights: Weights = Weights()): DataModel = {
+    def apply(analysis: Analysis, weights: Weights = Weights()): AppModel = {
 
-      val categories = analysis.criteria.map { c =>
+      val criteria = analysis.criteria.map { c =>
         GroupedCriteria(analysis.entities, c, analysis.reviews, weights)
       }
 
       val rankedEntities = analysis.entities.map { e =>
-        val value = median(categories.flatMap(_.groupedValues(e)))
+        val value = median(criteria.flatMap(_.groupedValues(e)))
         GroupedEntity(e, value = value)
       }.sortBy(_.value).reverse
 
@@ -61,7 +61,12 @@ object app {
       // colorize _after_ ranking to get optimally distinct colors
       val colorMap = autoColorMap(rankedEntities.map(_.id))
 
-      DataModel(rankedEntities, categories, selectionModel, colorMap)
+      val minValue = if (criteria.isEmpty) None else criteria.map(_.minValue).min
+      val maxValue = if (criteria.isEmpty) None else criteria.map(_.maxValue).max
+
+      val qualityLayout = new QualityLayout(criteria, minValue, maxValue)
+
+      AppModel(rankedEntities, criteria, selectionModel, colorMap, minValue, maxValue, qualityLayout)
     }
 
   }

@@ -19,7 +19,7 @@ import scalacss.ScalaCssReact._
   */
 object FileImportComponent {
 
-  case class Props(proxy: ModelProxy[NoDataModel])
+  case class Props(proxy: ModelProxy[NoDataAppModel])
 
   type Row = js.Dictionary[String]
 
@@ -32,16 +32,16 @@ object FileImportComponent {
   // callbacks which are invoked during file parsing
   // 'runNow' is needed because all parsing happens asynchronously
 
-  private def handleProgress(proxy: ModelProxy[NoDataModel])(progress: Float): Unit =
+  private def handleProgress(proxy: ModelProxy[NoDataAppModel])(progress: Float): Unit =
     proxy.dispatch(AnalysisImportInProgressAction(progress)).runNow()
 
-  private def handleReady(proxy: ModelProxy[NoDataModel])(analysis: Analysis): Unit =
+  private def handleReady(proxy: ModelProxy[NoDataAppModel])(analysis: Analysis): Unit =
     proxy.dispatch(AnalysisReadyAction(analysis)).runNow()
 
-  private def handleError(proxy: ModelProxy[NoDataModel])(t: Throwable): Unit =
+  private def handleError(proxy: ModelProxy[NoDataAppModel])(t: Throwable): Unit =
     proxy.dispatch(AnalysisImportFailedAction(t)).runNow()
 
-  private def handleFileDropped(proxy: ModelProxy[NoDataModel])(e: DragEvent): Callback = {
+  private def handleFileDropped(proxy: ModelProxy[NoDataAppModel])(e: DragEvent): Callback = {
     e.stopPropagation()
     e.preventDefault()
 
@@ -136,11 +136,11 @@ object FileImportComponent {
 
   }
 
-  private def importMockAnalysis(proxy: ModelProxy[NoDataModel]) = Callback.lazily {
+  private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) = Callback.lazily {
     proxy.dispatch(AnalysisReadyAction(mockAnalysis))
   }
 
-  private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataModel]) = Callback.lazily {
+  private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) = Callback.lazily {
     proxy.dispatch(AnalysisReadyAction(alphabetSoupAnalysis))
   }
 
@@ -168,6 +168,6 @@ object FileImportComponent {
     })
     .build
 
-  def apply(proxy: ModelProxy[NoDataModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[NoDataAppModel]) = component(Props(proxy))
 
 }

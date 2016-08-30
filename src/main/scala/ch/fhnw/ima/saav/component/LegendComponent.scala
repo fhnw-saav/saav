@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntitySelectionAction}
-import ch.fhnw.ima.saav.model.app.{DataModel, GroupedEntity}
+import ch.fhnw.ima.saav.model.app.{AppModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.Entity
 import diode.react.ModelProxy
@@ -16,7 +16,7 @@ import scalacss.ScalaCssReact._
 
 object LegendComponent {
 
-  case class Props(proxy: ModelProxy[DataModel], allSelectionState: TriStateCheckbox.State)
+  case class Props(proxy: ModelProxy[AppModel], allSelectionState: TriStateCheckbox.State)
 
   class Backend($: BackendScope[Props, Unit]) {
 
@@ -141,7 +141,7 @@ object LegendComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(proxy: ModelProxy[DataModel]) = {
+  def apply(proxy: ModelProxy[AppModel]) = {
 
     val selectedEntitiesCount = proxy.value.selectionModel.selected.size
     val entitiesCount = proxy.value.rankedEntities.size
