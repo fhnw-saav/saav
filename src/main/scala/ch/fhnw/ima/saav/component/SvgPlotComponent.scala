@@ -418,7 +418,7 @@ object SvgPlotComponent {
         case AxisType.Subcriteria => (layout.subCriteriaAxisTopY, layout.subCriteriaAxisBotY)
       }
 
-      value / (layout.getMaxValue - layout.getMinValue) * (botY - topY)
+      value / (layout.maxValue - layout.minValue) * (botY - topY)
     }
 
   }

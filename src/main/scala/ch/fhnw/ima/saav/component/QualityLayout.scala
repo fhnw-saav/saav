@@ -17,9 +17,8 @@ class QualityLayout(model: DataModel) {
   private val verticalAxisGap = 70
   private val headerTextGap = 40
 
-  // TODO: these do not really belong here, should be part of the data model, probably be defined in the data itself
-  private var minValue: Double = 0
-  private var maxValue: Double = 0
+  val minValue = model.minValue.getOrElse(0d)
+  val maxValue = model.maxValue.getOrElse(0d)
 
   private val criteriaBoxesMap = new scala.collection.mutable.HashMap[Criteria, (Int, Int)]
   private val criteriaAxesMap = new scala.collection.mutable.HashMap[Criteria, Int]
@@ -70,23 +69,7 @@ class QualityLayout(model: DataModel) {
     x = x + criteriaWidth
   }
 
-  // Compute min and max values
-
-  for (criteria <- model.criteria) {
-    for (subCriteria <- criteria.subCriteria) {
-      for (entity <- model.rankedEntities) {
-        val value = subCriteria.groupedValues(entity.id).get
-        minValue = Math.min(minValue, value)
-        maxValue = Math.max(maxValue, value)
-      }
-    }
-  }
-
   // And now for the getters or something...
-
-  def getMinValue = minValue
-
-  def getMaxValue = maxValue
 
   def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria.id)
 

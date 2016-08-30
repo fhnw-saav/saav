@@ -28,6 +28,9 @@ object app {
     colorMap: Map[Entity, WebColor]
   ) {
 
+    val minValue = criteria.map(_.minValue).min
+    val maxValue = criteria.map(_.maxValue).max
+
     def updateWeights(analysis: Analysis, weights: Weights): DataModel = {
 
       // create new model to trigger value calculation with new weights
@@ -69,6 +72,8 @@ object app {
 
   final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator]) {
     def name = id.name
+    val minValue = groupedValues.unzip._2.min
+    val maxValue = groupedValues.unzip._2.max
   }
 
   object GroupedSubCriteria {
@@ -94,6 +99,10 @@ object app {
 
   final case class GroupedCriteria(id: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]]) {
     def name = id.name
+
+    // Deliberately not using min/max of groupedValues for our purpose
+    val minValue = subCriteria.map(_.minValue).min
+    val maxValue = subCriteria.map(_.maxValue).max
   }
 
   object GroupedCriteria {
