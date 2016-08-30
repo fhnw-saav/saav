@@ -99,7 +99,7 @@ object pages {
         <.div(
           <.div(css.row,
             <.div(css.colXs3, LegendComponent(p.proxy)),
-            <.div(css.colXs9, SvgPlotComponent(p.proxy))
+            <.div(css.colXs9, ProfileChartComponent(p.proxy))
           )
         )
       })

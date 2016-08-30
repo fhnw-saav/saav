@@ -8,7 +8,7 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom.raw.SVGSVGElement
 
-object SvgPlotComponent {
+object ProfileChartComponent {
 
   case class Props(proxy: ModelProxy[DataModel], layout: QualityLayout)
 
@@ -423,7 +423,7 @@ object SvgPlotComponent {
 
   }
 
-  private val component = ReactComponentB[Props](SvgPlotComponent.getClass.getSimpleName)
+  private val component = ReactComponentB[Props](ProfileChartComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
     .build
