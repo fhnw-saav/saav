@@ -1,9 +1,9 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
-import ch.fhnw.ima.saav.model.layout.QualityLayout
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity, QualityModel}
 import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
+import ch.fhnw.ima.saav.model.layout.QualityLayout
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
@@ -251,8 +251,7 @@ object QualityChartComponent {
           <.svg.line(
             ^.svg.x1 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y1 := layout.subCriteriaAxisTopY,
             ^.svg.x2 := layout.getSubCriteriaAxisX(subCriteria), ^.svg.y2 := layout.subCriteriaAxisBotY,
-            ^.svg.stroke := stroke, ^.svg.strokeWidth := "1",
-            ^.cursor.pointer
+            ^.svg.stroke := stroke, ^.svg.strokeWidth := "1"
           )
         }
         <.svg.g(axes)
@@ -273,7 +272,7 @@ object QualityChartComponent {
     /**
       * Constructs the horizontal lines for the entities.
       *
-      * @param model  the data model
+      * @param model the data model
       * @return a group of SVG elements containing the representation of the entities
       */
     private def constructEntities(model: AppModel, hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) = {
@@ -287,16 +286,16 @@ object QualityChartComponent {
       val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy(e => (isPinned(e), isSelected(e)))
       val entities = for (groupedEntity <- entitiesInPaintingOrder) yield {
 
-        val (strokeColor, strokeWidth, cursor) =
+        val (strokeColor, strokeWidth) =
           if (isSelected(groupedEntity))
             if (isPinned(groupedEntity))
-              ("black", 4, ^.cursor.pointer)
+              ("black", 4)
             else if (isHovered(groupedEntity))
-              (model.colorMap(groupedEntity.id).hexValue, 4, ^.cursor.pointer)
+              (model.colorMap(groupedEntity.id).hexValue, 4)
             else
-              (model.colorMap(groupedEntity.id).hexValue, 2, ^.cursor.pointer)
+              (model.colorMap(groupedEntity.id).hexValue, 2)
           else
-            ("#cccccc", 1, ^.cursor.default)
+            ("#cccccc", 1)
 
         // create the criteria values lines
 
@@ -320,8 +319,7 @@ object QualityChartComponent {
         val criteriaValuesLine =
           <.svg.path(^.svg.d := coordString,
             ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-            ^.onClick --> toggleEntityPinning(groupedEntity),
-            cursor
+            ^.onClick --> toggleEntityPinning(groupedEntity)
           )
 
         // create the subcriteria values lines
@@ -350,8 +348,7 @@ object QualityChartComponent {
         val subCriteriaValuesLine =
           <.svg.path(^.svg.d := coordString,
             ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-            ^.onClick --> toggleEntityPinning(groupedEntity),
-            cursor
+            ^.onClick --> toggleEntityPinning(groupedEntity)
           )
 
         // Create the circles if entity is pinned
@@ -361,8 +358,7 @@ object QualityChartComponent {
             <.svg.circle(
               ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
               ^.svg.fill := "black",
-              ^.svg.strokeWidth := 0,
-              ^.cursor.pointer
+              ^.svg.strokeWidth := 0
             )
           }
           <.svg.g(c)
