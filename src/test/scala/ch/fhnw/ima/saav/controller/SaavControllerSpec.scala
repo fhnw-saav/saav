@@ -47,8 +47,8 @@ class SaavControllerSpec extends FunSpec with Matchers {
       val analysis = AnalysisBuilder().build
       val result = analysisHandler.handle(AnalysisReadyAction(analysis))
       result.newModelOpt match {
-        case Some(Right(AppModel(rankedEntities, _, _, _, _, _, _))) =>
-          rankedEntities.size shouldBe analysis.entities.size
+        case Some(Right(appModel)) =>
+          appModel.qualityModel.rankedEntities.size shouldBe analysis.entities.size
         case _ => failOnUnexpectedAction
       }
     }

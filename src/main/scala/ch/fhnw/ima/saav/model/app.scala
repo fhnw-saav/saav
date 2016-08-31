@@ -3,6 +3,7 @@ package model
 
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain._
+import ch.fhnw.ima.saav.model.layout.{ProfileLayout, QualityLayout}
 
 /** Application models (incl. presentation state). */
 object app {
@@ -22,23 +23,14 @@ object app {
   final case class EntitySelectionModel(selected: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
 
   final case class AppModel(
-    rankedEntities: Seq[GroupedEntity],
-    criteria: Seq[GroupedCriteria],
     selectionModel: EntitySelectionModel,
     colorMap: Map[Entity, WebColor],
-    minValue: Option[Double],
-    maxValue: Option[Double],
-    qualityLayout: QualityLayout
+    qualityModel: QualityModel,
+    profileModel: ProfileModel
   ) {
 
     def updateWeights(analysis: Analysis, weights: Weights): AppModel = {
-
-      // create new model to trigger value calculation with new weights
-      val newModel = AppModel(analysis, weights)
-
-      // keep selections and colors of current model
-      newModel.copy(selectionModel = selectionModel, colorMap = colorMap)
-
+      copy(qualityModel = QualityModel(analysis, weights))
     }
 
   }
@@ -46,9 +38,26 @@ object app {
   object AppModel {
 
     def apply(analysis: Analysis, weights: Weights = Weights()): AppModel = {
+      val qualityModel = QualityModel(analysis, weights)
+      val profileModel = ProfileModel(analysis, weights)
+      val selectionModel = EntitySelectionModel(analysis.entities.toSet, None)
+
+      // colorize _after_ ranking to get optimally distinct colors by default
+      val colorMap = autoColorMap(qualityModel.rankedEntities.map(_.id))
+
+      AppModel(selectionModel, colorMap, qualityModel, profileModel)
+    }
+
+  }
+
+  final case class QualityModel(rankedEntities: Seq[GroupedEntity], criteria: Seq[GroupedCriteria], layout: QualityLayout)
+
+  object QualityModel {
+
+    def apply(analysis: Analysis, weights: Weights): QualityModel = {
 
       val criteria = analysis.criteria.map { c =>
-        GroupedCriteria(analysis.entities, c, analysis.reviews, weights)
+        GroupedCriteria.forQuality(analysis.entities, c, analysis.reviews, weights)
       }
 
       val rankedEntities = analysis.entities.map { e =>
@@ -56,20 +65,43 @@ object app {
         GroupedEntity(e, value = value)
       }.sortBy(_.value).reverse
 
-      val selectionModel = EntitySelectionModel(analysis.entities.toSet, None)
+      val (minValue, maxValue) = minMaxValues(criteria)
 
-      // colorize _after_ ranking to get optimally distinct colors
-      val colorMap = autoColorMap(rankedEntities.map(_.id))
+      val layout = new QualityLayout(criteria, minValue, maxValue)
 
-      val minValue = if (criteria.isEmpty) None else criteria.map(_.minValue).min
-      val maxValue = if (criteria.isEmpty) None else criteria.map(_.maxValue).max
-
-      val qualityLayout = new QualityLayout(criteria, minValue, maxValue)
-
-      AppModel(rankedEntities, criteria, selectionModel, colorMap, minValue, maxValue, qualityLayout)
+      QualityModel(rankedEntities, criteria, layout)
     }
 
   }
+
+  final case class ProfileModel(sortedEntities: Seq[GroupedEntity], entitySortingStrategy: EntitySortingStrategy, criteria: Seq[GroupedCriteria], layout: ProfileLayout)
+
+  object ProfileModel {
+
+    def apply(analysis: Analysis, weights: Weights): ProfileModel = {
+
+      val criteria = analysis.criteria.map { c =>
+        GroupedCriteria.forProfile(analysis.entities, c, analysis.reviews, weights)
+      }
+
+      // TODO: Support different sorting strategies
+      val sortedEntities = analysis.entities.map { e =>
+        val value = median(criteria.flatMap(_.groupedValues(e)))
+        GroupedEntity(e, value = value)
+      }.sortBy(_.name)
+
+      val (minValue, maxValue) = minMaxValues(criteria)
+
+      val layout = new ProfileLayout(criteria, minValue, maxValue)
+
+      ProfileModel(sortedEntities, ByAlphabetEntitySortingStrategy, criteria, layout)
+    }
+
+  }
+
+  trait EntitySortingStrategy
+  case object ByAlphabetEntitySortingStrategy extends EntitySortingStrategy
+  final case class ByCriteriaEntitySortingStrategy(criteria: Criteria)
 
   final case class GroupedEntity(id: Entity, value: Option[Double] = None) {
     def name = id.name
@@ -112,11 +144,12 @@ object app {
 
   object GroupedCriteria {
 
-    def apply(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
+    def forQuality(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
+      // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
       val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.disabledIndicators))
 
-      def groupedValue(entity: Entity): Option[Double] = {
+      val groupedValue = (entity: Entity) => {
         val valuesWithWeights = for {
           subCriterion <- subCriteria
           value <- subCriterion.groupedValues(entity)
@@ -131,10 +164,32 @@ object app {
         weightedMedian(valuesWithWeights)
       }
 
+      GroupedCriteria(entities, criteria, subCriteria, groupedValue)
+
+    }
+
+    def forProfile(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
+
+      // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
+      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.disabledIndicators))
+
+      val groupedValue = (entity: Entity) => {
+        val valuesWithWeights = for {
+          subCriterion <- subCriteria
+          value <- subCriterion.groupedValues(entity)
+        } yield {
+          (value, 1d) // no weighting for profile chart
+        }
+        weightedMedian(valuesWithWeights)
+      }
+
+      GroupedCriteria(entities, criteria, subCriteria, groupedValue)
+
+    }
+
+    private def apply(entities: Seq[Entity], criteria: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValue: Entity => Option[Double]): GroupedCriteria = {
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
-
       GroupedCriteria(criteria, subCriteria, groupedValues)
-
     }
 
   }
@@ -169,6 +224,12 @@ object app {
         Some((sortedValues(i) + sortedValues(i + 1)) / 2)
       case length => Some(sortedValues(length / 2))
     }
+  }
+
+  private[model] def minMaxValues(criteria: Seq[GroupedCriteria]) = {
+    val minValue = if (criteria.isEmpty) None else criteria.map(_.minValue).min
+    val maxValue = if (criteria.isEmpty) None else criteria.map(_.maxValue).max
+    (minValue, maxValue)
   }
 
 }

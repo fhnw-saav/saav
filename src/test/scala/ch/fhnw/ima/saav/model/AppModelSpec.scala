@@ -46,20 +46,22 @@ class AppModelSpec extends FunSpec with Matchers {
 
     it("should aggregate medians across all categories and sub-categories") {
 
+      val qualityModel = model.qualityModel
+
       // ranking (highest global median first)
-      model.rankedEntities.size shouldBe 3
-      model.rankedEntities(0).id shouldBe entityTwo
-      model.rankedEntities(0).value shouldBe Some(100)
+      qualityModel.rankedEntities.size shouldBe 3
+      qualityModel.rankedEntities(0).id shouldBe entityTwo
+      qualityModel.rankedEntities(0).value shouldBe Some(100)
 
-      model.rankedEntities(1).id shouldBe entityOne
-      model.rankedEntities(1).value shouldBe Some(22.25)
+      qualityModel.rankedEntities(1).id shouldBe entityOne
+      qualityModel.rankedEntities(1).value shouldBe Some(22.25)
 
-      model.rankedEntities(2).id shouldBe entityThree
-      model.rankedEntities(2).value shouldBe Some(0)
+      qualityModel.rankedEntities(2).id shouldBe entityThree
+      qualityModel.rankedEntities(2).value shouldBe Some(0)
 
-      model.criteria.size shouldBe 2
+      qualityModel.criteria.size shouldBe 2
 
-      val criteriaOne = model.criteria(0)
+      val criteriaOne = qualityModel.criteria(0)
       criteriaOne.groupedValues(entityTwo) shouldBe Some(101)
       criteriaOne.groupedValues(entityThree) shouldBe Some(0)
       criteriaOne.groupedValues(entityOne) shouldBe Some(2)
@@ -69,7 +71,7 @@ class AppModelSpec extends FunSpec with Matchers {
       criteriaOne.subCriteria(0).groupedValues(entityThree) shouldBe Some(0)
 
 
-      val criteriaTwo = model.criteria(1)
+      val criteriaTwo = qualityModel.criteria(1)
       criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
       criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
       criteriaTwo.groupedValues(entityThree) shouldBe None
@@ -86,7 +88,7 @@ class AppModelSpec extends FunSpec with Matchers {
       val someIndicators = analysis.criteria(0).subCriteria(0).indicators.toSet
       val weights = Weights(disabledIndicators = someIndicators)
 
-      val newModel = model.updateWeights(analysis, weights)
+      val newModel = model.updateWeights(analysis, weights).qualityModel
 
       // ranking (highest global median first)
       newModel.rankedEntities.size shouldBe 3

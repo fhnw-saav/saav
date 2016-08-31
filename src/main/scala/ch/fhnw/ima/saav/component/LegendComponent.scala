@@ -23,7 +23,7 @@ object LegendComponent {
     def autoColorize() = {
       $.props >>= { p =>
         val sm = p.proxy.value.selectionModel
-        val selectedEntities = p.proxy.value.rankedEntities.map(_.id).filter(sm.selected.contains)
+        val selectedEntities = p.proxy.value.qualityModel.rankedEntities.map(_.id).filter(sm.selected.contains)
         p.proxy.dispatch(AutoColorizeAction(selectedEntities))}
     }
 
@@ -45,7 +45,7 @@ object LegendComponent {
           case TriStateCheckbox.Checked => false
           case _ => true
         }
-        val allEntities = p.proxy.value.rankedEntities.map(_.id).toSet
+        val allEntities = p.proxy.value.qualityModel.rankedEntities.map(_.id).toSet
         p.proxy.dispatch(UpdateEntitySelectionAction(allEntities, isSelected = newSelected))
       }
     }
@@ -119,7 +119,7 @@ object LegendComponent {
     def render(p: Props) = {
 
       val dm = p.proxy.value
-      val entities = dm.rankedEntities
+      val entities = dm.qualityModel.rankedEntities
       val selectionModel = dm.selectionModel
 
       val rows = entities.map(_.id).zipWithIndex.map {
@@ -144,7 +144,7 @@ object LegendComponent {
   def apply(proxy: ModelProxy[AppModel]) = {
 
     val selectedEntitiesCount = proxy.value.selectionModel.selected.size
-    val entitiesCount = proxy.value.rankedEntities.size
+    val entitiesCount = proxy.value.qualityModel.rankedEntities.size
     val allSelectionState =
       if (selectedEntitiesCount == 0) TriStateCheckbox.Unchecked
       else if (selectedEntitiesCount == entitiesCount) TriStateCheckbox.Checked
