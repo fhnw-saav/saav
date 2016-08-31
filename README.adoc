@@ -5,5 +5,11 @@ Software application to analyse and visualise research output in the humanities 
 # Documentation
 
 * link:CONTRIBUTING.adoc[Development Setup]
-* link:architecture.adoc[Architecture]
-* http://fhnw-saav.github.io/saav/[Live Version]
+* link:docs/architecture.adoc[Architecture]
+* link:docs/deployment.adoc[Deployment]
+
+# Live
+
+The latest milestone is deployed via GitHub Pages:
+
+* http://fhnw-saav.github.io/saav/[Live Site] (http://fhnw-saav.github.io/saav/version.txt[inspect current version])

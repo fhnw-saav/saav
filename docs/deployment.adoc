@@ -1,0 +1,34 @@
+# Deployment
+
+How to create a tagged non-SNAPSHOT release and deploy it via http://fhnw-saav.github.io/saav/[GitHub pages].
+
+## Pre-Requisites
+
+* Up-to-date clone of `saav` repo (i.e. `git pull` first)
+* No changes in working directory
+
+## Versioning
+
+The project version is managed via `version.sbt`.
+
+If your current `version.sbt` is e.g. at `1.2.3-SNAPSHOT`:
+
+* No change required to deploy `1.2.3`
+* Manual edit + commit required to deploy `1.3.0`
+
+## Deployment
+
+To release and deploy:
+
+`sbt deploy`
+
+Assuming e.g. a version `1.2.3-SNAPSHOT`, this will:
+
+* Strip the `-SNAPSHOT` suffix (`1.2.3`)
+* Tag the repo (`v1.2.3`)
+* Compile and assemble all site artifacts (JS, HTML, CSS)
+* Include a `version.txt` (containing `1.2.3`)
+* Add site to `gh-pages` branch
+* Commit and push `gh-pages` branch
+* Upgrade `version.sbt` to next SNAPSHOT (`1.2.4-SNAPSHOT`)
+* Commit and push `master` (including new tag)
