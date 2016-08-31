@@ -73,7 +73,13 @@ def directory(sourceDir: File): Seq[(File, String)] = {
 lazy val cleanSite = taskKey[Unit]("Cleans contents of 'target/site'")
 cleanSite := IO.delete(siteDirectory.value)
 
-makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource)
+lazy val writeVersionToFile = taskKey[Unit]("Writes 'version.txt' to 'target/site'")
+writeVersionToFile := {
+  val file = siteDirectory.value / "version.txt"
+  IO.write(file, version.value)
+}
+
+makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource, writeVersionToFile)
 
 lazy val deployCommand = Command.command("deploy") {
   state =>
