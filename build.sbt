@@ -52,6 +52,7 @@ substitutions in EditSource ++= Seq(
 siteMappings ++=
   Seq(
     target.value / "index.html" -> "index.html",
+    versionTxt(version.value),
     toJsFolder((fullOptJS in Compile).value.data),
     toJsFolder(file((fullOptJS in Compile).value.data.getPath + ".map")),
     toJsFolder((packageScalaJSLauncher in Compile).value.data),
@@ -73,13 +74,14 @@ def directory(sourceDir: File): Seq[(File, String)] = {
 lazy val cleanSite = taskKey[Unit]("Cleans contents of 'target/site'")
 cleanSite := IO.delete(siteDirectory.value)
 
-lazy val writeVersionToFile = taskKey[Unit]("Writes 'version.txt' to 'target/site'")
-writeVersionToFile := {
-  val file = siteDirectory.value / "version.txt"
-  IO.write(file, version.value)
+def versionTxt(version: String) = {
+  val name = "version.txt"
+  val f = file(s"target/$name")
+  IO.write(f, version)
+  f -> name
 }
 
-makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource, writeVersionToFile)
+makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource)
 
 lazy val deployCommand = Command.command("deploy") {
   state =>
