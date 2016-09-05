@@ -36,6 +36,7 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val colXs2 = styleWrap("col-xs-2")
   val colXs3 = styleWrap("col-xs-3")
+  val colXs6 = styleWrap("col-xs-6")
   val colXs9 = styleWrap("col-xs-9")
   val colXs10 = styleWrap("col-xs-10")
   val colXs12 = styleWrap("col-xs-12")
@@ -106,6 +107,8 @@ object GlobalStyles extends StyleSheet.Inline {
   object glyph {
     val magic = styleWrap("fa fa-fw fa-magic")
     val pin = styleWrap("fa fa-fw fa-thumb-tack")
+    val right = styleWrap("fa fa-fw fa-chevron-right")
+    val down = styleWrap("fa fa-fw fa-chevron-down")
   }
 
   val _glyph = glyph // prevent lazy initialization

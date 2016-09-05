@@ -23,6 +23,8 @@ object app {
   final case class EntitySelectionModel(selected: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
 
   final case class AppModel(
+    analysis: Analysis,
+    weights: Weights,
     selectionModel: EntitySelectionModel,
     colorMap: Map[Entity, WebColor],
     qualityModel: QualityModel,
@@ -45,7 +47,7 @@ object app {
       // colorize _after_ ranking to get optimally distinct colors by default
       val colorMap = autoColorMap(qualityModel.rankedEntities.map(_.id))
 
-      AppModel(selectionModel, colorMap, qualityModel, profileModel)
+      AppModel(analysis, weights, selectionModel, colorMap, qualityModel, profileModel)
     }
 
   }
