@@ -22,10 +22,13 @@ object app {
 
   final case class EntitySelectionModel(selected: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
 
+  final case class SubCriteriaSelectionModel(hovered: Option[SubCriteria] = None)
+
   final case class AppModel(
     analysis: Analysis,
     weights: Weights,
-    selectionModel: EntitySelectionModel,
+    entitySelectionModel: EntitySelectionModel,
+    subCriteriaSelectionModel: SubCriteriaSelectionModel,
     colorMap: Map[Entity, WebColor],
     qualityModel: QualityModel,
     profileModel: ProfileModel
@@ -42,12 +45,13 @@ object app {
     def apply(analysis: Analysis, weights: Weights = Weights()): AppModel = {
       val qualityModel = QualityModel(analysis, weights)
       val profileModel = ProfileModel(analysis, weights)
-      val selectionModel = EntitySelectionModel(analysis.entities.toSet, None)
+      val entitySelectionModel = EntitySelectionModel(analysis.entities.toSet, None)
+      val subCriteriaSelectionModel = SubCriteriaSelectionModel()
 
       // colorize _after_ ranking to get optimally distinct colors by default
       val colorMap = autoColorMap(qualityModel.rankedEntities.map(_.id))
 
-      AppModel(analysis, weights, selectionModel, colorMap, qualityModel, profileModel)
+      AppModel(analysis, weights, entitySelectionModel, subCriteriaSelectionModel, colorMap, qualityModel, profileModel)
     }
 
   }

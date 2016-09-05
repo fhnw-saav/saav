@@ -22,7 +22,7 @@ object LegendComponent {
 
     def autoColorize() = {
       $.props >>= { p =>
-        val sm = p.proxy.value.selectionModel
+        val sm = p.proxy.value.entitySelectionModel
         val selectedEntities = p.proxy.value.qualityModel.rankedEntities.map(_.id).filter(sm.selected.contains)
         p.proxy.dispatch(AutoColorizeAction(selectedEntities))}
     }
@@ -34,7 +34,7 @@ object LegendComponent {
 
     def toggleEntitySelection(entity: Entity) = {
       $.props >>= { p =>
-        val isSelected = p.proxy.value.selectionModel.selected.contains(entity)
+        val isSelected = p.proxy.value.entitySelectionModel.selected.contains(entity)
         p.proxy.dispatch(UpdateEntitySelectionAction(Set(entity), !isSelected))
       }
     }
@@ -56,7 +56,7 @@ object LegendComponent {
         Callback.empty
       } else {
         $.props >>= { p =>
-          val isPinned = p.proxy.value.selectionModel.pinned.contains(entity)
+          val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
           val pinnedOrNone = if (isPinned) None else Some(entity)
           p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
         }
@@ -120,7 +120,7 @@ object LegendComponent {
 
       val dm = p.proxy.value
       val entities = dm.qualityModel.rankedEntities
-      val selectionModel = dm.selectionModel
+      val selectionModel = dm.entitySelectionModel
 
       val rows = entities.map(_.id).zipWithIndex.map {
         case (e, i) =>
@@ -143,7 +143,7 @@ object LegendComponent {
 
   def apply(proxy: ModelProxy[AppModel]) = {
 
-    val selectedEntitiesCount = proxy.value.selectionModel.selected.size
+    val selectedEntitiesCount = proxy.value.entitySelectionModel.selected.size
     val entitiesCount = proxy.value.qualityModel.rankedEntities.size
     val allSelectionState =
       if (selectedEntitiesCount == 0) TriStateCheckbox.Unchecked

@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.controller
 
-import ch.fhnw.ima.saav.controller.SaavController.{AnalysisHandler, _}
+import ch.fhnw.ima.saav.controller.SaavController.{AnalysisImportHandler, _}
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain._
 import diode.RootModelRW
@@ -8,9 +8,10 @@ import org.scalatest._
 
 class SaavControllerSpec extends FunSpec with Matchers {
 
-  def analysisHandler = new AnalysisHandler(new RootModelRW(SaavModel().model))
+  def analysisHandler = new AnalysisImportHandler(new RootModelRW(SaavModel().model))
 
-  def selectionAndPinningHandler(initialModel: EntitySelectionModel) = new SelectionAndPinningHandler(new RootModelRW(initialModel))
+  def entitySelectionHandler(initialModel: EntitySelectionModel) = new EntitySelectionHandler(new RootModelRW(initialModel))
+  def subCriteriaSelectionHandler(initialModel: SubCriteriaSelectionModel) = new SubCriteriaSelectionHandler(new RootModelRW(initialModel))
 
   def failOnUnexpectedAction = fail("Unexpected action result")
 
@@ -58,7 +59,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
   describe(s"Handling ${UpdateEntitySelectionAction.getClass.getSimpleName}") {
 
     it("should wire selected entities") {
-      val handler = selectionAndPinningHandler(EntitySelectionModel())
+      val handler = entitySelectionHandler(EntitySelectionModel())
       val selectedEntities = Set(Entity("x"), Entity("y"))
       val result = handler.handle(UpdateEntitySelectionAction(selectedEntities, isSelected = true))
       result.newModelOpt match {
@@ -71,7 +72,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
 
     it("should clear pinning if entity is no longer selected") {
       val anEntity = Entity("x")
-      val handler = selectionAndPinningHandler(EntitySelectionModel(pinned = Some(anEntity)))
+      val handler = entitySelectionHandler(EntitySelectionModel(pinned = Some(anEntity)))
       val result = handler.handle(UpdateEntitySelectionAction(Set.empty, isSelected = false))
       result.newModelOpt match {
         case Some(EntitySelectionModel(actualSelectedEntities, actualPinned)) =>
@@ -83,7 +84,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
 
     it("should not touch pinning if entity is still selected") {
       val anEntity = Entity("x")
-      val handler = selectionAndPinningHandler(EntitySelectionModel(pinned = Some(anEntity)))
+      val handler = entitySelectionHandler(EntitySelectionModel(pinned = Some(anEntity)))
       val result = handler.handle(UpdateEntitySelectionAction(Set(anEntity), isSelected = true))
       result.newModelOpt match {
         case Some(EntitySelectionModel(actualSelectedEntities, actualPinned)) =>
@@ -97,7 +98,7 @@ class SaavControllerSpec extends FunSpec with Matchers {
   describe(s"Handling ${UpdateEntityPinningAction.getClass.getSimpleName}") {
 
     it("should wire a pinned entity") {
-      val handler = selectionAndPinningHandler(EntitySelectionModel())
+      val handler = entitySelectionHandler(EntitySelectionModel())
       val pinnedEntity = Some(Entity("x"))
       val result = handler.handle(UpdateEntityPinningAction(pinnedEntity))
       result.newModelOpt match {
@@ -108,11 +109,36 @@ class SaavControllerSpec extends FunSpec with Matchers {
     }
 
     it("should clear pinning") {
-      val handler = selectionAndPinningHandler(EntitySelectionModel(pinned = Some(Entity("x"))))
+      val handler = entitySelectionHandler(EntitySelectionModel(pinned = Some(Entity("x"))))
       val result = handler.handle(UpdateEntityPinningAction(None))
       result.newModelOpt match {
         case Some(EntitySelectionModel(_, actualPinnedEntity)) =>
           actualPinnedEntity shouldBe None
+        case _ => failOnUnexpectedAction
+      }
+    }
+
+  }
+
+  describe(s"Handling ${UpdateSubCriteriaHoveringAction.getClass.getSimpleName}") {
+
+    it("should wire a hovered sub-criteria") {
+      val handler = subCriteriaSelectionHandler(SubCriteriaSelectionModel())
+      val hoveredSubCriteria = Some(SubCriteria("x", Seq.empty))
+      val result = handler.handle(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
+      result.newModelOpt match {
+        case Some(SubCriteriaSelectionModel(actualHoveredSubCriteria)) =>
+          actualHoveredSubCriteria shouldBe hoveredSubCriteria
+        case _ => failOnUnexpectedAction
+      }
+    }
+
+    it("should clear sub-criteria hovering") {
+      val handler = subCriteriaSelectionHandler(SubCriteriaSelectionModel(hovered = Some(SubCriteria("x", Seq.empty))))
+      val result = handler.handle(UpdateSubCriteriaHoveringAction(None))
+      result.newModelOpt match {
+        case Some(SubCriteriaSelectionModel(actualHoveredSubCriteria)) =>
+          actualHoveredSubCriteria shouldBe None
         case _ => failOnUnexpectedAction
       }
     }

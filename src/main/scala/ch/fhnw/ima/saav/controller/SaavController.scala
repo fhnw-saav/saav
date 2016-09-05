@@ -3,13 +3,13 @@ package controller
 
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
-import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
+import ch.fhnw.ima.saav.model.domain.{Analysis, Entity, SubCriteria}
 import diode._
 import diode.react.ReactConnector
 
 object SaavController {
 
-  // Analysis Actions
+  // Manages Analysis Import
 
   final case class AnalysisImportInProgressAction(progress: Float) extends Action
 
@@ -17,7 +17,7 @@ object SaavController {
 
   final case class AnalysisReadyAction[E <: Entity](analysis: Analysis) extends Action
 
-  class AnalysisHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
+  class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
 
     override def handle = {
       case AnalysisImportInProgressAction(progress) => updated(Left(NoDataAppModel(ImportInProgress(progress))))
@@ -34,7 +34,7 @@ object SaavController {
 
   }
 
-  // Color Actions
+  // Manages Entity Colors
 
   final case class AutoColorizeAction(entities: Seq[Entity]) extends Action
 
@@ -49,13 +49,13 @@ object SaavController {
 
   }
 
-  // Entity Selection & Pinning
+  // Manages EntitySelectionModel
 
   final case class UpdateEntitySelectionAction(entities: Set[Entity], isSelected: Boolean) extends Action
 
   final case class UpdateEntityPinningAction(pinnedEntity: Option[Entity]) extends Action
 
-  class SelectionAndPinningHandler[M](modelRW: ModelRW[M, EntitySelectionModel]) extends ActionHandler(modelRW) {
+  class EntitySelectionHandler[M](modelRW: ModelRW[M, EntitySelectionModel]) extends ActionHandler(modelRW) {
 
     override def handle = {
       case UpdateEntitySelectionAction(entities, isSelected) =>
@@ -78,13 +78,26 @@ object SaavController {
 
   }
 
+  // Manages SubCriteriaSelectionModel
+
+  final case class UpdateSubCriteriaHoveringAction(hoveredSubCriteria: Option[SubCriteria]) extends Action
+
+  class SubCriteriaSelectionHandler[M](modelRW: ModelRW[M, SubCriteriaSelectionModel]) extends ActionHandler(modelRW) {
+
+    override def handle = {
+      case UpdateSubCriteriaHoveringAction(hoveredSubCriteria) =>
+        updated(value.copy(hovered = hoveredSubCriteria))
+    }
+
+  }
+
   // Circuit
 
   object SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
 
     override protected def initialModel = SaavModel()
 
-    private val analysisHandler = new AnalysisHandler(zoomRW(_.model)((m, v) => m.copy(model = v)))
+    private val analysisImportHandler = new AnalysisImportHandler(zoomRW(_.model)((m, v) => m.copy(model = v)))
 
     private val colorHandler = {
       def modelGet = (m: SaavModel) =>
@@ -94,15 +107,24 @@ object SaavController {
       new ColorHandler(zoomRW(modelGet)(modelSet))
     }
 
-    private val selectionAndPinningHandler = {
+    private val entitySelectionHandler = {
       def modelGet = (m: SaavModel) =>
-        m.model.right.toOption.map(_.selectionModel).get
+        m.model.right.toOption.map(_.entitySelectionModel).get
       def modelSet = (m: SaavModel, v: EntitySelectionModel) =>
-        m.copy(model = m.model.right.map(_.copy(selectionModel = v)))
-      new SelectionAndPinningHandler(zoomRW(modelGet)(modelSet))
+        m.copy(model = m.model.right.map(_.copy(entitySelectionModel = v)))
+      new EntitySelectionHandler(zoomRW(modelGet)(modelSet))
     }
 
-    override protected val actionHandler = composeHandlers(analysisHandler, colorHandler, selectionAndPinningHandler)
+    private val subCriteriaSelectionHandler = {
+      def modelGet = (m: SaavModel) =>
+        m.model.right.toOption.map(_.subCriteriaSelectionModel).get
+      def modelSet = (m: SaavModel, v: SubCriteriaSelectionModel) =>
+        m.copy(model = m.model.right.map(_.copy(subCriteriaSelectionModel = v)))
+      new SubCriteriaSelectionHandler(zoomRW(modelGet)(modelSet))
+    }
+
+    override protected val actionHandler =
+      composeHandlers(analysisImportHandler, colorHandler, entitySelectionHandler, subCriteriaSelectionHandler)
 
     override def handleError(msg: String): Unit = {
       val name = SaavController.getClass.getSimpleName

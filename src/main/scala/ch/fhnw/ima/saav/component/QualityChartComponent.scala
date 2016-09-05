@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.UpdateEntityPinningAction
-import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity, QualityModel}
+import ch.fhnw.ima.saav.controller.SaavController.{UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
+import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
 import ch.fhnw.ima.saav.model.layout.QualityLayout
 import diode.react.ModelProxy
@@ -13,28 +13,15 @@ object QualityChartComponent {
 
   case class Props(proxy: ModelProxy[AppModel])
 
-  case class State(hoveredSubCriteria: Option[SubCriteria] = None, hoveredEntity: Option[Entity] = None)
+  case class State(hoveredEntity: Option[Entity] = None)
 
   val svgRef = Ref[SVGSVGElement]("svgRef")
 
   class Backend($: BackendScope[Props, State]) {
 
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteria]) =
-      $.state >>= { s =>
-        if (s.hoveredSubCriteria != hoveredSubCriteria) {
-          $.setState(s.copy(hoveredSubCriteria = hoveredSubCriteria))
-        } else {
-          Callback.empty
-        }
-      }
-
-    def clearHoveredSubCriteria() =
-      $.state >>= { s =>
-        if (s.hoveredSubCriteria.isDefined) {
-          $.setState(s.copy(hoveredSubCriteria = None))
-        } else {
-          Callback.empty
-        }
+      $.props >>= { p =>
+        p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
       }
 
     def setHoveredEntity(hoveredEntity: Option[Entity]) =
@@ -48,7 +35,7 @@ object QualityChartComponent {
 
     def toggleEntityPinning(groupedEntity: GroupedEntity) =
       $.props >>= { p =>
-        val isPinned = p.proxy.value.selectionModel.pinned.contains(groupedEntity.id)
+        val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(groupedEntity.id)
         val pinnedOrNone = if (isPinned) None else Some(groupedEntity.id)
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
@@ -66,7 +53,7 @@ object QualityChartComponent {
       val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
       val model = proxy.value
       val hoveredSubCriteria = findClosestSubCriteria(model.qualityModel, cursorPt)
-      val hoveredEntity = findClosestEntity(model.qualityModel, model.selectionModel, cursorPt)
+      val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
 
       setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity)
 
@@ -148,8 +135,6 @@ object QualityChartComponent {
       */
     def render(p: Props, s: State) = {
 
-      println("render")
-
       val model = p.proxy.value
 
       val background = <.svg.rect(
@@ -158,9 +143,8 @@ object QualityChartComponent {
         ^.svg.x := "0", ^.svg.y := "0",
         ^.svg.width := "100%", ^.svg.height := "100%")
 
-
-      val coordinateSystem = constructCoordinateSystem(model.qualityModel, s.hoveredSubCriteria)
-      val entities = constructEntities(model, s.hoveredSubCriteria, s.hoveredEntity)
+      val coordinateSystem = constructCoordinateSystem(model)
+      val entities = constructEntities(model, s.hoveredEntity)
 
       // Assemble everything
 
@@ -181,13 +165,14 @@ object QualityChartComponent {
     /**
       * Constructs the boxes and the axes for the hierarchical parallel coordinate system.
       *
-      * @param model              the data model
-      * @param hoveredSubCriteria the sub criteria that is currently probed
+      * @param appModel the application model
       * @return a group of SVG elements that make up the coordinate system
       */
-    private def constructCoordinateSystem(model: QualityModel, hoveredSubCriteria: Option[SubCriteria]) = {
+    private def constructCoordinateSystem(appModel: AppModel) = {
 
+      val model = appModel.qualityModel
       val layout = model.layout
+      val hoveredSubCriteria = appModel.subCriteriaSelectionModel.hovered
 
       // create the criteria boxes
 
@@ -272,15 +257,16 @@ object QualityChartComponent {
     /**
       * Constructs the horizontal lines for the entities.
       *
-      * @param model the data model
+      * @param model the application model
       * @return a group of SVG elements containing the representation of the entities
       */
-    private def constructEntities(model: AppModel, hoveredSubCriteria: Option[SubCriteria], hoveredEntity: Option[Entity]) = {
+    private def constructEntities(model: AppModel, hoveredEntity: Option[Entity]) = {
 
       val layout = model.qualityModel.layout
+      val hoveredSubCriteria = model.subCriteriaSelectionModel.hovered
 
-      def isSelected(e: GroupedEntity) = model.selectionModel.selected.contains(e.id)
-      def isPinned(e: GroupedEntity) = model.selectionModel.pinned.contains(e.id)
+      def isSelected(e: GroupedEntity) = model.entitySelectionModel.selected.contains(e.id)
+      def isPinned(e: GroupedEntity) = model.entitySelectionModel.pinned.contains(e.id)
       def isHovered(e: GroupedEntity) = hoveredEntity.contains(e.id)
 
       val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy(e => (isPinned(e), isSelected(e)))
