@@ -113,33 +113,6 @@ object app {
     def name = id.name
   }
 
-  final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[Indicator]) {
-    def name = id.name
-    val minValue = groupedValues.values.min
-    val maxValue = groupedValues.values.max
-  }
-
-  object GroupedSubCriteria {
-
-    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], disabledIndicators: Set[Indicator]): GroupedSubCriteria = {
-      val indicators = subCriteria.indicators.filter(!disabledIndicators.contains(_))
-
-      def groupedValue(entity: Entity): Option[Double] = {
-        val values = for {
-          review <- reviews
-          indicator <- indicators
-          values <- indicator.values.get((entity, review))
-        } yield values
-        median(values)
-      }
-
-      val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
-
-      GroupedSubCriteria(subCriteria, groupedValues, indicators)
-    }
-
-  }
-
   final case class GroupedCriteria(id: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]]) {
     def name = id.name
 
@@ -196,6 +169,57 @@ object app {
     private def apply(entities: Seq[Entity], criteria: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValue: Entity => Option[Double]): GroupedCriteria = {
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
       GroupedCriteria(criteria, subCriteria, groupedValues)
+    }
+
+  }
+
+  final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[GroupedIndicator]) {
+    def name = id.name
+
+    val minValue = groupedValues.values.min
+    val maxValue = groupedValues.values.max
+  }
+
+  object GroupedSubCriteria {
+
+    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], disabledIndicators: Set[Indicator]): GroupedSubCriteria = {
+      val indicators = subCriteria.indicators.filter(!disabledIndicators.contains(_)).map { i =>
+        GroupedIndicator(i, entities, reviews)
+      }
+
+      def groupedValue(entity: Entity): Option[Double] = {
+        val values = for {
+          indicator <- indicators
+          value <- indicator.groupedValues(entity)
+        } yield value
+        median(values)
+      }
+
+      val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
+
+      GroupedSubCriteria(subCriteria, groupedValues, indicators)
+    }
+
+  }
+
+  final case class GroupedIndicator(id: Indicator, groupedValues: Map[Entity, Option[Double]]) {
+    def name = id.name
+  }
+
+  object GroupedIndicator {
+
+    def apply(indicator: Indicator, entities: Seq[Entity], reviews: Seq[Review]): GroupedIndicator = {
+      val groupedValues =
+        (for {
+          entity <- entities
+        } yield {
+          val values = for {
+            review <- reviews
+            value <- indicator.values.get((entity, review))
+          } yield value
+          entity -> median(values)
+        }).toMap
+      GroupedIndicator(indicator, groupedValues)
     }
 
   }

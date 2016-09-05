@@ -17,22 +17,16 @@ object IndicatorComponent {
       val model = p.proxy.value
 
       val indicators = for {
-        pinnedEntity <- model.entitySelectionModel.pinned
-        hoveredSubCriteria <- model.subCriteriaSelectionModel.hovered
+        pinnedEntity <- model.entitySelectionModel.pinned.toSeq
+        hoveredSubCriteria <- model.subCriteriaSelectionModel.hovered.toSeq
+        focusSubCriteria <- model.qualityModel.criteria.flatMap(_.subCriteria).find(_.id == hoveredSubCriteria).toSeq
+        indicator <- focusSubCriteria.indicators
       } yield {
-        val focusSubCriteria = model.qualityModel.criteria.flatMap(_.subCriteria).find(_.id == hoveredSubCriteria)
-        focusSubCriteria match {
-          case Some(subCriteria) =>
-            val review = model.analysis.reviews.head // TODO: Aggregate indicators across reviews
-            for (indicator <- subCriteria.indicators) yield {
-              val value = indicator.values((pinnedEntity, review))
-              <.div(
-                <.div(css.colXs10, indicator.name),
-                <.div(css.colXs2, value)
-              )
-            }
-          case _ => Seq.empty
-        }
+        val value = indicator.groupedValues(pinnedEntity)
+        <.div(
+          <.div(css.colXs10, indicator.name),
+          <.div(css.colXs2, value)
+        )
       }
 
       <.div(
