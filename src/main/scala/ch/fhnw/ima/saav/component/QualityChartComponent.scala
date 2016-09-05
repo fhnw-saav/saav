@@ -81,6 +81,8 @@ object QualityChartComponent {
 
     }
 
+    def clearHovering = setHoveredEntity(None) >> setHoveredSubCriteria(None)
+
     private def findClosestEntity(model: QualityModel, selectionModel: EntitySelectionModel, cursorPt: SVGPoint): Option[Entity] = {
 
       val layout = model.layout
@@ -155,6 +157,7 @@ object QualityChartComponent {
         ^.svg.viewBox := s"0 0 ${layout.width} ${layout.height}",
         ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
         ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
+        ^.onMouseLeave --> clearHovering,
         background,
         coordinateSystem,
         entities
