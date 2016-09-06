@@ -13,30 +13,37 @@ class AppModelSpec extends FunSpec with Matchers {
     val entityTwo = Entity("P2")
     val entityThree = Entity("P3")
 
-    val review = Review("Review")
+    val reviewOne = Review("Review1")
+    val reviewTwo = Review("Review2")
+    val reviewThree = Review("Review3")
 
     val analysis = AnalysisBuilder()
       .criteria("Cat 1")
         .subCriteria("Sub-Cat 11")
           .indicator("Indicator 111")
-            .addValue(entityOne, review, 1)
-            .addValue(entityTwo, review, 101)
+            .addValue(entityOne, reviewOne, 1)
+            .addValue(entityOne, reviewTwo, 0.1)
+            .addValue(entityOne, reviewThree, 2)
+            .addValue(entityTwo, reviewOne, 101)
+            .addValue(entityTwo, reviewTwo, 100)
+            .addValue(entityTwo, reviewThree, 102)
           .build
           .indicator("Indicator 112")
-            .addValue(entityOne, review, 3)
-            .addValue(entityTwo, review, 101)
-            .addValue(entityThree, review, 0)
+            .addValue(entityOne, reviewOne, 3)
+            .addValue(entityTwo, reviewOne, 101)
+            .addValue(entityThree, reviewOne, 0)
           .build
         .build
       .build
       .criteria("Cat 2")
         .subCriteria("Sub-Cat 21")
           .indicator("Indicator 211")
-            .addValue(entityOne, review, 42)
-            .addValue(entityTwo, review, 99)
+            .addValue(entityOne, reviewOne, 41)
+            .addValue(entityOne, reviewTwo, 43)
+            .addValue(entityTwo, reviewOne, 99)
           .build
           .indicator("Indicator 212")
-            .addValue(entityOne, review, 43)
+            .addValue(entityOne, reviewOne, 43)
           .build
         .build
       .build
