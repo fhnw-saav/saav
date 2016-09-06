@@ -31,7 +31,11 @@ object IndicatorComponent {
 
       <.div(
         <.h2("Indicators"),
-        <.div(css.row, indicators.toSeq)
+        if (indicators.isEmpty) {
+          <.i("Pin a row and move your mouse over an axis to see something here")
+        } else {
+          <.div(css.row, indicators.toSeq)
+        }
       )
 
     }
