@@ -67,13 +67,13 @@ object ExpertConfigComponent {
     def createCriteriaItem(criteria: Criteria, s: State) = {
       s.criteriaToggleStates(criteria) match {
         case Collapsed =>
-          <.div(css.row, rightGlyph, ^.onClick --> expandCriteria(criteria), criteria.name)
+          <.div(rightGlyph, ^.onClick --> expandCriteria(criteria), criteria.name)
         case Expanded =>
           <.div(
-            <.div(css.row, downGlyph, ^.onClick --> collapseCriteria(criteria), criteria.name),
-            <.ul(css.row,
+            <.div(downGlyph, ^.onClick --> collapseCriteria(criteria), criteria.name),
+            <.ul(css.expertConfigListStyle,
               for (subCriteria <- criteria.subCriteria) yield {
-                createSubCriteriaItem(subCriteria, s)
+                <.li(createSubCriteriaItem(subCriteria, s))
               })
           )
       }
@@ -82,13 +82,13 @@ object ExpertConfigComponent {
     def createSubCriteriaItem(subCriteria: SubCriteria, s: State) = {
       s.subCriteriaToggleStates(subCriteria) match {
         case Collapsed =>
-          <.div(css.row, rightGlyph, ^.onClick --> expandSubCriteria(subCriteria), subCriteria.name)
+          <.div(rightGlyph, ^.onClick --> expandSubCriteria(subCriteria), subCriteria.name)
         case Expanded =>
           <.div(
-            <.div(css.row, downGlyph, ^.onClick --> collapseSubCriteria(subCriteria), subCriteria.name),
-            <.ul(css.row,
+            <.div(downGlyph, ^.onClick --> collapseSubCriteria(subCriteria), subCriteria.name),
+            <.ul(css.expertConfigListStyle,
               for (indicator <- subCriteria.indicators) yield {
-                <.li(indicator.name)
+                <.li(<.input.checkbox(), " " + indicator.name)
               })
           )
       }

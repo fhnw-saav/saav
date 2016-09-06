@@ -99,11 +99,11 @@ object pages {
         <.div(
           <.div(css.row,
             <.div(css.colXs3, LegendComponent(p.proxy)),
-            <.div(css.colXs6, QualityChartComponent(p.proxy)),
-            <.div(css.colXs3, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.weights))))
+            <.div(css.colXs9, QualityChartComponent(p.proxy))
           ),
           <.div(css.row,
-            <.div(css.colXs3, IndicatorComponent(p.proxy))
+            <.div(css.colXs3, IndicatorComponent(p.proxy)),
+            <.div(css.colXs9, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.weights))))
           )
         )
       })

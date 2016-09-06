@@ -79,6 +79,11 @@ object GlobalStyles extends StyleSheet.Inline {
     color(c"#bbb")
   )
 
+  val expertConfigListStyle = style(
+    addClassName("list-unstyled"),
+    marginLeft(18 px) // align with font awesome fixed-width glyph
+  )
+
   val hidden = style(
     display.none
   )
