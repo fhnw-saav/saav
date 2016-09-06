@@ -68,16 +68,17 @@ package object model {
 
     val criteria2 = builder.criteria("Criteria B")
 
-    val subCriteria21 = criteria2.subCriteria("Whitespace")
+    val subCriteria21 = criteria2.subCriteria("Word Count")
     val wordCountIndicator = subCriteria21.indicator("Word Count")
 
     def isVowel(c: Char) = "aeiouäöü".contains(c)
+    def isSpace(c: Char) = c == ' '
 
     for (e <- entities) {
       val length = e.name.length
-      val consonantCount = e.name.toLowerCase.filterNot(isVowel).length
+      val consonantCount = e.name.toLowerCase.filterNot(isVowel).filterNot(isSpace).length
       val vowelCount = e.name.toLowerCase.filter(isVowel).length
-      val wordCount = e.name.filter(_ == ' ').length + 1
+      val wordCount = e.name.filter(isSpace).length + 1
 
       println(s"${e.name}: length $length, $consonantCount consonant(s), $vowelCount vowel(s), $wordCount word(s)")
 
