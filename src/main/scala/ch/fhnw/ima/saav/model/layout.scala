@@ -30,10 +30,22 @@ object layout {
 
     // Compute general parameters
 
-    val criteriaCount = criteria.size
-    val axisCount = criteria.foldLeft(0)((count, c) => count + c.subCriteria.size)
-    val axisSpacing = Math.max((width - ((criteriaCount + 1) * margin) - (criteriaCount * 2 * padding)) / (axisCount - criteriaCount), 0)
-    val axisHeight = (height - headerTextGap - 2 * padding - verticalAxisGap - margin) / 2
+    private val criteriaCount = criteria.size
+    private val axisCount = criteria.foldLeft(0)((count, c) => count + c.subCriteria.size)
+
+    // Calculate axis spacing
+    // In the special case of each criterion having exactly one sub-criterion, axis spacing should be 0
+    // but we still need to make use of available space > tracked as extraPadding
+    private val (axisSpacing, extraPadding) = {
+      val axisGapCount = axisCount - criteriaCount
+      val availableWith = width - ((criteriaCount + 1) * margin) - (criteriaCount * 2 * padding)
+      if (axisGapCount == 0) {
+        (0, availableWith / criteriaCount)
+      } else {
+        (Math.max(availableWith / axisGapCount, 0), 0)
+      }
+    }
+    private val axisHeight = (height - headerTextGap - 2 * padding - verticalAxisGap - margin) / 2
 
     // Compute boxes y positions
 
@@ -55,14 +67,14 @@ object layout {
     for (criterion <- criteria) {
 
       x = x + margin
-      val criteriaWidth = 2 * padding + ((criterion.subCriteria.size - 1) * axisSpacing)
+      val criteriaWidth = 2 * padding + ((criterion.subCriteria.size - 1) * axisSpacing) + extraPadding
 
       criteriaBoxesMap(criterion.id) = (x, criteriaWidth)
       criteriaAxesMap(criterion.id) = x + (criteriaWidth / 2)
 
       var subIndex = 0
       for (subCriteria <- criterion.subCriteria) {
-        subCriteriaAxesMap(subCriteria.id) = x + padding + (subIndex * axisSpacing)
+        subCriteriaAxesMap(subCriteria.id) = x + padding + (extraPadding / 2) + (subIndex * axisSpacing)
         subIndex += 1
 
         subCriteriaDomainMap(subCriteria.id) = subCriteria
