@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.model.app.Weights
-import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria}
+import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, SubCriteria}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB}
@@ -10,14 +10,14 @@ import scalacss.ScalaCssReact._
 
 object ExpertConfigComponent {
 
-  private val rightGlyph = <.i(css.glyph.right)
-  private val downGlyph = <.i(css.glyph.down)
+  private val rightGlyph = <.i(css.glyph.right, ^.cursor.pointer)
+  private val downGlyph = <.i(css.glyph.down, ^.cursor.pointer)
 
   case class Props(proxy: ModelProxy[(Analysis, Weights)])
 
   case class State(
     criteriaToggleStates: Map[Criteria, ToggleState] = Map.empty[Criteria, ToggleState].withDefaultValue(Collapsed),
-    subCriteriaToggleStates: Map[Criteria, ToggleState] = Map.empty[Criteria, ToggleState].withDefaultValue(Collapsed)
+    subCriteriaToggleStates: Map[SubCriteria, ToggleState] = Map.empty[SubCriteria, ToggleState].withDefaultValue(Collapsed)
   )
 
   sealed trait ToggleState
@@ -34,9 +34,20 @@ object ExpertConfigComponent {
 
     def updateCriteriaToggleState(criteria: Criteria, newToggleState: ToggleState) =
       $.modState { s =>
-        val newCriteriaToggleStates = s.criteriaToggleStates.updated(criteria, newToggleState)
-        s.copy(criteriaToggleStates = newCriteriaToggleStates)
+        val newStates = s.criteriaToggleStates.updated(criteria, newToggleState)
+        s.copy(criteriaToggleStates = newStates)
       }
+
+    def expandSubCriteria(subCriteria: SubCriteria) = updateSubCriteriaToggleState(subCriteria, Expanded)
+
+    def collapseSubCriteria(subCriteria: SubCriteria) = updateSubCriteriaToggleState(subCriteria, Collapsed)
+
+    def updateSubCriteriaToggleState(subCriteria: SubCriteria, newToggleState: ToggleState) =
+      $.modState { s =>
+        val newStates = s.subCriteriaToggleStates.updated(subCriteria, newToggleState)
+        s.copy(subCriteriaToggleStates = newStates)
+      }
+
 
     def render(p: Props, s: State) = {
 
@@ -62,7 +73,22 @@ object ExpertConfigComponent {
             <.div(css.row, downGlyph, ^.onClick --> collapseCriteria(criteria), criteria.name),
             <.ul(css.row,
               for (subCriteria <- criteria.subCriteria) yield {
-                <.li(subCriteria.name)
+                createSubCriteriaItem(subCriteria, s)
+              })
+          )
+      }
+    }
+
+    def createSubCriteriaItem(subCriteria: SubCriteria, s: State) = {
+      s.subCriteriaToggleStates(subCriteria) match {
+        case Collapsed =>
+          <.div(css.row, rightGlyph, ^.onClick --> expandSubCriteria(subCriteria), subCriteria.name)
+        case Expanded =>
+          <.div(
+            <.div(css.row, downGlyph, ^.onClick --> collapseSubCriteria(subCriteria), subCriteria.name),
+            <.ul(css.row,
+              for (indicator <- subCriteria.indicators) yield {
+                <.li(indicator.name)
               })
           )
       }
