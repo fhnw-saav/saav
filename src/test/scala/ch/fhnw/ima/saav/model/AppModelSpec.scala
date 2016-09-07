@@ -110,20 +110,10 @@ class AppModelSpec extends FunSpec with Matchers {
       newModel.rankedEntities(2).id shouldBe entityThree
       newModel.rankedEntities(2).value shouldBe None
 
-      newModel.criteria.size shouldBe 2
-
-      // all indicators below disabled --> all values None
-      val criteriaOne = newModel.criteria(0)
-      criteriaOne.groupedValues(entityTwo) shouldBe None
-      criteriaOne.groupedValues(entityThree) shouldBe None
-      criteriaOne.groupedValues(entityOne) shouldBe None
-      criteriaOne.subCriteria.size shouldBe 1
-      criteriaOne.subCriteria(0).groupedValues(entityOne) shouldBe None
-      criteriaOne.subCriteria(0).groupedValues(entityTwo) shouldBe None
-      criteriaOne.subCriteria(0).groupedValues(entityThree) shouldBe None
+      newModel.criteria.size shouldBe 1
 
       // weights unchanged --> same expectations as with defaults
-      val criteriaTwo = newModel.criteria(1)
+      val criteriaTwo = newModel.criteria(0)
       criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
       criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
       criteriaTwo.groupedValues(entityThree) shouldBe None

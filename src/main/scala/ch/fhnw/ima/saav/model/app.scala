@@ -62,16 +62,17 @@ object app {
 
     def apply(analysis: Analysis, weights: Weights): QualityModel = {
 
-      val criteria = analysis.criteria.map { c =>
+      val allCriteria = analysis.criteria.map { c =>
         GroupedCriteria.forQuality(analysis.entities, c, analysis.reviews, weights)
       }
+      val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
       val rankedEntities = analysis.entities.map { e =>
         val value = median(criteria.flatMap(_.groupedValues(e)))
         GroupedEntity(e, value = value)
       }.sortBy(_.value).reverse
 
-      val (minValue, maxValue) = minMaxValues(criteria)
+      val (minValue, maxValue) = safeMinMax(criteria)
 
       val layout = new QualityLayout(criteria, minValue, maxValue)
 
@@ -86,9 +87,10 @@ object app {
 
     def apply(analysis: Analysis, weights: Weights): ProfileModel = {
 
-      val criteria = analysis.criteria.map { c =>
+      val allCriteria = analysis.criteria.map { c =>
         GroupedCriteria.forProfile(analysis.entities, c, analysis.reviews, weights)
       }
+      val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
       // TODO: Support different sorting strategies
       val sortedEntities = analysis.entities.map { e =>
@@ -96,7 +98,7 @@ object app {
         GroupedEntity(e, value = value)
       }.sortBy(_.name)
 
-      val (minValue, maxValue) = minMaxValues(criteria)
+      val (minValue, maxValue) = safeMinMax(criteria)
 
       val layout = new ProfileLayout(criteria, minValue, maxValue)
 
@@ -117,8 +119,8 @@ object app {
     def name = id.name
 
     // Deliberately not using min/max of groupedValues for our purpose
-    val minValue = subCriteria.map(_.minValue).min
-    val maxValue = subCriteria.map(_.maxValue).max
+    val minValue = safeMinMax(subCriteria.map(_.minValue))._1
+    val maxValue = safeMinMax(subCriteria.map(_.maxValue))._2
   }
 
   object GroupedCriteria {
@@ -126,7 +128,8 @@ object app {
     def forQuality(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
       // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
-      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
+      val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
+      val subCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
 
       val groupedValue = (entity: Entity) => {
         val valuesWithWeights = for {
@@ -150,7 +153,8 @@ object app {
     def forProfile(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
       // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
-      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
+      val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
+      val subCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
 
       val groupedValue = (entity: Entity) => {
         val valuesWithWeights = for {
@@ -176,8 +180,7 @@ object app {
   final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[GroupedIndicator]) {
     def name = id.name
 
-    val minValue = groupedValues.values.min
-    val maxValue = groupedValues.values.max
+    val (minValue, maxValue) = safeMinMax(groupedValues.values)
   }
 
   object GroupedSubCriteria {
@@ -256,10 +259,21 @@ object app {
     }
   }
 
-  private[model] def minMaxValues(criteria: Seq[GroupedCriteria]) = {
-    val minValue = if (criteria.isEmpty) None else criteria.map(_.minValue).min
-    val maxValue = if (criteria.isEmpty) None else criteria.map(_.maxValue).max
-    (minValue, maxValue)
+  private[model] def safeMinMax(criteria: Seq[GroupedCriteria]): (Option[Double], Option[Double]) = {
+    if (criteria.isEmpty) {
+      (None, None)
+    } else {
+      (criteria.map(_.minValue).min, criteria.map(_.maxValue).max)
+    }
+  }
+
+  private[model] def safeMinMax(optionalValues: Iterable[Option[Double]]): (Option[Double], Option[Double]) = {
+    val values = optionalValues.flatten
+    if (values.isEmpty) {
+      (None, None)
+    } else {
+      (Some(values.min), Some(values.max))
+    }
   }
 
 }
