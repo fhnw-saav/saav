@@ -100,14 +100,11 @@ object SaavController {
   class WeightsHandler[M](modelRW: ModelRW[M, Weights]) extends ActionHandler(modelRW) {
     override def handle = {
       case UpdateIndicatorWeightAction(indicator, isEnabled) =>
-        println(s"${indicator.name}  $isEnabled")
         val newEnabledIndicators = if (isEnabled) {
           value.enabledIndicators + indicator
         } else {
           value.enabledIndicators - indicator
         }
-        println(newEnabledIndicators.map(_.name).mkString(", "))
-
         updated(value.copy(enabledIndicators = newEnabledIndicators))
     }
   }

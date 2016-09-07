@@ -146,7 +146,7 @@ object QualityChartComponent {
         ^.svg.width := "100%", ^.svg.height := "100%")
 
       val coordinateSystem = constructCoordinateSystem(model)
-      val entities = constructEntities(model, s.hoveredEntity)
+      val entities = if (model.qualityModel.criteria.isEmpty) Seq.empty else constructEntities(model, s.hoveredEntity)
 
       // Assemble everything
 

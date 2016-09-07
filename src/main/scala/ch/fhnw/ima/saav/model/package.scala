@@ -80,8 +80,6 @@ package object model {
       val vowelCount = e.name.toLowerCase.filter(isVowel).length
       val wordCount = e.name.filter(isSpace).length + 1
 
-      println(s"${e.name}: length $length, $consonantCount consonant(s), $vowelCount vowel(s), $wordCount word(s)")
-
       lengthIndicatorScope.addValue(e, review, length)
       consonantIndicatorScope.addValue(e, review, consonantCount)
       vowelIndicatorScope.addValue(e, review, vowelCount)
