@@ -49,7 +49,9 @@ class AppModelSpec extends FunSpec with Matchers {
       .build
     .build
 
-    val model = AppModel(analysis)
+    val indicators = analysis.criteria.flatMap(_.subCriteria.flatMap(_.indicators))
+    val weights = Weights(enabledIndicators = indicators.toSet)
+    val model = AppModel(analysis, weights)
 
     it("should aggregate medians across all categories and sub-categories") {
 
@@ -91,11 +93,11 @@ class AppModelSpec extends FunSpec with Matchers {
 
     it("should re-calculate aggregated medians when weights are updated") {
 
-      // disable all indicators below criteria 0
-      val someIndicators = analysis.criteria(0).subCriteria(0).indicators.toSet
-      val weights = Weights(disabledIndicators = someIndicators)
+      // enable all indicators below criteria 1
+      val someIndicators = analysis.criteria(1).subCriteria(0).indicators.toSet
+      val weights = Weights(enabledIndicators = someIndicators)
 
-      val newModel = model.updateWeights(analysis, weights).qualityModel
+      val newModel = model.updateWeights(weights).qualityModel
 
       // ranking (highest global median first)
       newModel.rankedEntities.size shouldBe 3

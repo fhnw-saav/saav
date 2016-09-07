@@ -3,7 +3,7 @@ package controller
 
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
-import ch.fhnw.ima.saav.model.domain.{Analysis, Entity, SubCriteria}
+import ch.fhnw.ima.saav.model.domain.{Analysis, Entity, Indicator, SubCriteria}
 import diode._
 import diode.react.ReactConnector
 
@@ -27,7 +27,9 @@ object SaavController {
         }
         updated(Left(NoDataAppModel(ImportFailed(t))))
       case AnalysisReadyAction(analysis) =>
-        val model = AppModel(analysis)
+        val indicators = analysis.criteria.flatMap(_.subCriteria.flatMap(_.indicators))
+        val weights = Weights(enabledIndicators = indicators.toSet)
+        val model = AppModel(analysis, weights)
         updated(Right(model))
 
     }
@@ -91,6 +93,25 @@ object SaavController {
 
   }
 
+  // Manages Weights
+
+  final case class UpdateIndicatorWeightAction(indicator: Indicator, isEnabled: Boolean) extends Action
+
+  class WeightsHandler[M](modelRW: ModelRW[M, Weights]) extends ActionHandler(modelRW) {
+    override def handle = {
+      case UpdateIndicatorWeightAction(indicator, isEnabled) =>
+        println(s"${indicator.name}  $isEnabled")
+        val newEnabledIndicators = if (isEnabled) {
+          value.enabledIndicators + indicator
+        } else {
+          value.enabledIndicators - indicator
+        }
+        println(newEnabledIndicators.map(_.name).mkString(", "))
+
+        updated(value.copy(enabledIndicators = newEnabledIndicators))
+    }
+  }
+
   // Circuit
 
   object SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
@@ -123,8 +144,24 @@ object SaavController {
       new SubCriteriaSelectionHandler(zoomRW(modelGet)(modelSet))
     }
 
+    private val weightsHandler = {
+      def modelGet = (m: SaavModel) =>
+        m.model.right.toOption.map(_.weights).get
+      def modelSet = (m: SaavModel, v: Weights) => {
+        val newAppModel = m.model.right.map(_.updateWeights(v))
+        m.copy(model = m.model.right.flatMap(_ => newAppModel))
+      }
+      new WeightsHandler(zoomRW(modelGet)(modelSet))
+    }
+
     override protected val actionHandler =
-      composeHandlers(analysisImportHandler, colorHandler, entitySelectionHandler, subCriteriaSelectionHandler)
+      composeHandlers(
+        analysisImportHandler,
+        colorHandler,
+        entitySelectionHandler,
+        subCriteriaSelectionHandler,
+        weightsHandler
+      )
 
     override def handleError(msg: String): Unit = {
       val name = SaavController.getClass.getSimpleName

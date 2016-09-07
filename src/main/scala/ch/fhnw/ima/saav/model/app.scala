@@ -34,15 +34,15 @@ object app {
     profileModel: ProfileModel
   ) {
 
-    def updateWeights(analysis: Analysis, weights: Weights): AppModel = {
-      copy(qualityModel = QualityModel(analysis, weights))
+    def updateWeights(weights: Weights): AppModel = {
+      copy(weights = weights, qualityModel = QualityModel(analysis, weights))
     }
 
   }
 
   object AppModel {
 
-    def apply(analysis: Analysis, weights: Weights = Weights()): AppModel = {
+    def apply(analysis: Analysis, weights: Weights): AppModel = {
       val qualityModel = QualityModel(analysis, weights)
       val profileModel = ProfileModel(analysis, weights)
       val entitySelectionModel = EntitySelectionModel(analysis.entities.toSet, None)
@@ -126,7 +126,7 @@ object app {
     def forQuality(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
       // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
-      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.disabledIndicators))
+      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
 
       val groupedValue = (entity: Entity) => {
         val valuesWithWeights = for {
@@ -150,7 +150,7 @@ object app {
     def forProfile(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
       // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
-      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.disabledIndicators))
+      val subCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
 
       val groupedValue = (entity: Entity) => {
         val valuesWithWeights = for {
@@ -182,8 +182,8 @@ object app {
 
   object GroupedSubCriteria {
 
-    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], disabledIndicators: Set[Indicator]): GroupedSubCriteria = {
-      val indicators = subCriteria.indicators.filter(!disabledIndicators.contains(_)).map { i =>
+    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], enabledIndicators: Set[Indicator]): GroupedSubCriteria = {
+      val indicators = subCriteria.indicators.filter(enabledIndicators.contains).map { i =>
         GroupedIndicator(i, entities, reviews)
       }
 
@@ -230,7 +230,7 @@ object app {
 
   case object Profile extends Weight
 
-  final case class Weights(subCriteriaWeights: Map[SubCriteria, Weight] = Map(), disabledIndicators: Set[Indicator] = Set.empty)
+  final case class Weights(subCriteriaWeights: Map[SubCriteria, Weight] = Map(), enabledIndicators: Set[Indicator])
 
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 
