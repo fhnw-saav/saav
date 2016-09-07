@@ -1,11 +1,11 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.SaavController.UpdateIndicatorWeightAction
-import ch.fhnw.ima.saav.model.app.Weights
+import ch.fhnw.ima.saav.model.app.{Weight, Weights}
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, ReactComponentB}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
 
 import scalacss.ScalaCssReact._
 
@@ -88,12 +88,20 @@ object ExpertConfigComponent {
     }
 
     def createSubCriteriaItem(subCriteria: SubCriteria, s: State, weights: Weights) = {
+
+      def header(glyph: ReactTag, onClick: => Callback) =
+        <.div(^.display.inline,
+          <.div(^.display.inline, glyph, ^.onClick --> onClick),
+          <.div(^.display.inline, subCriteria.name + " "),
+          createQualityVsProfileSelector(subCriteria, weights.subCriteriaWeights)
+        )
+
       s.subCriteriaToggleStates(subCriteria) match {
         case Collapsed =>
-          <.div(rightGlyph, ^.onClick --> expandSubCriteria(subCriteria), subCriteria.name)
+          header(rightGlyph, expandSubCriteria(subCriteria))
         case Expanded =>
           <.div(
-            <.div(downGlyph, ^.onClick --> collapseSubCriteria(subCriteria), subCriteria.name),
+            header(downGlyph, collapseSubCriteria(subCriteria)),
             <.ul(css.expertConfigListStyle,
               for (indicator <- subCriteria.indicators) yield {
                 val isChecked = weights.enabledIndicators.contains(indicator)
@@ -101,6 +109,14 @@ object ExpertConfigComponent {
               })
           )
       }
+    }
+
+    def createQualityVsProfileSelector(subCriteria: SubCriteria, subCriteriaWeights: Map[SubCriteria, Weight]) = {
+      val radioButtonGroupName = "profileVsQuality"
+      <.div(^.display.inline,
+        <.input.radio(^.name := radioButtonGroupName), " P ",
+        <.input.radio(^.name := radioButtonGroupName), " Q "
+      )
     }
 
   }
