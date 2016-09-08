@@ -2,9 +2,10 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntitySelectionAction}
-import ch.fhnw.ima.saav.model.app.{AppModel, GroupedEntity}
+import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.Entity
+import diode.Action
 import diode.react.ModelProxy
 import japgolly.scalajs.react.extra.components.TriStateCheckbox
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -16,26 +17,33 @@ import scalacss.ScalaCssReact._
 
 object LegendComponent {
 
-  case class Props(proxy: ModelProxy[AppModel], allSelectionState: TriStateCheckbox.State)
+  case class Props(
+    entities: Seq[GroupedEntity],
+    entitySelectionModel: EntitySelectionModel,
+    allSelectionState: TriStateCheckbox.State,
+    colorMap: Map[Entity, WebColor],
+    dispatch: Action => Callback
+  )
 
   class Backend($: BackendScope[Props, Unit]) {
 
     def autoColorize() = {
       $.props >>= { p =>
-        val sm = p.proxy.value.entitySelectionModel
-        val selectedEntities = p.proxy.value.qualityModel.rankedEntities.map(_.id).filter(sm.selected.contains)
-        p.proxy.dispatch(AutoColorizeAction(selectedEntities))}
+        val sm = p.entitySelectionModel
+        val selectedEntities = p.entities.map(_.id).filter(sm.selected.contains)
+        p.dispatch(AutoColorizeAction(selectedEntities))
+      }
     }
 
     def updateEntityColor(entity: Entity)(e: SyntheticEvent[HTMLInputElement]) = {
       val newColor = WebColor(e.target.value)
-      $.props >>= (_.proxy.dispatch(UpdateEntityColorAction(entity, newColor)))
+      $.props >>= (_.dispatch(UpdateEntityColorAction(entity, newColor)))
     }
 
     def toggleEntitySelection(entity: Entity) = {
       $.props >>= { p =>
-        val isSelected = p.proxy.value.entitySelectionModel.selected.contains(entity)
-        p.proxy.dispatch(UpdateEntitySelectionAction(Set(entity), !isSelected))
+        val isSelected = p.entitySelectionModel.selected.contains(entity)
+        p.dispatch(UpdateEntitySelectionAction(Set(entity), !isSelected))
       }
     }
 
@@ -45,8 +53,8 @@ object LegendComponent {
           case TriStateCheckbox.Checked => false
           case _ => true
         }
-        val allEntities = p.proxy.value.qualityModel.rankedEntities.map(_.id).toSet
-        p.proxy.dispatch(UpdateEntitySelectionAction(allEntities, isSelected = newSelected))
+        val allEntities = p.entities.map(_.id).toSet
+        p.dispatch(UpdateEntitySelectionAction(allEntities, isSelected = newSelected))
       }
     }
 
@@ -56,9 +64,9 @@ object LegendComponent {
         Callback.empty
       } else {
         $.props >>= { p =>
-          val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
+          val isPinned = p.entitySelectionModel.pinned.contains(entity)
           val pinnedOrNone = if (isPinned) None else Some(entity)
-          p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
+          p.dispatch(UpdateEntityPinningAction(pinnedOrNone))
         }
       }
     }
@@ -118,20 +126,16 @@ object LegendComponent {
 
     def render(p: Props) = {
 
-      val dm = p.proxy.value
-      val entities = dm.qualityModel.rankedEntities
-      val selectionModel = dm.entitySelectionModel
-
-      val rows = entities.map(_.id).zipWithIndex.map {
+      val rows = p.entities.map(_.id).zipWithIndex.map {
         case (e, i) =>
-          val isSelected = selectionModel.selected.contains(e)
-          val isPinned = selectionModel.pinned.contains(e)
-          val color = dm.colorMap(e)
+          val isSelected = p.entitySelectionModel.selected.contains(e)
+          val isPinned = p.entitySelectionModel.pinned.contains(e)
+          val color = p.colorMap(e)
           createRow(e, i, isSelected, isPinned, color)
       }
 
       <.table(css.legendTable,
-        <.thead(header(entities, p.allSelectionState)),
+        <.thead(header(p.entities, p.allSelectionState)),
         <.tbody(rows))
     }
 
@@ -141,16 +145,18 @@ object LegendComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(proxy: ModelProxy[AppModel]) = {
-
-    val selectedEntitiesCount = proxy.value.entitySelectionModel.selected.size
-    val entitiesCount = proxy.value.qualityModel.rankedEntities.size
+  def apply(proxy: ModelProxy[AppModel], entityProvider: (AppModel) => Seq[GroupedEntity]) = {
+    val model = proxy.value
+    val entitySelectionModel = model.entitySelectionModel
+    val selectedEntitiesCount = entitySelectionModel.selected.size
+    val entities = entityProvider(model)
+    val entitiesCount = entities.size
     val allSelectionState =
       if (selectedEntitiesCount == 0) TriStateCheckbox.Unchecked
       else if (selectedEntitiesCount == entitiesCount) TriStateCheckbox.Checked
       else TriStateCheckbox.Indeterminate
 
-    val props = Props(proxy, allSelectionState)
+    val props = Props(entities, entitySelectionModel, allSelectionState, model.colorMap, proxy.theDispatch)
     component(props)
   }
 

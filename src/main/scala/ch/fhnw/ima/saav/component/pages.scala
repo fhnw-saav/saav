@@ -120,11 +120,12 @@ object pages {
           <.div(
             s.activeTab match {
               case QualityTab => <.div(css.row, css.vSpaced,
-                <.div(css.colXs3, LegendComponent(p.proxy)),
+                <.div(css.colXs3, LegendComponent(p.proxy, _.qualityModel.rankedEntities)),
                 <.div(css.colXs9, QualityChartComponent(p.proxy))
               )
               case ProfileTab => <.div(css.row, css.vSpaced,
-                <.div(css.colXs12, TodoComponent("Profile Chart"))
+                <.div(css.colXs3, LegendComponent(p.proxy, _.profileModel.sortedEntities)),
+                <.div(css.colXs9, TodoComponent("Profile Chart"))
               )
             },
             <.div(css.row,
