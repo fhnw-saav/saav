@@ -22,6 +22,8 @@ object GlobalStyles extends StyleSheet.Inline {
     paddingTop(20 px)
   )
 
+  val navTabs = styleWrap("nav", "nav-tabs")
+
   // bootstrap's button-style anchors
   val mainLinkButton = styleWrap("btn", "btn-primary", "btn-lg", "btn-block", "active")
 
@@ -125,8 +127,9 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val textMuted = styleWrap("text-muted")
 
-  val active = styleWrap("active")
-
   val empty = styleWrap("")
+
+  val active = styleWrap("active")
+  val nonActive = empty
 
 }

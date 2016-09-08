@@ -4,7 +4,7 @@ package component
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
 import ch.fhnw.ima.saav.model.app.{AppModel, SaavModel}
 import diode.react.ModelProxy
-import japgolly.scalajs.react.ReactComponentB
+import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import japgolly.scalajs.react.vdom.prefix_<^._
 
 import scalacss.ScalaCssReact._
@@ -94,19 +94,51 @@ object pages {
 
     case class Props(proxy: ModelProxy[AppModel])
 
-    private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
-      .render_P(p => {
+    case class State(activeTab: Tab)
+
+    sealed trait Tab {
+      def name: String
+    }
+
+    case object QualityTab extends Tab {
+      val name = "Quality"
+    }
+
+    case object ProfileTab extends Tab {
+      val name = "Profile"
+    }
+
+    class Backend($: BackendScope[Props, State]) {
+      def render(p: Props, s: State) = {
         <.div(
-          <.div(css.row,
-            <.div(css.colXs3, LegendComponent(p.proxy)),
-            <.div(css.colXs9, QualityChartComponent(p.proxy))
+          <.ul(css.navTabs,
+            for (tab <- Seq(QualityTab, ProfileTab)) yield {
+              val style = if (s.activeTab == tab) css.active else css.nonActive
+              <.li(style, ^.cursor.pointer, <.a(^.onClick --> $.modState(s => s.copy(activeTab = tab)), tab.name))
+            }
           ),
-          <.div(css.row,
-            <.div(css.colXs3, IndicatorComponent(p.proxy)),
-            <.div(css.colXs9, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.weights))))
+          <.div(
+            s.activeTab match {
+              case QualityTab => <.div(css.row, css.vSpaced,
+                <.div(css.colXs3, LegendComponent(p.proxy)),
+                <.div(css.colXs9, QualityChartComponent(p.proxy))
+              )
+              case ProfileTab => <.div(css.row, css.vSpaced,
+                <.div(css.colXs12, TodoComponent("Profile Chart"))
+              )
+            },
+            <.div(css.row,
+              <.div(css.colXs3, IndicatorComponent(p.proxy)),
+              <.div(css.colXs9, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.weights))))
+            )
           )
         )
-      })
+      }
+    }
+
+    private val component = ReactComponentB[Props](PageWithDataComponent.getClass.getSimpleName)
+      .initialState(State(activeTab = QualityTab))
+      .renderBackend[Backend]
       .build
 
     def apply(proxy: ModelProxy[AppModel]) = component(Props(proxy))
