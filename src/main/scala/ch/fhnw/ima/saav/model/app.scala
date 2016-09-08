@@ -127,15 +127,20 @@ object app {
 
     def forQuality(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
-      // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
       val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
-      val subCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
+      val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
+      val qualitySubCriteria = nonEmptySubCriteria.filter { sc =>
+        weights.subCriteriaWeights(sc.id) match {
+          case Quality(_) => true
+          case _ => false
+        }
+      }
 
       val groupedValue = (entity: Entity) => {
         val valuesWithWeights = for {
-          subCriterion <- subCriteria
+          subCriterion <- qualitySubCriteria
           value <- subCriterion.groupedValues(entity)
-          weight = weights.subCriteriaWeights.getOrElse(subCriterion.id, Quality(1f))
+          weight = weights.subCriteriaWeights(subCriterion.id)
           weightValue <- weight match {
             case Quality(wv) => Some(wv)
             case _ => None
@@ -146,19 +151,21 @@ object app {
         weightedMedian(valuesWithWeights)
       }
 
-      GroupedCriteria(entities, criteria, subCriteria, groupedValue)
+      GroupedCriteria(entities, criteria, qualitySubCriteria, groupedValue)
 
     }
 
     def forProfile(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
 
-      // TODO: Filter according to profile vs. quality (only makes sense once we have good defaults)
       val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
-      val subCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
+      val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
+      val profileSubCriteria = nonEmptySubCriteria.filter { sc =>
+        weights.subCriteriaWeights(sc.id) == Profile
+      }
 
       val groupedValue = (entity: Entity) => {
         val valuesWithWeights = for {
-          subCriterion <- subCriteria
+          subCriterion <- profileSubCriteria
           value <- subCriterion.groupedValues(entity)
         } yield {
           (value, 1d) // no weighting for profile chart
@@ -166,7 +173,7 @@ object app {
         weightedMedian(valuesWithWeights)
       }
 
-      GroupedCriteria(entities, criteria, subCriteria, groupedValue)
+      GroupedCriteria(entities, criteria, profileSubCriteria, groupedValue)
 
     }
 
@@ -233,7 +240,9 @@ object app {
 
   case object Profile extends Weight
 
-  final case class Weights(subCriteriaWeights: Map[SubCriteria, Weight] = Map(), enabledIndicators: Set[Indicator])
+  final case class Weights(
+    subCriteriaWeights: Map[SubCriteria, Weight] = Map().withDefaultValue(Quality(1.0)),
+    enabledIndicators: Set[Indicator])
 
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 

@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.UpdateIndicatorWeightAction
-import ch.fhnw.ima.saav.model.app.{Weight, Weights}
+import ch.fhnw.ima.saav.controller.SaavController.{UpdateIndicatorWeightAction, UpdateSubCriteriaWeightAction}
+import ch.fhnw.ima.saav.model.app.{Profile, Quality, Weight, Weights}
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -56,6 +56,9 @@ object ExpertConfigComponent {
         val toggled = !isCurrentlyEnabled
         p.proxy.dispatch(UpdateIndicatorWeightAction(indicator, toggled))
       }
+
+    def updateSubCriteriaWeight(subCriteria: SubCriteria, weight: Weight) =
+      $.props >>= (_.proxy.dispatch(UpdateSubCriteriaWeightAction(subCriteria, weight)))
 
     def render(p: Props, s: State) = {
 
@@ -112,10 +115,19 @@ object ExpertConfigComponent {
     }
 
     def createQualityVsProfileSelector(subCriteria: SubCriteria, subCriteriaWeights: Map[SubCriteria, Weight]) = {
-      val radioButtonGroupName = "profileVsQuality"
+      val radioButtonGroupName = "profileVsQuality-" + subCriteria.name
+      val isProfile = subCriteriaWeights(subCriteria) == Profile
       <.div(^.display.inline,
-        <.input.radio(^.name := radioButtonGroupName), " P ",
-        <.input.radio(^.name := radioButtonGroupName), " Q "
+        <.input.radio(
+          ^.name := radioButtonGroupName,
+          ^.checked := !isProfile,
+          ^.onChange --> updateSubCriteriaWeight(subCriteria, Quality(1.0))),
+        " Q ",
+        <.input.radio(
+          ^.name := radioButtonGroupName,
+          ^.checked := isProfile,
+          ^.onChange --> updateSubCriteriaWeight(subCriteria, Profile)),
+        " P "
       )
     }
 

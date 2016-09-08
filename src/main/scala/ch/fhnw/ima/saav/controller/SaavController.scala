@@ -97,6 +97,8 @@ object SaavController {
 
   final case class UpdateIndicatorWeightAction(indicator: Indicator, isEnabled: Boolean) extends Action
 
+  final case class UpdateSubCriteriaWeightAction(subCriteria: SubCriteria, weight: Weight) extends Action
+
   class WeightsHandler[M](modelRW: ModelRW[M, Weights]) extends ActionHandler(modelRW) {
     override def handle = {
       case UpdateIndicatorWeightAction(indicator, isEnabled) =>
@@ -106,6 +108,9 @@ object SaavController {
           value.enabledIndicators - indicator
         }
         updated(value.copy(enabledIndicators = newEnabledIndicators))
+      case UpdateSubCriteriaWeightAction(subCriteria, weight) =>
+        val newSubCriteriaWeights = value.subCriteriaWeights.updated(subCriteria, weight)
+        updated(value.copy(subCriteriaWeights = newSubCriteriaWeights))
     }
   }
 
