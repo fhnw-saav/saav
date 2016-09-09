@@ -136,13 +136,11 @@ object FileImportComponent {
 
   }
 
-  private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) = Callback.lazily {
+  private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) =
     proxy.dispatch(AnalysisReadyAction(mockAnalysis))
-  }
 
-  private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) = Callback.lazily {
+  private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) =
     proxy.dispatch(AnalysisReadyAction(alphabetSoupAnalysis))
-  }
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {

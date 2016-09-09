@@ -1,6 +1,8 @@
-package ch.fhnw.ima.saav.component
+package ch.fhnw.ima.saav
+package component
 
-import ch.fhnw.ima.saav.model.app.AppModel
+import ch.fhnw.ima.saav.model.app._
+import ch.fhnw.ima.saav.model.domain.Entity
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -9,18 +11,14 @@ import scalacss.ScalaCssReact._
 
 object IndicatorComponent {
 
-  case class Props(proxy: ModelProxy[AppModel])
+  case class Props(pinnedEntity: Option[Entity], indicators: Seq[GroupedIndicator])
 
   private val component = ReactComponentB[Props](IndicatorComponent.getClass.getSimpleName)
     .render_P { p =>
 
-      val model = p.proxy.value
-
       val indicators = for {
-        pinnedEntity <- model.entitySelectionModel.pinned.toSeq
-        hoveredSubCriteria <- model.subCriteriaSelectionModel.hovered.toSeq
-        focusSubCriteria <- model.qualityModel.criteria.flatMap(_.subCriteria).find(_.id == hoveredSubCriteria).toSeq
-        indicator <- focusSubCriteria.indicators
+        pinnedEntity <- p.pinnedEntity.toSeq
+        indicator <- p.indicators
       } yield {
         val value = indicator.groupedValues(pinnedEntity)
         <.div(
@@ -39,8 +37,23 @@ object IndicatorComponent {
       )
 
     }
+    .shouldComponentUpdate { $ =>
+      $.currentProps != $.nextProps
+    }
     .build
 
-  def apply(proxy: ModelProxy[AppModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[AppModel]) = {
+    val model = proxy.value
+    val pinnedEntity = model.entitySelectionModel.pinned
+    val allCriteria = model.qualityModel.criteria ++ model.profileModel.criteria
+    val indicators = for {
+      hoveredSubCriteria <- model.subCriteriaSelectionModel.hovered.toSeq
+      focusSubCriteria <- allCriteria.flatMap(_.subCriteria).find(_.id == hoveredSubCriteria).toSeq
+      indicator <- focusSubCriteria.indicators
+    } yield {
+      indicator
+    }
+    component(Props(pinnedEntity, indicators))
+  }
 
 }

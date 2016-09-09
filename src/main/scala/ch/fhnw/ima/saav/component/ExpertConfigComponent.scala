@@ -3,6 +3,7 @@ package ch.fhnw.ima.saav.component
 import ch.fhnw.ima.saav.controller.SaavController.{UpdateIndicatorWeightAction, UpdateSubCriteriaWeightAction}
 import ch.fhnw.ima.saav.model.app.{Profile, Quality, Weight, Weights}
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
+import diode.Action
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
@@ -14,7 +15,7 @@ object ExpertConfigComponent {
   private val rightGlyph = <.i(css.glyph.right, ^.cursor.pointer)
   private val downGlyph = <.i(css.glyph.down, ^.cursor.pointer)
 
-  case class Props(proxy: ModelProxy[(Analysis, Weights)])
+  case class Props(analysis: Analysis, weights: Weights, dispatch: Action => Callback)
 
   case class State(
     criteriaToggleStates: Map[Criteria, ToggleState] = Map.empty[Criteria, ToggleState].withDefaultValue(Collapsed),
@@ -51,21 +52,18 @@ object ExpertConfigComponent {
 
     def toggleIndicatorWeight(indicator: Indicator) =
       $.props >>= { p =>
-        val weights = p.proxy.value._2
-        val isCurrentlyEnabled = weights.enabledIndicators.contains(indicator)
+        val isCurrentlyEnabled = p.weights.enabledIndicators.contains(indicator)
         val toggled = !isCurrentlyEnabled
-        p.proxy.dispatch(UpdateIndicatorWeightAction(indicator, toggled))
+        p.dispatch(UpdateIndicatorWeightAction(indicator, toggled))
       }
 
     def updateSubCriteriaWeight(subCriteria: SubCriteria, weight: Weight) =
-      $.props >>= (_.proxy.dispatch(UpdateSubCriteriaWeightAction(subCriteria, weight)))
+      $.props >>= (_.dispatch(UpdateSubCriteriaWeightAction(subCriteria, weight)))
 
     def render(p: Props, s: State) = {
 
-      val (analysis, weights) = p.proxy.value
-
-      val criteriaItems = for (criteria <- analysis.criteria) yield {
-        <.div(css.row, createCriteriaItem(criteria, s, weights))
+      val criteriaItems = for (criteria <- p.analysis.criteria) yield {
+        <.div(css.row, createCriteriaItem(criteria, s, p.weights))
       }
 
       <.div(
@@ -136,8 +134,18 @@ object ExpertConfigComponent {
   private val component = ReactComponentB[Props](ExpertConfigComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
+    .shouldComponentUpdate { $ =>
+      // compare all fields of props except for `dispatch` (a function which would never be ==)
+      val propsChanged = $.currentProps.analysis != $.nextProps.analysis || $.currentProps.weights != $.nextProps.weights
+      val stateChanged = $.currentState != $.nextState
+      propsChanged || stateChanged
+    }
     .build
 
-  def apply(proxy: ModelProxy[(Analysis, Weights)]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[(Analysis, Weights)]) = {
+    val (analysis, weights) = proxy.value
+    val dispatch = proxy.theDispatch
+    component(Props(analysis, weights, dispatch))
+  }
 
 }
