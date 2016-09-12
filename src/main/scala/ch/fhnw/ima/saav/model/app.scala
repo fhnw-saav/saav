@@ -35,7 +35,7 @@ object app {
   ) {
 
     def updateWeights(weights: Weights): AppModel = {
-      copy(weights = weights, qualityModel = QualityModel(analysis, weights))
+      copy(weights = weights, qualityModel = QualityModel(analysis, weights), profileModel = ProfileModel(analysis, weights))
     }
 
   }

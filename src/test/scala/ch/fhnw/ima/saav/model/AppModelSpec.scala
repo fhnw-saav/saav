@@ -97,23 +97,29 @@ class AppModelSpec extends FunSpec with Matchers {
       val someIndicators = analysis.criteria(1).subCriteria(0).indicators.toSet
       val weights = Weights(enabledIndicators = someIndicators)
 
-      val newModel = model.updateWeights(weights).qualityModel
+      val oldProfileModel = model.profileModel
+
+      val newModel = model.updateWeights(weights)
+      val newProfileModel = newModel.profileModel
+      newProfileModel shouldNot be theSameInstanceAs oldProfileModel
+
+      val newQualityModel = newModel.qualityModel
 
       // ranking (highest global median first)
-      newModel.rankedEntities.size shouldBe 3
-      newModel.rankedEntities(0).id shouldBe entityTwo
-      newModel.rankedEntities(0).value shouldBe Some(99)
+      newQualityModel.rankedEntities.size shouldBe 3
+      newQualityModel.rankedEntities(0).id shouldBe entityTwo
+      newQualityModel.rankedEntities(0).value shouldBe Some(99)
 
-      newModel.rankedEntities(1).id shouldBe entityOne
-      newModel.rankedEntities(1).value shouldBe Some(42.5)
+      newQualityModel.rankedEntities(1).id shouldBe entityOne
+      newQualityModel.rankedEntities(1).value shouldBe Some(42.5)
 
-      newModel.rankedEntities(2).id shouldBe entityThree
-      newModel.rankedEntities(2).value shouldBe None
+      newQualityModel.rankedEntities(2).id shouldBe entityThree
+      newQualityModel.rankedEntities(2).value shouldBe None
 
-      newModel.criteria.size shouldBe 1
+      newQualityModel.criteria.size shouldBe 1
 
       // weights unchanged --> same expectations as with defaults
-      val criteriaTwo = newModel.criteria(0)
+      val criteriaTwo = newQualityModel.criteria(0)
       criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
       criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
       criteriaTwo.groupedValues(entityThree) shouldBe None

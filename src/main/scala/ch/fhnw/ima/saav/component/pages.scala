@@ -125,7 +125,7 @@ object pages {
               )
               case ProfileTab => <.div(css.row, css.vSpaced,
                 <.div(css.colXs3, LegendComponent(p.proxy, _.profileModel.sortedEntities)),
-                <.div(css.colXs9, TodoComponent("Profile Chart"))
+                <.div(css.colXs9, ProfileChartComponent(p.proxy))
               )
             },
             <.div(css.row,
