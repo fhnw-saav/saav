@@ -1,21 +1,23 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.{UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
+import ch.fhnw.ima.saav.controller.SaavController.{UpdateChartWidth, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
-import ch.fhnw.ima.saav.model.layout.QualityLayout
+import ch.fhnw.ima.saav.model.layout.QualityChartLayout
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
+import org.scalajs.dom
 import org.scalajs.dom.raw.{SVGPoint, SVGSVGElement}
 
+// noinspection TypeAnnotation
 object QualityChartComponent {
 
   case class Props(proxy: ModelProxy[AppModel])
 
   case class State(hoveredEntity: Option[Entity] = None)
 
-  val svgRef = Ref[SVGSVGElement]("svgRef")
+  private val svgRef = Ref[SVGSVGElement]("svgRef")
 
   class Backend($: BackendScope[Props, State]) {
 
@@ -44,20 +46,29 @@ object QualityChartComponent {
       * The global mouse handler.
       */
     def onSvgMouseEvent(proxy: ModelProxy[AppModel], isClicked: Boolean)(e: ReactMouseEvent) =
-    svgRef($).map { svg =>
+      svgRef($).map { svg =>
 
-      val pt = svg.createSVGPoint()
-      pt.x = e.clientX
-      pt.y = e.clientY
+        val pt = svg.createSVGPoint()
+        pt.x = e.clientX
+        pt.y = e.clientY
 
-      val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
-      val model = proxy.value
-      val hoveredSubCriteria = findClosestSubCriteria(model.qualityModel, cursorPt)
-      val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
+        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+        val model = proxy.value
+        val hoveredSubCriteria = findClosestSubCriteria(model.qualityModel, cursorPt)
+        val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
 
-      setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity)
+        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity)
 
-    }.getOrElse(Callback.empty)
+      }.getOrElse(Callback.empty)
+
+    def onWindowResize(proxy: ModelProxy[AppModel]) = {
+      svgRef($).map { svg =>
+        val bootstrapGutter = 30
+        val width = svg.clientWidth - 2 * bootstrapGutter
+        println(width)
+        proxy.dispatch(UpdateChartWidth(width))
+      }.getOrElse(Callback.empty)
+    }
 
     private def findClosestSubCriteria(model: QualityModel, cursorPt: SVGPoint): Option[SubCriteria] = {
       val layout = model.layout
@@ -136,6 +147,10 @@ object QualityChartComponent {
       * @return the virtual DOM to be rendered.
       */
     def render(p: Props, s: State) = {
+
+      dom.window.onresize = (e: dom.Event) => {
+        onWindowResize(p.proxy).runNow()
+      }
 
       val model = p.proxy.value
 
@@ -247,11 +262,11 @@ object QualityChartComponent {
 
       // TODO: alignment, how do we get the bounding box of an SVG text element?
       val hoveredAxisLabel =
-      <.svg.text(
-        ^.svg.textAnchor := "middle",
-        ^.svg.x := hoveredAxisX,
-        ^.svg.y := layout.subCriteriaAxisTopY - layout.padding + 5, hoveredAxisName
-      )
+        <.svg.text(
+          ^.svg.textAnchor := "middle",
+          ^.svg.x := hoveredAxisX,
+          ^.svg.y := layout.subCriteriaAxisTopY - layout.padding + 5, hoveredAxisName
+        )
 
       <.svg.g(criteriaBoxesAndStuff, criteriaAxes, subCriteriaAxes, hoveredAxisLabel)
     }
@@ -269,7 +284,9 @@ object QualityChartComponent {
       val hoveredSubCriteria = model.subCriteriaSelectionModel.hovered
 
       def isSelected(e: GroupedEntity) = model.entitySelectionModel.selected.contains(e.id)
+
       def isPinned(e: GroupedEntity) = model.entitySelectionModel.pinned.contains(e.id)
+
       def isHovered(e: GroupedEntity) = hoveredEntity.contains(e.id)
 
       val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy(e => (isPinned(e), isSelected(e)))
@@ -409,7 +426,7 @@ object QualityChartComponent {
       val Criteria, Subcriteria = Value
     }
 
-    private def computeAxisValue(value: Double, layout: QualityLayout, axisType: AxisType.Value): Double = {
+    private def computeAxisValue(value: Double, layout: QualityChartLayout, axisType: AxisType.Value): Double = {
       val (topY, botY) = axisType match {
         case AxisType.Criteria => (layout.criteriaAxisTopY, layout.criteriaAxisBotY)
         case AxisType.Subcriteria => (layout.subCriteriaAxisTopY, layout.subCriteriaAxisBotY)

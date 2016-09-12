@@ -3,7 +3,7 @@ package model
 
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain._
-import ch.fhnw.ima.saav.model.layout.{ProfileLayout, QualityLayout}
+import ch.fhnw.ima.saav.model.layout.{ProfileChartLayout, QualityChartLayout}
 
 /** Application models (incl. presentation state). */
 object app {
@@ -34,6 +34,7 @@ object app {
     profileModel: ProfileModel
   ) {
 
+    // TODO: Move to SaavController
     def updateWeights(weights: Weights): AppModel = {
       copy(weights = weights, qualityModel = QualityModel(analysis, weights), profileModel = ProfileModel(analysis, weights))
     }
@@ -56,7 +57,7 @@ object app {
 
   }
 
-  final case class QualityModel(rankedEntities: Seq[GroupedEntity], criteria: Seq[GroupedCriteria], layout: QualityLayout)
+  final case class QualityModel(rankedEntities: Seq[GroupedEntity], criteria: Seq[GroupedCriteria], layout: QualityChartLayout)
 
   object QualityModel {
 
@@ -74,14 +75,14 @@ object app {
 
       val (minValue, maxValue) = safeMinMax(criteria)
 
-      val layout = new QualityLayout(criteria, minValue, maxValue)
+      val layout = new QualityChartLayout(criteria = criteria, minValueOption = minValue, maxValueOption = maxValue)
 
       QualityModel(rankedEntities, criteria, layout)
     }
 
   }
 
-  final case class ProfileModel(sortedEntities: Seq[GroupedEntity], entitySortingStrategy: EntitySortingStrategy, criteria: Seq[GroupedCriteria], layout: ProfileLayout)
+  final case class ProfileModel(sortedEntities: Seq[GroupedEntity], entitySortingStrategy: EntitySortingStrategy, criteria: Seq[GroupedCriteria], layout: ProfileChartLayout)
 
   object ProfileModel {
 
@@ -100,7 +101,7 @@ object app {
 
       val (minValue, maxValue) = safeMinMax(criteria)
 
-      val layout = new ProfileLayout(criteria, minValue, maxValue)
+      val layout = new ProfileChartLayout(criteria = criteria, minValueOption = minValue, maxValueOption = maxValue)
 
       ProfileModel(sortedEntities, ByAlphabetEntitySortingStrategy, criteria, layout)
     }
@@ -112,15 +113,15 @@ object app {
   final case class ByCriteriaEntitySortingStrategy(criteria: Criteria)
 
   final case class GroupedEntity(id: Entity, value: Option[Double] = None) {
-    def name = id.name
+    def name: String = id.name
   }
 
   final case class GroupedCriteria(id: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]]) {
-    def name = id.name
+    def name: String = id.name
 
     // Deliberately not using min/max of groupedValues for our purpose
-    val minValue = safeMinMax(subCriteria.map(_.minValue))._1
-    val maxValue = safeMinMax(subCriteria.map(_.maxValue))._2
+    val minValue: Option[Double] = safeMinMax(subCriteria.map(_.minValue))._1
+    val maxValue: Option[Double] = safeMinMax(subCriteria.map(_.maxValue))._2
   }
 
   object GroupedCriteria {
@@ -185,7 +186,7 @@ object app {
   }
 
   final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[GroupedIndicator]) {
-    def name = id.name
+    def name: String = id.name
 
     val (minValue, maxValue) = safeMinMax(groupedValues.values)
   }
@@ -213,7 +214,7 @@ object app {
   }
 
   final case class GroupedIndicator(id: Indicator, groupedValues: Map[Entity, Option[Double]]) {
-    def name = id.name
+    def name: String = id.name
   }
 
   object GroupedIndicator {

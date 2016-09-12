@@ -9,19 +9,19 @@ object layout {
   /**
     * Computes layout parameters for presenting quality aspects of given criteria.
     */
-  class QualityLayout(criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
+  class QualityChartLayout(val width: Int = 1000, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
-    // only relevant for aspect ratio and e.g. relative stroke width (svg will be scaled within parent element)
-    val width = 1000
     val height = 500
+
+    // TODO: Calculate margin, padding, and gaps relative to width
 
     private val margin = 20
     val padding = 20
     private val verticalAxisGap = 70
     private val headerTextGap = 40
 
-    val minValue = Math.min(0, minValueOption.getOrElse(0d))
-    val maxValue = Math.max(0, maxValueOption.getOrElse(0d))
+    val minValue: Double = Math.min(0, minValueOption.getOrElse(0d))
+    val maxValue: Double = Math.max(0, maxValueOption.getOrElse(0d))
 
     private val criteriaBoxesMap = new scala.collection.mutable.HashMap[Criteria, (Int, Int)]
     private val criteriaAxesMap = new scala.collection.mutable.HashMap[Criteria, Int]
@@ -49,16 +49,16 @@ object layout {
 
     // Compute boxes y positions
 
-    val boxTopY = headerTextGap
-    val boxBotY = height - margin
+    val boxTopY: Int = headerTextGap
+    val boxBotY: Int = height - margin
 
     // Compute axes y positions
 
-    val criteriaAxisTopY = headerTextGap + padding
-    val criteriaAxisBotY = criteriaAxisTopY + axisHeight
+    val criteriaAxisTopY: Int = headerTextGap + padding
+    val criteriaAxisBotY: Int = criteriaAxisTopY + axisHeight
 
-    val subCriteriaAxisTopY = height - margin - padding - axisHeight
-    val subCriteriaAxisBotY = subCriteriaAxisTopY + axisHeight
+    val subCriteriaAxisTopY: Int = height - margin - padding - axisHeight
+    val subCriteriaAxisBotY: Int = subCriteriaAxisTopY + axisHeight
 
     // Compute boxes and axes x positions
 
@@ -99,8 +99,15 @@ object layout {
 
   }
 
-  final class ProfileLayout(criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
+  /**
+    * Computes layout parameters for presenting profile aspects of given criteria.
+    */
+  final class ProfileChartLayout(val width: Int = 1000, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
+
+    val height = 500
+
     // TODO: Implement as required by UI
+
   }
 
 }
