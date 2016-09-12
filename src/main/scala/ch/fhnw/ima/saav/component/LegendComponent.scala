@@ -18,6 +18,7 @@ import scalacss.ScalaCssReact._
 object LegendComponent {
 
   case class Props(
+    showRank: Boolean,
     entities: Seq[GroupedEntity],
     entitySelectionModel: EntitySelectionModel,
     allSelectionState: TriStateCheckbox.State,
@@ -73,7 +74,7 @@ object LegendComponent {
 
     val pinGlyph = <.i(css.glyph.pin, ^.title := "Pin")
 
-    def header(entities: Seq[GroupedEntity], allSelectionState: TriStateCheckbox.State) = {
+    def header(entities: Seq[GroupedEntity], allSelectionState: TriStateCheckbox.State, isShowRank: Boolean) = {
 
       val autoColorizeGlyph = <.i(
         css.glyph.magic,
@@ -82,7 +83,7 @@ object LegendComponent {
         ^.title := "Auto-Colorize")
 
       <.tr(
-        <.th("#"),
+        isShowRank ?= <.th("#"),
         <.th("Name"),
         <.th(allCheckbox(allSelectionState)),
         <.th(^.textAlign.center, autoColorizeGlyph),
@@ -90,7 +91,7 @@ object LegendComponent {
       )
     }
 
-    def createRow(entity: Entity, index: Int, isSelected: Boolean, isPinned: Boolean, color: WebColor) = {
+    def createRow(entity: Entity, index: Int, isSelected: Boolean, isPinned: Boolean, color: WebColor, isShowRank: Boolean) = {
 
       val selectionStyle = if (isSelected) css.empty else css.textMuted
       val pinStyle = if (isPinned) css.active else css.empty
@@ -101,7 +102,7 @@ object LegendComponent {
         else EmptyTag
 
       <.tr(selectionStyle, pinStyle, cursor, togglePinOnClick,
-        <.th(^.scope := "row", index + 1),
+        isShowRank ?= <.th(^.scope := "row", index + 1),
         <.td(entity.name),
         <.td(checkbox(entity, isSelected)),
         <.td(^.textAlign.center, colorPicker(entity, isSelected, color)),
@@ -131,11 +132,11 @@ object LegendComponent {
           val isSelected = p.entitySelectionModel.selected.contains(e)
           val isPinned = p.entitySelectionModel.pinned.contains(e)
           val color = p.colorMap(e)
-          createRow(e, i, isSelected, isPinned, color)
+          createRow(e, i, isSelected, isPinned, color, p.showRank)
       }
 
       <.table(css.legendTable,
-        <.thead(header(p.entities, p.allSelectionState)),
+        <.thead(header(p.entities, p.allSelectionState, p.showRank)),
         <.tbody(rows))
     }
 
@@ -145,7 +146,7 @@ object LegendComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(proxy: ModelProxy[AppModel], entityProvider: (AppModel) => Seq[GroupedEntity]) = {
+  def apply(proxy: ModelProxy[AppModel], entityProvider: (AppModel) => Seq[GroupedEntity], showRank: Boolean = true) = {
     val model = proxy.value
     val entitySelectionModel = model.entitySelectionModel
     val selectedEntitiesCount = entitySelectionModel.selected.size
@@ -156,7 +157,7 @@ object LegendComponent {
       else if (selectedEntitiesCount == entitiesCount) TriStateCheckbox.Checked
       else TriStateCheckbox.Indeterminate
 
-    val props = Props(entities, entitySelectionModel, allSelectionState, model.colorMap, proxy.theDispatch)
+    val props = Props(showRank, entities, entitySelectionModel, allSelectionState, model.colorMap, proxy.theDispatch)
     component(props)
   }
 

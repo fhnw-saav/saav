@@ -124,7 +124,7 @@ object pages {
                 <.div(css.colXs9, QualityChartComponent(p.proxy))
               )
               case ProfileTab => <.div(css.row, css.vSpaced,
-                <.div(css.colXs3, LegendComponent(p.proxy, _.profileModel.sortedEntities)),
+                <.div(css.colXs3, LegendComponent(p.proxy, _.profileModel.sortedEntities, showRank = false)),
                 <.div(css.colXs9, ProfileChartComponent(p.proxy))
               )
             },
