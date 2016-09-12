@@ -1,5 +1,7 @@
 package ch.fhnw.ima.saav.component
 
+import java.util.UUID
+
 import ch.fhnw.ima.saav.controller.SaavController.{UpdateIndicatorWeightAction, UpdateSubCriteriaWeightAction}
 import ch.fhnw.ima.saav.model.app.{Profile, Quality, Weight, Weights}
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
@@ -113,7 +115,7 @@ object ExpertConfigComponent {
     }
 
     def createQualityVsProfileSelector(subCriteria: SubCriteria, subCriteriaWeights: Map[SubCriteria, Weight]) = {
-      val radioButtonGroupName = "profileVsQuality-" + subCriteria.name
+      val radioButtonGroupName = String.valueOf(UUID.randomUUID()) // TODO: Is this fast enough? Optionally introduce an ID in SubCriteria
       val isProfile = subCriteriaWeights(subCriteria) == Profile
       <.div(^.display.inline,
         <.input.radio(
