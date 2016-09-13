@@ -38,11 +38,13 @@ object layout {
     // but we still need to make use of available space > tracked as extraPadding
     private val (axisSpacing, extraPadding) = {
       val axisGapCount = axisCount - criteriaCount
-      val availableWith = width - ((criteriaCount + 1) * margin) - (criteriaCount * 2 * padding)
-      if (axisGapCount == 0) {
-        (0, availableWith / criteriaCount)
+      val availableWidth = width - ((criteriaCount + 1) * margin) - (criteriaCount * 2 * padding)
+      if (criteriaCount == 0) {
+        (0, availableWidth)
+      } else if (axisGapCount == 0) {
+        (0, availableWidth / criteriaCount)
       } else {
-        (Math.max(availableWith / axisGapCount, 0), 0)
+        (Math.max(availableWidth / axisGapCount, 0), 0)
       }
     }
     private val axisHeight = (height - headerTextGap - 2 * padding - verticalAxisGap - margin) / 2
