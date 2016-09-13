@@ -109,7 +109,13 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val _form = form
 
-  val legendTable = styleWrap("table table-hover")
+  val table = styleWrap("table table-hover")
+
+  var tdOverflowHidden = style(
+    maxWidth.`0`,
+    overflow.hidden,
+    whiteSpace.nowrap
+  )
 
   object glyph {
     val magic = styleWrap("fa fa-fw fa-magic")

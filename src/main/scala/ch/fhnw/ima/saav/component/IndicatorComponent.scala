@@ -21,9 +21,9 @@ object IndicatorComponent {
         indicator <- p.indicators
       } yield {
         val value = indicator.groupedValues(pinnedEntity)
-        <.div(
-          <.div(css.colXs10, indicator.name),
-          <.div(css.colXs2, value)
+        <.tr(
+          <.td(css.colXs10, css.tdOverflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.name, indicator.name),
+          <.td(css.colXs2, value)
         )
       }
 
@@ -32,7 +32,9 @@ object IndicatorComponent {
         if (indicators.isEmpty) {
           <.i("Pin a row and move your mouse over an axis to see something here")
         } else {
-          <.div(css.row, indicators.toSeq)
+          <.table(css.table,
+            <.tbody(indicators.toSeq)
+          )
         }
       )
 

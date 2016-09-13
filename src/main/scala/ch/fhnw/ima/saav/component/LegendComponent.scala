@@ -103,7 +103,7 @@ object LegendComponent {
 
       <.tr(selectionStyle, pinStyle, cursor, togglePinOnClick,
         isShowRank ?= <.th(^.scope := "row", index + 1),
-        <.td(entity.name),
+        <.td(css.tdOverflowHidden, ^.textOverflow.ellipsis, ^.title := entity.name, entity.name),
         <.td(checkbox(entity, isSelected)),
         <.td(^.textAlign.center, colorPicker(entity, isSelected, color)),
         <.td(^.textAlign.center, if (isPinned) pinGlyph else EmptyTag)
@@ -135,7 +135,7 @@ object LegendComponent {
           createRow(e, i, isSelected, isPinned, color, p.showRank)
       }
 
-      <.table(css.legendTable,
+      <.table(css.table,
         <.thead(header(p.entities, p.allSelectionState, p.showRank)),
         <.tbody(rows))
     }
