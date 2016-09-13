@@ -440,6 +440,9 @@ object QualityChartComponent {
   private val component = ReactComponentB[Props](QualityChartComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
+    .componentDidMount { $ =>
+      $.backend.onWindowResize($.props.proxy)
+    }
     .build
 
   def apply(proxy: ModelProxy[AppModel]) = component(Props(proxy))
