@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.controller.SaavController.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntitySelectionAction}
+import ch.fhnw.ima.saav.controller.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntitySelectionAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.Entity

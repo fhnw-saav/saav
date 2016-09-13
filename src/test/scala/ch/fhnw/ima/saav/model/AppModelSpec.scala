@@ -91,35 +91,29 @@ class AppModelSpec extends FunSpec with Matchers {
 
     }
 
-    it("should re-calculate aggregated medians when weights are updated") {
+    it("should only include enabled indicators when aggregating medians") {
 
       // enable all indicators below criteria 1
       val someIndicators = analysis.criteria(1).subCriteria(0).indicators.toSet
       val weights = Weights(enabledIndicators = someIndicators)
 
-      val oldProfileModel = model.profileModel
-
-      val newModel = model.updateWeights(weights)
-      val newProfileModel = newModel.profileModel
-      newProfileModel shouldNot be theSameInstanceAs oldProfileModel
-
-      val newQualityModel = newModel.qualityModel
+      val qualityModel = QualityModel(model.analysis, weights)
 
       // ranking (highest global median first)
-      newQualityModel.rankedEntities.size shouldBe 3
-      newQualityModel.rankedEntities(0).id shouldBe entityTwo
-      newQualityModel.rankedEntities(0).value shouldBe Some(99)
+      qualityModel.rankedEntities.size shouldBe 3
+      qualityModel.rankedEntities(0).id shouldBe entityTwo
+      qualityModel.rankedEntities(0).value shouldBe Some(99)
 
-      newQualityModel.rankedEntities(1).id shouldBe entityOne
-      newQualityModel.rankedEntities(1).value shouldBe Some(42.5)
+      qualityModel.rankedEntities(1).id shouldBe entityOne
+      qualityModel.rankedEntities(1).value shouldBe Some(42.5)
 
-      newQualityModel.rankedEntities(2).id shouldBe entityThree
-      newQualityModel.rankedEntities(2).value shouldBe None
+      qualityModel.rankedEntities(2).id shouldBe entityThree
+      qualityModel.rankedEntities(2).value shouldBe None
 
-      newQualityModel.criteria.size shouldBe 1
+      qualityModel.criteria.size shouldBe 1
 
       // weights unchanged --> same expectations as with defaults
-      val criteriaTwo = newQualityModel.criteria(0)
+      val criteriaTwo = qualityModel.criteria(0)
       criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
       criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
       criteriaTwo.groupedValues(entityThree) shouldBe None

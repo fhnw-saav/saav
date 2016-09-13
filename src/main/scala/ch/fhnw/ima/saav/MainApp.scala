@@ -3,13 +3,15 @@ package ch.fhnw.ima.saav
 import ch.fhnw.ima.saav.component.TodoComponent
 import ch.fhnw.ima.saav.component.pages.Page.{HomePage, ProjectAnalysisPage}
 import ch.fhnw.ima.saav.component.pages._
-import ch.fhnw.ima.saav.controller.SaavController.SaavCircuit
+import ch.fhnw.ima.saav.controller.SaavCircuit
 import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.ReactDOM
 import japgolly.scalajs.react.extra.router.{Resolution, Router, _}
+import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import org.scalajs.dom
 import org.scalajs.dom._
+import org.scalajs.dom.html.Div
 
 import scala.scalajs.js
 import scalacss.Defaults._
@@ -25,17 +27,17 @@ object MainApp extends js.JSApp {
     import dsl._
 
     // re-usable connections to controller
-    val modelConnection = SaavCircuit.connect(m => m)
+    val modelConnection = new SaavCircuit().connect(m => m)
 
     // defines how hash-prefixed locations are mapped to a rendered component
-    def routeSubPage(subPage: SubPage): Rule = staticRoute("#/" + subPage.hashLink, subPage) ~> renderR(ctl => {
+    def routeSubPage(subPage: SubPage): Rule = staticRoute("#/" + subPage.hashLink, subPage) ~> renderR(_ => {
       subPage match {
         case ProjectAnalysisPage => modelConnection(ProjectAnalysisPageComponent(_))
         case _ => TodoComponent(subPage.displayName)
       }
     })
 
-    val homePageRoute = staticRoute(root, HomePage) ~> renderR(ctl => HomePageComponent())
+    val homePageRoute = staticRoute(root, HomePage) ~> renderR(_ => HomePageComponent())
     val subPageRoutes = Page.subPages.map(routeSubPage).reduce(_ | _)
 
     val defaultRedirect = redirectToPage(Page.HomePage)(Redirect.Replace)
@@ -44,7 +46,7 @@ object MainApp extends js.JSApp {
   }.renderWith(layout)
 
   // base layout for all pages
-  def layout(ctl: RouterCtl[Page], r: Resolution[Page]) = {
+  private def layout(ctl: RouterCtl[Page], r: Resolution[Page]): ReactTagOf[Div] = {
 
     // globally defined CSS styles
     val css = GlobalStyles
@@ -53,7 +55,7 @@ object MainApp extends js.JSApp {
     <.div(css.saavContainer, r.render())
   }
 
-  def main() = {
+  def main(): Unit = {
     // create stylesheet
     GlobalStyles.addToDocument()
     // create the router component (which knows what to render based on defined rules > see routerConfig above)

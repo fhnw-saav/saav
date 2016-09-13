@@ -32,14 +32,7 @@ object app {
     colorMap: Map[Entity, WebColor],
     qualityModel: QualityModel,
     profileModel: ProfileModel
-  ) {
-
-    // TODO: Move to SaavController
-    def updateWeights(weights: Weights): AppModel = {
-      copy(weights = weights, qualityModel = QualityModel(analysis, weights), profileModel = ProfileModel(analysis, weights))
-    }
-
-  }
+  )
 
   object AppModel {
 

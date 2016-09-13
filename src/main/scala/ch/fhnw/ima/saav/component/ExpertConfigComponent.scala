@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav.component
 
 import java.util.UUID
 
-import ch.fhnw.ima.saav.controller.SaavController.{UpdateIndicatorWeightAction, UpdateSubCriteriaWeightAction}
+import ch.fhnw.ima.saav.controller.{UpdateIndicatorWeightAction, UpdateSubCriteriaWeightAction}
 import ch.fhnw.ima.saav.model.app.{Profile, Quality, Weight, Weights}
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
 import diode.Action

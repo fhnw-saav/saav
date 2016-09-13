@@ -1,0 +1,41 @@
+package ch.fhnw.ima.saav.controller
+
+import ch.fhnw.ima.saav.model.app.{SaavModel, _}
+import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
+import diode._
+
+final case class AnalysisImportInProgressAction(progress: Float) extends Action
+
+final case class AnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
+
+final case class AnalysisReadyAction[E <: Entity](analysis: Analysis) extends Action
+
+class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
+
+  override def handle: PartialFunction[Any, ActionResult[M]] = {
+    case AnalysisImportInProgressAction(progress) => updated(Left(NoDataAppModel(ImportInProgress(progress))))
+    case a@AnalysisImportFailedAction(t, logToConsole) =>
+      if (logToConsole) {
+        println(s"[${getClass.getSimpleName}] Error: ${String.valueOf(a)}")
+        t.printStackTrace()
+      }
+      updated(Left(NoDataAppModel(ImportFailed(t))))
+    case AnalysisReadyAction(analysis) =>
+      val indicators = analysis.criteria.flatMap(_.subCriteria.flatMap(_.indicators))
+      val weights = Weights(enabledIndicators = indicators.toSet)
+      val model = AppModel(analysis, weights)
+      updated(Right(model))
+
+  }
+
+}
+
+object AnalysisImportHandler {
+
+  def modelGet: (SaavModel) => Either[NoDataAppModel, AppModel] =
+    _.model
+
+  def modelSet: (SaavModel, Either[NoDataAppModel, AppModel]) => SaavModel = (m, v) =>
+    m.copy(model = v)
+
+}

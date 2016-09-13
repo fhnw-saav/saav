@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.SaavController.{UpdateChartWidth, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
+import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
@@ -66,7 +66,7 @@ object QualityChartComponent {
         val bootstrapGutter = 30
         val width = svg.clientWidth - 2 * bootstrapGutter
         println(width)
-        proxy.dispatch(UpdateChartWidth(width))
+        proxy.dispatch(UpdateChartWidthAction(width))
       }.getOrElse(Callback.empty)
     }
 
