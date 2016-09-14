@@ -103,7 +103,7 @@ object LegendComponent {
 
       <.tr(selectionStyle, pinStyle, cursor, togglePinOnClick,
         isShowRank ?= <.th(^.scope := "row", index + 1),
-        <.td(css.tdOverflowHidden, ^.textOverflow.ellipsis, ^.title := entity.name, entity.name),
+        <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.title := entity.name, entity.name),
         <.td(checkbox(entity, isSelected)),
         <.td(^.textAlign.center, colorPicker(entity, isSelected, color)),
         <.td(^.textAlign.center, if (isPinned) pinGlyph else EmptyTag)

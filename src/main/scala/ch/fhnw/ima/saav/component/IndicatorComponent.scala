@@ -22,7 +22,7 @@ object IndicatorComponent {
       } yield {
         val value = indicator.groupedValues(pinnedEntity)
         <.tr(
-          <.td(css.colXs10, css.tdOverflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.name, indicator.name),
+          <.td(css.colXs10, css.overflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.name, indicator.name),
           <.td(css.colXs2, value)
         )
       }

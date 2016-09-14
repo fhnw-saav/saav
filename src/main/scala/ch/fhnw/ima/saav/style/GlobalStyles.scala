@@ -36,11 +36,17 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val row = styleWrap("row")
 
+  val colXs1 = styleWrap("col-xs-1")
   val colXs2 = styleWrap("col-xs-2")
   val colXs3 = styleWrap("col-xs-3")
+  val colXs4 = styleWrap("col-xs-4")
+  val colXs5 = styleWrap("col-xs-5")
   val colXs6 = styleWrap("col-xs-6")
+  val colXs7 = styleWrap("col-xs-7")
+  val colXs8 = styleWrap("col-xs-8")
   val colXs9 = styleWrap("col-xs-9")
   val colXs10 = styleWrap("col-xs-10")
+  val colXs11 = styleWrap("col-xs-11")
   val colXs12 = styleWrap("col-xs-12")
 
   // SVG responsiveness (http://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js)
@@ -81,9 +87,16 @@ object GlobalStyles extends StyleSheet.Inline {
     color(c"#bbb")
   )
 
-  val expertConfigListStyle = style(
+  val expertIndicatorList = style(
     addClassName("list-unstyled"),
     marginLeft(18 px) // align with font awesome fixed-width glyph
+  )
+
+  val expertSubCriteriaTable = style(
+    addClassName("table"),
+    width(100 %%),
+    paddingRight(`0`),
+    marginTop(10 px)
   )
 
   val hidden = style(
@@ -111,7 +124,7 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val table = styleWrap("table table-hover")
 
-  var tdOverflowHidden = style(
+  var overflowHidden = style(
     maxWidth.`0`,
     overflow.hidden,
     whiteSpace.nowrap

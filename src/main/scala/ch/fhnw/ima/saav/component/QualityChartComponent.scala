@@ -65,7 +65,6 @@ object QualityChartComponent {
       svgRef($).map { svg =>
         val bootstrapGutter = 30
         val width = svg.clientWidth - 2 * bootstrapGutter
-        println(width)
         proxy.dispatch(UpdateChartWidthAction(width))
       }.getOrElse(Callback.empty)
     }

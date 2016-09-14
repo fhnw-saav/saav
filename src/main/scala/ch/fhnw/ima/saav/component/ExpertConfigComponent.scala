@@ -7,8 +7,10 @@ import ch.fhnw.ima.saav.model.app.{Profile, Quality, Weight, Weights}
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
 import diode.Action
 import diode.react.ModelProxy
+import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactComponentU, ReactEventI, TopNode}
+import org.scalajs.dom.html.Div
 
 import scalacss.ScalaCssReact._
 
@@ -32,105 +34,206 @@ object ExpertConfigComponent {
 
   class Backend($: BackendScope[Props, State]) {
 
-    def expandCriteria(criteria: Criteria) = updateCriteriaToggleState(criteria, Expanded)
+    private def expandCriteria(criteria: Criteria) = updateCriteriaToggleState(criteria, Expanded)
 
-    def collapseCriteria(criteria: Criteria) = updateCriteriaToggleState(criteria, Collapsed)
+    private def collapseCriteria(criteria: Criteria) = updateCriteriaToggleState(criteria, Collapsed)
 
-    def updateCriteriaToggleState(criteria: Criteria, newToggleState: ToggleState) =
+    private def updateCriteriaToggleState(criteria: Criteria, newToggleState: ToggleState) =
       $.modState { s =>
         val newStates = s.criteriaToggleStates.updated(criteria, newToggleState)
         s.copy(criteriaToggleStates = newStates)
       }
 
-    def expandSubCriteria(subCriteria: SubCriteria) = updateSubCriteriaToggleState(subCriteria, Expanded)
+    private def expandSubCriteria(subCriteria: SubCriteria) = updateSubCriteriaToggleState(subCriteria, Expanded)
 
-    def collapseSubCriteria(subCriteria: SubCriteria) = updateSubCriteriaToggleState(subCriteria, Collapsed)
+    private def collapseSubCriteria(subCriteria: SubCriteria) = updateSubCriteriaToggleState(subCriteria, Collapsed)
 
-    def updateSubCriteriaToggleState(subCriteria: SubCriteria, newToggleState: ToggleState) =
+    private def updateSubCriteriaToggleState(subCriteria: SubCriteria, newToggleState: ToggleState) =
       $.modState { s =>
         val newStates = s.subCriteriaToggleStates.updated(subCriteria, newToggleState)
         s.copy(subCriteriaToggleStates = newStates)
       }
 
-    def toggleIndicatorWeight(indicator: Indicator) =
+    private def toggleIndicatorWeight(indicator: Indicator) =
       $.props >>= { p =>
         val isCurrentlyEnabled = p.weights.enabledIndicators.contains(indicator)
         val toggled = !isCurrentlyEnabled
         p.dispatch(UpdateIndicatorWeightAction(indicator, toggled))
       }
 
-    def updateSubCriteriaWeight(subCriteria: SubCriteria, weight: Weight) =
+    private def updateSubCriteria(subCriteria: SubCriteria, weight: Weight) =
       $.props >>= (_.dispatch(UpdateSubCriteriaWeightAction(subCriteria, weight)))
 
-    def render(p: Props, s: State) = {
+    private def updateSubCriteriaQualityWeightValue(subCriteria: SubCriteria)(e: ReactEventI) =
+      updateSubCriteria(subCriteria, Quality(e.target.value.toDouble))
 
-      val criteriaItems = for (criteria <- p.analysis.criteria) yield {
-        <.div(css.row, createCriteriaItem(criteria, s, p.weights))
-      }
+    def render(p: Props, s: State): ReactTagOf[Div] = {
 
       <.div(
         <.h2("Expert Configuration"),
-        <.ul(criteriaItems)
+        CriteriaTable(CriteriaTableProps(p.analysis.criteria, s.criteriaToggleStates, s.subCriteriaToggleStates, p.weights))
       )
 
     }
 
-    def createCriteriaItem(criteria: Criteria, s: State, weights: Weights) = {
-      s.criteriaToggleStates(criteria) match {
-        case Collapsed =>
-          <.div(rightGlyph, ^.onClick --> expandCriteria(criteria), criteria.name)
-        case Expanded =>
-          <.div(
-            <.div(downGlyph, ^.onClick --> collapseCriteria(criteria), criteria.name),
-            <.ul(css.expertConfigListStyle,
-              for (subCriteria <- criteria.subCriteria) yield {
-                <.li(createSubCriteriaItem(subCriteria, s, weights))
-              })
+    private final case class CriteriaTableProps(
+      criteria: Seq[Criteria],
+      criteriaToggleStates: Map[Criteria, ToggleState],
+      subCriteriaToggleStates: Map[SubCriteria, ToggleState],
+      weights: Weights)
+
+    private val CriteriaTable = ReactComponentB[CriteriaTableProps]("CriteriaTable")
+      .render_P { p =>
+        <.table(css.table,
+          <.thead(
+            <.tr(
+              <.th(css.colXs8),
+              <.th(css.colXs1, ^.textAlign.center, "Q"),
+              <.th(css.colXs1, ^.textAlign.center, "P"),
+              <.th(css.colXs2, ^.textAlign.center, "Weight")
+            )
+          ),
+          <.tbody(
+            for (criteria <- p.criteria) yield {
+              CriteriaRow(CriteriaRowProps(criteria, p.criteriaToggleStates(criteria), p.subCriteriaToggleStates, p.weights))
+            }
           )
+        )
       }
-    }
+      .build
 
-    def createSubCriteriaItem(subCriteria: SubCriteria, s: State, weights: Weights) = {
 
-      def header(glyph: ReactTag, onClick: => Callback) =
-        <.div(^.display.inline,
-          <.div(^.display.inline, glyph, ^.onClick --> onClick),
-          <.div(^.display.inline, subCriteria.name + " "),
-          createQualityVsProfileSelector(subCriteria, weights.subCriteriaWeights)
+    private final case class CriteriaRowProps(
+      criteria: Criteria,
+      criteriaToggleState: ToggleState,
+      subCriteriaToggleStates: Map[SubCriteria, ToggleState],
+      weights: Weights
+    )
+
+    private lazy val CriteriaRow = ReactComponentB[CriteriaRowProps]("CriteriaRow")
+      .render_P { p =>
+        <.tr(^.backgroundColor := "transparent",
+          p.criteriaToggleState match {
+            case Collapsed =>
+              <.td(css.overflowHidden, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
+                <.div(^.display.inline, ^.onClick --> expandCriteria(p.criteria), rightGlyph),
+                p.criteria.name
+              )
+            case Expanded =>
+              <.td(css.overflowHidden, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
+                <.div(^.display.inline, ^.onClick --> collapseCriteria(p.criteria), downGlyph),
+                p.criteria.name,
+                SubCriteriaTable(SubCriteriaTableProps(p.criteria.subCriteria, p.subCriteriaToggleStates, p.weights))
+              )
+          })
+      }
+      .build
+
+    private final case class SubCriteriaTableProps(
+      subCriteria: Seq[SubCriteria],
+      subCriteriaToggleStates: Map[SubCriteria, ToggleState],
+      weights: Weights
+    )
+
+    private lazy val SubCriteriaTable = ReactComponentB[SubCriteriaTableProps]("SubCriteriaTable")
+      .render_P { p =>
+        <.table(css.expertSubCriteriaTable,
+          <.tbody(
+            for (subCriteria <- p.subCriteria) yield {
+              SubCriteriaRow(SubCriteriaRowProps(subCriteria, p.subCriteriaToggleStates(subCriteria), p.weights))
+            }
+          )
+        )
+      }
+      .build
+
+    private final case class SubCriteriaRowProps(
+      subCriteria: SubCriteria,
+      subCriteriaToggleState: ToggleState,
+      weights: Weights
+    )
+
+    private val SubCriteriaRow = ReactComponentB[SubCriteriaRowProps]("SubCriteriaRow")
+      .render_P { p =>
+
+        // TODO: Is this fast enough? Optionally introduce an ID in SubCriteria
+        val radioButtonGroupName = String.valueOf(UUID.randomUUID())
+        val subCriteriaWeight = p.weights.subCriteriaWeights(p.subCriteria)
+        val isProfile = subCriteriaWeight == Profile
+
+        val qualityRadioButton = <.td(css.colXs1, ^.textAlign.center,
+          <.input.radio(
+            ^.name := radioButtonGroupName,
+            ^.checked := !isProfile,
+            ^.onChange --> updateSubCriteria(p.subCriteria, Quality(1.0)))
         )
 
-      s.subCriteriaToggleStates(subCriteria) match {
-        case Collapsed =>
-          header(rightGlyph, expandSubCriteria(subCriteria))
-        case Expanded =>
-          <.div(
-            header(downGlyph, collapseSubCriteria(subCriteria)),
-            <.ul(css.expertConfigListStyle,
-              for (indicator <- subCriteria.indicators) yield {
-                val isChecked = weights.enabledIndicators.contains(indicator)
-                <.li(<.input.checkbox(^.checked := isChecked, ^.onChange --> toggleIndicatorWeight(indicator)), " " + indicator.name)
-              })
-          )
+        val profileRadioButton = <.td(css.colXs1, ^.textAlign.center,
+          <.input.radio(
+            ^.name := radioButtonGroupName,
+            ^.checked := isProfile,
+            ^.onChange --> updateSubCriteria(p.subCriteria, Profile))
+        )
+
+        val weightValue: Double = subCriteriaWeight match {
+          case Profile => 1.0
+          case Quality(w) => w.toDouble
+        }
+
+        val formattedWeightValue = f"$weightValue%1.1f"
+
+        val weightSlider = <.td(css.colXs2, ^.textAlign.center,
+          <.input.range(^.display.inline, ^.width := "80%", ^.verticalAlign.middle,
+            ^.min := 0,
+            ^.max := 1,
+            ^.step := 0.1,
+            ^.disabled := isProfile,
+            ^.value := weightValue,
+            ^.onChange ==> updateSubCriteriaQualityWeightValue(p.subCriteria)
+          ),
+          <.div(^.display.inline, ^.float.right, ^.verticalAlign.middle, formattedWeightValue)
+        )
+
+        val nameCollapsedOrNameExpandedWithIndicators = p.subCriteriaToggleState match {
+          case Collapsed =>
+            <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.paddingLeft := "20px", ^.colSpan := 4,
+              <.div(^.display.inline, ^.onClick --> expandSubCriteria(p.subCriteria), rightGlyph),
+              p.subCriteria.name
+            )
+          case Expanded =>
+            <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.paddingLeft := "20px", ^.colSpan := 4,
+              <.div(^.display.inline, ^.onClick --> collapseSubCriteria(p.subCriteria), downGlyph),
+              p.subCriteria.name,
+              IndicatorList(IndicatorListProps(p.subCriteria.indicators, p.weights.enabledIndicators))
+            )
+        }
+        <.tr(
+          nameCollapsedOrNameExpandedWithIndicators,
+          qualityRadioButton,
+          profileRadioButton,
+          weightSlider
+        )
       }
-    }
+      .build
 
-    def createQualityVsProfileSelector(subCriteria: SubCriteria, subCriteriaWeights: Map[SubCriteria, Weight]) = {
-      val radioButtonGroupName = String.valueOf(UUID.randomUUID()) // TODO: Is this fast enough? Optionally introduce an ID in SubCriteria
-      val isProfile = subCriteriaWeights(subCriteria) == Profile
-      <.div(^.display.inline,
-        <.input.radio(
-          ^.name := radioButtonGroupName,
-          ^.checked := !isProfile,
-          ^.onChange --> updateSubCriteriaWeight(subCriteria, Quality(1.0))),
-        " Q ",
-        <.input.radio(
-          ^.name := radioButtonGroupName,
-          ^.checked := isProfile,
-          ^.onChange --> updateSubCriteriaWeight(subCriteria, Profile)),
-        " P "
-      )
-    }
+    private final case class IndicatorListProps(
+      indicators: Seq[Indicator],
+      enabledIndicators: Set[Indicator]
+    )
 
+    private lazy val IndicatorList =
+      ReactComponentB[IndicatorListProps]("IndicatorList")
+        .render_P { p =>
+          <.ul(css.expertIndicatorList,
+            for (indicator <- p.indicators) yield {
+              val isChecked = p.enabledIndicators.contains(indicator)
+              <.li(^.whiteSpace.nowrap, ^.overflow.hidden, ^.textOverflow.ellipsis,
+                <.input.checkbox(^.checked := isChecked, ^.onChange --> toggleIndicatorWeight(indicator)),
+                " " + indicator.name
+              )
+            })
+        }
+        .build
   }
 
   private val component = ReactComponentB[Props](ExpertConfigComponent.getClass.getSimpleName)
@@ -144,7 +247,7 @@ object ExpertConfigComponent {
     }
     .build
 
-  def apply(proxy: ModelProxy[(Analysis, Weights)]) = {
+  def apply(proxy: ModelProxy[(Analysis, Weights)]): ReactComponentU[Props, State, Backend, TopNode] = {
     val (analysis, weights) = proxy.value
     val dispatch = proxy.theDispatch
     component(Props(analysis, weights, dispatch))
