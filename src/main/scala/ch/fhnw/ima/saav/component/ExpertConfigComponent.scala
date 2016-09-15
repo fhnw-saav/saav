@@ -89,8 +89,8 @@ object ExpertConfigComponent {
             <.tr(
               <.th(css.colXs8),
               <.th(css.colXs1, ^.textAlign.center, "Q"),
-              <.th(css.colXs1, ^.textAlign.center, "P"),
-              <.th(css.colXs2, ^.textAlign.center, "Weight")
+              <.th(css.colXs2, ^.textAlign.center, "Weight"),
+              <.th(css.colXs1, ^.textAlign.center, "P")
             )
           ),
           <.tbody(
@@ -182,16 +182,20 @@ object ExpertConfigComponent {
 
         val formattedWeightValue = f"$weightValue%1.1f"
 
-        val weightSlider = <.td(css.colXs2, ^.textAlign.center,
-          <.input.range(^.display.inline, ^.width := "80%", ^.verticalAlign.middle,
-            ^.min := 0,
-            ^.max := 1,
-            ^.step := 0.1,
-            ^.disabled := isProfile,
-            ^.value := weightValue,
-            ^.onChange ==> updateSubCriteriaQualityWeightValue(p.subCriteria)
-          ),
-          <.div(^.display.inline, ^.float.right, ^.verticalAlign.middle, formattedWeightValue)
+        // TODO: Move all CSS to GlobalStyles
+        val weightSlider = <.td(css.colXs2,
+          <.div(^.`class` := "form-group form-inline input-group", ^.marginTop := "-8px",
+            <.input.range(
+              css.expertFormControl, ^.boxShadow := "0 0 0 transparent",
+              ^.min := 0,
+              ^.max := 1,
+              ^.step := 0.1,
+              ^.disabled := isProfile,
+              ^.value := weightValue,
+              ^.onChange ==> updateSubCriteriaQualityWeightValue(p.subCriteria)
+            ),
+            <.div(css.expertInputGroupAddon, formattedWeightValue)
+          )
         )
 
         val nameCollapsedOrNameExpandedWithIndicators = p.subCriteriaToggleState match {
@@ -210,8 +214,8 @@ object ExpertConfigComponent {
         <.tr(
           nameCollapsedOrNameExpandedWithIndicators,
           qualityRadioButton,
-          profileRadioButton,
-          weightSlider
+          weightSlider,
+          profileRadioButton
         )
       }
       .build

@@ -99,6 +99,19 @@ object GlobalStyles extends StyleSheet.Inline {
     marginTop(10 px)
   )
 
+  val expertFormControl = style(
+    addClassName("form-control"),
+    borderColor.transparent,
+    paddingLeft.`0`,
+    paddingRight.`0`
+  )
+
+  val expertInputGroupAddon = style(
+    addClassName("input-group-addon"),
+    backgroundColor.transparent,
+    border.none
+  )
+
   val hidden = style(
     display.none
   )
