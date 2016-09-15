@@ -14,6 +14,7 @@ import org.scalajs.dom.html.Div
 
 import scalacss.ScalaCssReact._
 
+// TODO: Move all CSS to GlobalStyles
 object ExpertConfigComponent {
 
   private val rightGlyph = <.i(css.glyph.right, ^.cursor.pointer)
@@ -89,7 +90,7 @@ object ExpertConfigComponent {
             <.tr(
               <.th(css.colXs8),
               <.th(css.colXs1, ^.textAlign.center, "Q"),
-              <.th(css.colXs2, ^.textAlign.center, "Weight"),
+              <.th(css.colXs2, ^.textAlign.left, "Weight"),
               <.th(css.colXs1, ^.textAlign.center, "P")
             )
           ),
@@ -115,12 +116,12 @@ object ExpertConfigComponent {
         <.tr(^.backgroundColor := "transparent",
           p.criteriaToggleState match {
             case Collapsed =>
-              <.td(css.overflowHidden, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
+              <.td(css.overflowHidden, ^.paddingLeft := 0, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
                 <.div(^.display.inline, ^.onClick --> expandCriteria(p.criteria), rightGlyph),
                 p.criteria.name
               )
             case Expanded =>
-              <.td(css.overflowHidden, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
+              <.td(css.overflowHidden, ^.paddingLeft := 0, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
                 <.div(^.display.inline, ^.onClick --> collapseCriteria(p.criteria), downGlyph),
                 p.criteria.name,
                 SubCriteriaTable(SubCriteriaTableProps(p.criteria.subCriteria, p.subCriteriaToggleStates, p.weights))
@@ -182,7 +183,6 @@ object ExpertConfigComponent {
 
         val formattedWeightValue = f"$weightValue%1.1f"
 
-        // TODO: Move all CSS to GlobalStyles
         val weightSlider = <.td(css.colXs2,
           <.div(^.`class` := "form-group form-inline input-group", ^.marginTop := "-8px",
             <.input.range(
