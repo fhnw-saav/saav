@@ -8,7 +8,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom
-import org.scalajs.dom.raw.{SVGPoint, SVGSVGElement}
+import org.scalajs.dom.raw.{HTMLElement, SVGPoint, SVGSVGElement}
 
 // noinspection TypeAnnotation
 object QualityChartComponent {
@@ -63,8 +63,8 @@ object QualityChartComponent {
 
     def onWindowResize(proxy: ModelProxy[AppModel]) = {
       svgRef($).map { svg =>
-        val bootstrapGutter = 30
-        val width = svg.clientWidth - 2 * bootstrapGutter
+        val parent = svg.parentNode.asInstanceOf[HTMLElement]
+        val width = parent.clientWidth
         proxy.dispatch(UpdateChartWidthAction(width))
       }.getOrElse(Callback.empty)
     }
