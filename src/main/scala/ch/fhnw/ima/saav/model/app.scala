@@ -2,6 +2,7 @@ package ch.fhnw.ima.saav
 package model
 
 import ch.fhnw.ima.saav.model.color._
+import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.layout.{ProfileChartLayout, QualityChartLayout}
 
@@ -25,6 +26,7 @@ object app {
   final case class SubCriteriaSelectionModel(hovered: Option[SubCriteria] = None)
 
   final case class AppModel(
+    config: Config,
     analysis: Analysis,
     weights: Weights,
     entitySelectionModel: EntitySelectionModel,
@@ -36,17 +38,17 @@ object app {
 
   object AppModel {
 
-    def apply(analysis: Analysis, weights: Weights): AppModel = {
+    def apply(analysis: Analysis, config: Config): AppModel = {
       val defaultLayoutWidth = 1000
-      val qualityModel = QualityModel(analysis, weights, defaultLayoutWidth)
-      val profileModel = ProfileModel(analysis, weights, defaultLayoutWidth)
+      val qualityModel = QualityModel(analysis, config.defaultWeights, defaultLayoutWidth)
+      val profileModel = ProfileModel(analysis, config.defaultWeights, defaultLayoutWidth)
       val entitySelectionModel = EntitySelectionModel(analysis.entities.toSet, None)
       val subCriteriaSelectionModel = SubCriteriaSelectionModel()
 
       // colorize _after_ ranking to get optimally distinct colors by default
       val colorMap = autoColorMap(qualityModel.rankedEntities.map(_.id))
 
-      AppModel(analysis, weights, entitySelectionModel, subCriteriaSelectionModel, colorMap, qualityModel, profileModel)
+      AppModel(config, analysis, config.defaultWeights, entitySelectionModel, subCriteriaSelectionModel, colorMap, qualityModel, profileModel)
     }
 
   }
@@ -235,9 +237,7 @@ object app {
 
   case object Profile extends Weight
 
-  final case class Weights(
-    subCriteriaWeights: Map[SubCriteria, Weight] = Map().withDefaultValue(Quality(1.0)),
-    enabledIndicators: Set[Indicator])
+  final case class Weights(subCriteriaWeights: Map[SubCriteria, Weight], enabledIndicators: Set[Indicator])
 
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 

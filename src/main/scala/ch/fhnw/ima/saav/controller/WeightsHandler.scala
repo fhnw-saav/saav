@@ -6,6 +6,8 @@ import diode.{Action, ActionHandler, ActionResult, ModelRW}
 
 // Manages Weights
 
+final case class UpdateWeightsAction(weights: Weights) extends Action
+
 final case class UpdateIndicatorWeightAction(indicator: Indicator, isEnabled: Boolean) extends Action
 
 final case class UpdateSubCriteriaWeightAction(subCriteria: SubCriteria, weight: Weight) extends Action
@@ -13,6 +15,7 @@ final case class UpdateSubCriteriaWeightAction(subCriteria: SubCriteria, weight:
 class WeightsHandler[M](modelRW: ModelRW[M, Weights]) extends ActionHandler(modelRW) {
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
+    case UpdateWeightsAction(weights) => updated(weights)
     case UpdateIndicatorWeightAction(indicator, isEnabled) =>
       val newEnabledIndicators = if (isEnabled) {
         value.enabledIndicators + indicator

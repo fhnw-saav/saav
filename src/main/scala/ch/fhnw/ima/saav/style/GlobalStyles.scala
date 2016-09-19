@@ -112,6 +112,17 @@ object GlobalStyles extends StyleSheet.Inline {
     border.none
   )
 
+  val expertConfigChangedWarning = style(
+    addClassNames("alert", "alert-warning"),
+    float.right,
+    padding.`0`,
+    marginBottom.`0`
+  )
+
+  val expertConfigChangedWarningLabel = style(
+    marginRight(10 px)
+  )
+
   val hidden = style(
     display.none
   )
@@ -146,6 +157,7 @@ object GlobalStyles extends StyleSheet.Inline {
     val pin = styleWrap("fa fa-fw fa-thumb-tack")
     val right = styleWrap("fa fa-fw fa-chevron-right")
     val down = styleWrap("fa fa-fw fa-chevron-down")
+    val reset = styleWrap("fa fa-fw fa-rotate-left")
   }
 
   val _glyph = glyph // prevent lazy initialization

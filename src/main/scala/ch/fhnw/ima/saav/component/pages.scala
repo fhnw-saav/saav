@@ -130,7 +130,7 @@ object pages {
             },
             <.div(css.row,
               <.div(css.colXs3, IndicatorComponent(p.proxy)),
-              <.div(css.colXs9, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.weights))))
+              <.div(css.colXs9, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.config, m.weights))))
             )
           )
         )

@@ -163,6 +163,14 @@ class SaavCircuitSpec extends FunSpec with Matchers {
 
   describe(s"${WeightsHandler.getClass.getSimpleName}") {
 
+    it("should update weights") {
+      val circuit = circuitWithAnalysis()
+      val newWeights = Weights(Map.empty, Set.empty)
+      circuit.dispatch(UpdateWeightsAction(newWeights))
+      val weights = circuit.zoom(WeightsHandler.modelGet).value
+      weights shouldBe newWeights
+    }
+
     it("should control enabled indicators") {
       val indicator = Indicator("x", Map.empty)
       val circuit = circuitWithAnalysis()
@@ -186,8 +194,8 @@ class SaavCircuitSpec extends FunSpec with Matchers {
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateChartWidthAction(42))
       val model = circuit.zoom(ChartLayoutHandler.modelGet).value
-      model._1.width === 42
-      model._2.width === 42
+      model._1.width shouldBe 42
+      model._2.width shouldBe 42
     }
   }
 

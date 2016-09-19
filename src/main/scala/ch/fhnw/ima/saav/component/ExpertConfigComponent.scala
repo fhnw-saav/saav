@@ -2,8 +2,9 @@ package ch.fhnw.ima.saav.component
 
 import java.util.UUID
 
-import ch.fhnw.ima.saav.controller.{UpdateIndicatorWeightAction, UpdateSubCriteriaWeightAction}
+import ch.fhnw.ima.saav.controller._
 import ch.fhnw.ima.saav.model.app.{Profile, Quality, Weight, Weights}
+import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
 import diode.Action
 import diode.react.ModelProxy
@@ -19,8 +20,9 @@ object ExpertConfigComponent {
 
   private val rightGlyph = <.i(css.glyph.right, ^.cursor.pointer)
   private val downGlyph = <.i(css.glyph.down, ^.cursor.pointer)
+  private val resetGlyph = <.i(css.glyph.reset, ^.cursor.pointer)
 
-  case class Props(analysis: Analysis, weights: Weights, dispatch: Action => Callback)
+  case class Props(analysis: Analysis, defaultWeights: Weights, weights: Weights, dispatch: Action => Callback)
 
   case class State(
     criteriaToggleStates: Map[Criteria, ToggleState] = Map.empty[Criteria, ToggleState].withDefaultValue(Collapsed),
@@ -68,10 +70,22 @@ object ExpertConfigComponent {
     private def updateSubCriteriaQualityWeightValue(subCriteria: SubCriteria)(e: ReactEventI) =
       updateSubCriteria(subCriteria, Quality(e.target.value.toDouble))
 
+    private def reset =
+      $.props >>= (p => p.dispatch(UpdateWeightsAction(p.defaultWeights)))
+
     def render(p: Props, s: State): ReactTagOf[Div] = {
 
+      val resetWidget = <.span(
+        css.expertConfigChangedWarning,
+        ^.onClick --> reset,
+        ^.cursor.pointer,
+        ^.title := "Reset",
+        <.span(css.expertConfigChangedWarningLabel, "Changed"),
+        resetGlyph
+      )
+
       <.div(
-        <.h2("Expert Configuration"),
+        <.h2("Expert Configuration", (p.defaultWeights != p.weights) ?= resetWidget),
         CriteriaTable(CriteriaTableProps(p.analysis.criteria, s.criteriaToggleStates, s.subCriteriaToggleStates, p.weights))
       )
 
@@ -251,10 +265,10 @@ object ExpertConfigComponent {
     }
     .build
 
-  def apply(proxy: ModelProxy[(Analysis, Weights)]): ReactComponentU[Props, State, Backend, TopNode] = {
-    val (analysis, weights) = proxy.value
+  def apply(proxy: ModelProxy[(Analysis, Config, Weights)]): ReactComponentU[Props, State, Backend, TopNode] = {
+    val (analysis, config, weights) = proxy.value
     val dispatch = proxy.theDispatch
-    component(Props(analysis, weights, dispatch))
+    component(Props(analysis, config.defaultWeights, weights, dispatch))
   }
 
 }

@@ -1,6 +1,7 @@
 package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.model.app.{SaavModel, _}
+import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import diode._
 
@@ -21,9 +22,19 @@ class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppMod
       }
       updated(Left(NoDataAppModel(ImportFailed(t))))
     case AnalysisReadyAction(analysis) =>
-      val indicators = analysis.criteria.flatMap(_.subCriteria.flatMap(_.indicators))
-      val weights = Weights(enabledIndicators = indicators.toSet)
-      val model = AppModel(analysis, weights)
+
+      // TODO: Read config from external JSON
+
+      val subCriteria = analysis.criteria.flatMap(_.subCriteria)
+      val subCriteriaWeights = subCriteria.map(_ -> Quality(1.0)) toMap
+      val indicators = subCriteria.flatMap(_.indicators)
+      val weights = Weights(subCriteriaWeights, indicators.toSet)
+
+      val config = new Config {
+        val defaultWeights: Weights = weights
+      }
+
+      val model = AppModel(analysis, config)
       updated(Right(model))
 
   }
