@@ -109,7 +109,7 @@ object QualityChartComponent {
             val x1 = layout.getCriteriaAxisX(model.criteria(i - 1))
             val x2 = layout.getCriteriaAxisX(model.criteria(i))
             if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
-              for (entity <- selectionModel.selected) {
+              for (entity <- selectionModel.visible) {
                 val val1 = computeAxisValue(model.criteria(i - 1).groupedValues(entity).get, layout, AxisType.Criteria)
                 val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
                 val y = layout.criteriaAxisBotY - cursorPt.y
@@ -284,17 +284,17 @@ object QualityChartComponent {
       val layout = model.qualityModel.layout
       val hoveredSubCriteria = model.subCriteriaSelectionModel.hovered
 
-      def isSelected(e: GroupedEntity) = model.entitySelectionModel.selected.contains(e.id)
+      def isVisible(e: GroupedEntity) = model.entitySelectionModel.visible.contains(e.id)
 
       def isPinned(e: GroupedEntity) = model.entitySelectionModel.pinned.contains(e.id)
 
       def isHovered(e: GroupedEntity) = hoveredEntity.contains(e.id)
 
-      val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy(e => (isPinned(e), isSelected(e)))
+      val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy(e => (isPinned(e), isVisible(e)))
       val entities = for (groupedEntity <- entitiesInPaintingOrder) yield {
 
         val (strokeColor, strokeWidth) =
-          if (isSelected(groupedEntity))
+          if (isVisible(groupedEntity))
             if (isPinned(groupedEntity))
               ("black", 4)
             else if (isHovered(groupedEntity))

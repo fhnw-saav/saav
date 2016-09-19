@@ -56,42 +56,42 @@ class SaavCircuitSpec extends FunSpec with Matchers {
 
   describe(s"${EntitySelectionHandler.getClass.getSimpleName}") {
 
-    it("should wire selected entities") {
-      val selectedEntities = Set(Entity("x"), Entity("y"))
+    it("should wire visible entities") {
+      val visibleEntities = Set(Entity("x"), Entity("y"))
       val circuit = circuitWithAnalysis()
-      circuit.dispatch(UpdateEntitySelectionAction(selectedEntities, isSelected = true))
+      circuit.dispatch(UpdateEntityVisibilityAction(visibleEntities, visible = true))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
-        case EntitySelectionModel(actualSelectedEntities, actualPinned) =>
-          actualSelectedEntities should contain theSameElementsAs selectedEntities
+        case EntitySelectionModel(actualVisibleEntities, actualPinned) =>
+          actualVisibleEntities should contain theSameElementsAs visibleEntities
           actualPinned shouldBe empty
         case _ => failOnUnexpectedAction
       }
     }
 
-    it("should clear pinning if entity is no longer selected") {
+    it("should clear pinning if entity is no longer visible") {
       val anEntity = Entity("x")
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
-      circuit.dispatch(UpdateEntitySelectionAction(Set.empty, isSelected = false))
+      circuit.dispatch(UpdateEntityVisibilityAction(Set.empty, visible = false))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
-        case EntitySelectionModel(actualSelectedEntities, actualPinned) =>
-          actualSelectedEntities shouldBe empty
+        case EntitySelectionModel(actualVisibleEntities, actualPinned) =>
+          actualVisibleEntities shouldBe empty
           actualPinned shouldBe empty
         case _ => failOnUnexpectedAction
       }
     }
 
-    it("should not touch pinning if entity is still selected") {
+    it("should not touch pinning if entity is still visible") {
       val anEntity = Entity("x")
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
-      circuit.dispatch(UpdateEntitySelectionAction(Set(anEntity), isSelected = true))
+      circuit.dispatch(UpdateEntityVisibilityAction(Set(anEntity), visible = true))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
-        case EntitySelectionModel(actualSelectedEntities, actualPinned) =>
-          actualSelectedEntities shouldBe Set(anEntity)
+        case EntitySelectionModel(actualVisibleEntities, actualPinned) =>
+          actualVisibleEntities shouldBe Set(anEntity)
           actualPinned shouldBe Some(anEntity)
         case _ => failOnUnexpectedAction
       }

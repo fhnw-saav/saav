@@ -20,7 +20,7 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  final case class EntitySelectionModel(selected: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
+  final case class EntitySelectionModel(visible: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
 
   final case class SubCriteriaSelectionModel(hovered: Option[SubCriteria] = None)
 

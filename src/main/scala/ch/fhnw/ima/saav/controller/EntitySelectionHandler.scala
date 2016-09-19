@@ -4,28 +4,28 @@ import ch.fhnw.ima.saav.model.app.{EntitySelectionModel, SaavModel}
 import ch.fhnw.ima.saav.model.domain.Entity
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
 
-final case class UpdateEntitySelectionAction(entities: Set[Entity], isSelected: Boolean) extends Action
+final case class UpdateEntityVisibilityAction(entities: Set[Entity], visible: Boolean) extends Action
 
 final case class UpdateEntityPinningAction(pinnedEntity: Option[Entity]) extends Action
 
 class EntitySelectionHandler[M](modelRW: ModelRW[M, EntitySelectionModel]) extends ActionHandler(modelRW) {
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
-    case UpdateEntitySelectionAction(entities, isSelected) =>
-      val newSelection = if (isSelected) {
-        value.selected ++ entities
+    case UpdateEntityVisibilityAction(entities, visible) =>
+      val newVisible = if (visible) {
+        value.visible ++ entities
       } else {
-        value.selected -- entities
+        value.visible -- entities
       }
-      // clear pinning upon de-selection
+      // clear pinning for invisible entities
       val newPinned: Option[Entity] = value.pinned.flatMap { currentlyPinned =>
-        if (newSelection.contains(currentlyPinned)) {
+        if (newVisible.contains(currentlyPinned)) {
           value.pinned
         } else {
           None
         }
       }
-      updated(EntitySelectionModel(newSelection, newPinned))
+      updated(EntitySelectionModel(newVisible, newPinned))
     case UpdateEntityPinningAction(newPinned) => updated(value.copy(pinned = newPinned))
   }
 
