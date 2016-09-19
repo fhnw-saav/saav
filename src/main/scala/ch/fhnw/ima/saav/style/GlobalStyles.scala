@@ -92,7 +92,7 @@ object GlobalStyles extends StyleSheet.Inline {
     marginLeft(18 px) // align with font awesome fixed-width glyph
   )
 
-  val expertSubCriteriaTable = style(
+  val table = style(
     addClassName("table"),
     width(100 %%),
     paddingRight(`0`),
@@ -134,8 +134,6 @@ object GlobalStyles extends StyleSheet.Inline {
   }
 
   val _form = form
-
-  val table = styleWrap("table table-hover")
 
   var overflowHidden = style(
     maxWidth.`0`,

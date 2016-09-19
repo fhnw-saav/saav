@@ -138,7 +138,7 @@ object ExpertConfigComponent {
 
     private lazy val SubCriteriaTable = ReactComponentB[SubCriteriaTableProps]("SubCriteriaTable")
       .render_P { p =>
-        <.table(css.expertSubCriteriaTable,
+        <.table(css.table,
           <.tbody(
             for (subCriteria <- p.subCriteria) yield {
               SubCriteriaRow(SubCriteriaRowProps(subCriteria, p.subCriteriaToggleStates(subCriteria), p.weights))

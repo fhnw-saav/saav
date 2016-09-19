@@ -29,13 +29,14 @@ object IndicatorComponent {
 
       <.div(
         <.h2("Indicators"),
-        if (indicators.isEmpty) {
-          <.i("Pin a row and move your mouse over an axis to see something here")
-        } else {
-          <.table(css.table,
-            <.tbody(indicators.toSeq)
-          )
-        }
+        <.table(css.table,
+          <.thead(<.tr(<.th(css.colXs10, "Indicator"), <.th(css.colXs2, "Median"))),
+          <.tbody(
+            if (indicators.isEmpty) {
+              <.tr(<.td(^.colSpan := 2, <.i("Pin a row and move your mouse over an axis to see something here")))
+            } else {
+              indicators.toSeq
+            }))
       )
 
     }
