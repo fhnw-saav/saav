@@ -36,8 +36,8 @@ object WeightsHandler {
     m.copy(model = m.model.right.map { am =>
       am.copy(
         weights = v,
-        qualityModel = QualityModel(am.analysis, v),
-        profileModel = ProfileModel(am.analysis, v)
+        qualityModel = QualityModel(am.analysis, v, am.qualityModel.layout.width),
+        profileModel = ProfileModel(am.analysis, v, am.profileModel.layout.width)
       )
     })
   }

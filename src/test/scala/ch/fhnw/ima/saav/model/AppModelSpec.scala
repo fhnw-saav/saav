@@ -97,7 +97,7 @@ class AppModelSpec extends FunSpec with Matchers {
       val someIndicators = analysis.criteria(1).subCriteria(0).indicators.toSet
       val weights = Weights(enabledIndicators = someIndicators)
 
-      val qualityModel = QualityModel(model.analysis, weights)
+      val qualityModel = QualityModel(model.analysis, weights, 1000)
 
       // ranking (highest global median first)
       qualityModel.rankedEntities.size shouldBe 3

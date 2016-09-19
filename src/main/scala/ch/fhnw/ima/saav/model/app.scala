@@ -37,8 +37,9 @@ object app {
   object AppModel {
 
     def apply(analysis: Analysis, weights: Weights): AppModel = {
-      val qualityModel = QualityModel(analysis, weights)
-      val profileModel = ProfileModel(analysis, weights)
+      val defaultLayoutWidth = 1000
+      val qualityModel = QualityModel(analysis, weights, defaultLayoutWidth)
+      val profileModel = ProfileModel(analysis, weights, defaultLayoutWidth)
       val entitySelectionModel = EntitySelectionModel(analysis.entities.toSet, None)
       val subCriteriaSelectionModel = SubCriteriaSelectionModel()
 
@@ -54,7 +55,7 @@ object app {
 
   object QualityModel {
 
-    def apply(analysis: Analysis, weights: Weights): QualityModel = {
+    def apply(analysis: Analysis, weights: Weights, layoutWidth: Int): QualityModel = {
 
       val allCriteria = analysis.criteria.map { c =>
         GroupedCriteria.forQuality(analysis.entities, c, analysis.reviews, weights)
@@ -68,7 +69,7 @@ object app {
 
       val (minValue, maxValue) = safeMinMax(criteria)
 
-      val layout = new QualityChartLayout(criteria = criteria, minValueOption = minValue, maxValueOption = maxValue)
+      val layout = new QualityChartLayout(width = layoutWidth, criteria = criteria, minValueOption = minValue, maxValueOption = maxValue)
 
       QualityModel(rankedEntities, criteria, layout)
     }
@@ -79,7 +80,7 @@ object app {
 
   object ProfileModel {
 
-    def apply(analysis: Analysis, weights: Weights): ProfileModel = {
+    def apply(analysis: Analysis, weights: Weights, layoutWidth: Int): ProfileModel = {
 
       val allCriteria = analysis.criteria.map { c =>
         GroupedCriteria.forProfile(analysis.entities, c, analysis.reviews, weights)
@@ -94,7 +95,7 @@ object app {
 
       val (minValue, maxValue) = safeMinMax(criteria)
 
-      val layout = new ProfileChartLayout(criteria = criteria, minValueOption = minValue, maxValueOption = maxValue)
+      val layout = new ProfileChartLayout(width = layoutWidth, criteria = criteria, minValueOption = minValue, maxValueOption = maxValue)
 
       ProfileModel(sortedEntities, ByAlphabetEntitySortingStrategy, criteria, layout)
     }

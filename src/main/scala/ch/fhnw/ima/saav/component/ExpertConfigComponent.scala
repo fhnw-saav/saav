@@ -184,7 +184,7 @@ object ExpertConfigComponent {
         val formattedWeightValue = f"$weightValue%1.1f"
 
         val weightSlider = <.td(css.colXs2,
-          <.div(^.`class` := "form-group form-inline input-group", ^.marginTop := "-8px",
+          <.div(^.`class` := "form-group form-inline input-group", ^.marginTop := "-8px", ^.width := "100%",
             <.input.range(
               css.expertFormControl, ^.boxShadow := "0 0 0 transparent",
               ^.min := 0,

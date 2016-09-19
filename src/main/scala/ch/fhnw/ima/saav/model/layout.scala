@@ -9,7 +9,7 @@ object layout {
   /**
     * Computes layout parameters for presenting quality aspects of given criteria.
     */
-  class QualityChartLayout(val width: Int = 1000, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
+  class QualityChartLayout(val width: Int, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
     val height = 500
 
@@ -104,7 +104,7 @@ object layout {
   /**
     * Computes layout parameters for presenting profile aspects of given criteria.
     */
-  final class ProfileChartLayout(val width: Int = 1000, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
+  final class ProfileChartLayout(val width: Int, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
     val height = 500
 
