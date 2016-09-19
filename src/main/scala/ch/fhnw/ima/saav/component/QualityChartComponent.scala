@@ -6,7 +6,7 @@ import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
+import japgolly.scalajs.react.{BackendScope, Callback, CallbackTo, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, SVGPoint, SVGSVGElement}
 
@@ -35,10 +35,10 @@ object QualityChartComponent {
         }
       }
 
-    def toggleEntityPinning(groupedEntity: GroupedEntity) =
+    def toggleEntityPinning(entity: Entity) =
       $.props >>= { p =>
-        val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(groupedEntity.id)
-        val pinnedOrNone = if (isPinned) None else Some(groupedEntity.id)
+        val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
+        val pinnedOrNone = if (isPinned) None else Some(entity)
         p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
 
@@ -56,8 +56,13 @@ object QualityChartComponent {
         val model = proxy.value
         val hoveredSubCriteria = findClosestSubCriteria(model.qualityModel, cursorPt)
         val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
+        val togglePinningIfClicked = if (isClicked) {
+          hoveredEntity.map(toggleEntityPinning).getOrElse(Callback.empty)
+        } else {
+          Callback.empty
+        }
 
-        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity)
+        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
 
       }.getOrElse(Callback.empty)
 
@@ -326,7 +331,7 @@ object QualityChartComponent {
         val criteriaValuesLine =
           <.svg.path(^.svg.d := coordString,
             ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-            ^.onClick --> toggleEntityPinning(groupedEntity)
+            ^.onClick --> toggleEntityPinning(groupedEntity.id)
           )
 
         // create the subcriteria values lines
@@ -355,7 +360,7 @@ object QualityChartComponent {
         val subCriteriaValuesLine =
           <.svg.path(^.svg.d := coordString,
             ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-            ^.onClick --> toggleEntityPinning(groupedEntity)
+            ^.onClick --> toggleEntityPinning(groupedEntity.id)
           )
 
         // Create the circles if entity is pinned

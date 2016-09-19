@@ -4,6 +4,7 @@ import ch.fhnw.ima.saav.model.app.{SaavModel, _}
 import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain.{Analysis, Entity}
 import diode._
+import scala.language.postfixOps
 
 final case class AnalysisImportInProgressAction(progress: Float) extends Action
 
