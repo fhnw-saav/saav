@@ -56,9 +56,10 @@ object QualityChartComponent {
         val model = proxy.value
         val hoveredSubCriteria = findClosestSubCriteria(model.qualityModel, cursorPt)
         val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
-        val togglePinningIfClicked = hoveredEntity.collect {
-          case entity if isClicked => toggleEntityPinning(entity)
-        }.getOrElse(Callback.empty)
+        val togglePinningIfClicked = hoveredEntity match {
+          case Some(entity) if isClicked => toggleEntityPinning(entity)
+          case _ => Callback.empty
+        }
 
         setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
 
