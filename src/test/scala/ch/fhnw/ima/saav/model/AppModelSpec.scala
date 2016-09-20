@@ -1,9 +1,9 @@
 package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.Seq
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain._
+import ch.fhnw.ima.saav.model.weight.{Quality, Weights}
 import org.scalatest.{FunSpec, Matchers}
 
 class AppModelSpec extends FunSpec with Matchers {
@@ -121,22 +121,6 @@ class AppModelSpec extends FunSpec with Matchers {
       criteriaTwo.subCriteria(0).groupedValues(entityOne) shouldBe Some(42.5)
       criteriaTwo.subCriteria(0).groupedValues(entityTwo) shouldBe Some(99)
       criteriaTwo.subCriteria(0).groupedValues(entityThree) shouldBe None
-
-    }
-
-    it("should calculate weighted medians") {
-
-      {
-        val valuesWithWeights = Seq((13d, 0.1), (23d, 0.03), (54d, 0.04))
-        val weightedMedian = app.weightedMedian(valuesWithWeights)
-        assert(weightedMedian === Some(13))
-      }
-
-      {
-        val valuesWithWeights = Seq((1d, 0.613), (2d, 0.001), (3d, 0.613))
-        val weightedMedian = app.weightedMedian(valuesWithWeights)
-        assert(weightedMedian === Some(2))
-      }
 
     }
   }

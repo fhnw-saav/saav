@@ -2,6 +2,7 @@ package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{Indicator, SubCriteria}
+import ch.fhnw.ima.saav.model.weight.{Weight, Weights}
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
 
 // Manages Weights

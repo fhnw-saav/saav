@@ -3,9 +3,9 @@ package ch.fhnw.ima.saav.component
 import java.util.UUID
 
 import ch.fhnw.ima.saav.controller._
-import ch.fhnw.ima.saav.model.app.{Profile, Quality, Weight, Weights}
 import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
+import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weight, Weights}
 import diode.Action
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.ReactTagOf

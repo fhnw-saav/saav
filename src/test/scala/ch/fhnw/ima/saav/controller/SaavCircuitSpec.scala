@@ -4,6 +4,7 @@ import ch.fhnw.ima.saav.model
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain._
+import ch.fhnw.ima.saav.model.weight.{Profile, Weights}
 import org.scalatest._
 
 class SaavCircuitSpec extends FunSpec with Matchers {

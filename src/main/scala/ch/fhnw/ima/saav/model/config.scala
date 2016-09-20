@@ -1,6 +1,7 @@
-package ch.fhnw.ima.saav.model
+package ch.fhnw.ima.saav
+package model
 
-import ch.fhnw.ima.saav.model.app.Weights
+import ch.fhnw.ima.saav.model.weight.{Weight, Weights}
 
 object config {
 
@@ -9,5 +10,13 @@ object config {
     def defaultWeights: Weights
 
   }
+
+  final case class AnalysisConfig(criteria: Seq[CriteriaConfig])
+
+  final case class CriteriaConfig(name: String, subCriteria: Seq[SubCriteriaConfig])
+
+  final case class SubCriteriaConfig(name: String, indicators: Seq[IndicatorConfig])
+
+  final case class IndicatorConfig(name: String, weight: Weight)
 
 }

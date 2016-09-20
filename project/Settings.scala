@@ -20,6 +20,7 @@ object Settings {
     val scalaCSS = "0.4.1"
     val scalaJsD3 = "0.3.3"
     val diode = "1.0.0"
+    val circe = "0.5.2"
 
     // libraryDependencies (test)
     val scalaTest = "3.0.0"
@@ -38,6 +39,9 @@ object Settings {
     "org.singlespaced" %%% "scalajs-d3" % versions.scalaJsD3,
     "me.chrons" %%% "diode" % versions.diode,
     "me.chrons" %%% "diode-react" % versions.diode,
+    "io.circe" %%% "circe-scalajs" % versions.circe,
+    "io.circe" %%% "circe-parser" % versions.circe,
+    "io.circe" %%% "circe-generic" % versions.circe,
 
     // test
     "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",

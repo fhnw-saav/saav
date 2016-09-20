@@ -6,7 +6,7 @@ import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, CallbackTo, ReactComponentB, ReactMouseEvent, Ref}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, SVGPoint, SVGSVGElement}
 
