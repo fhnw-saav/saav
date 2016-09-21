@@ -98,48 +98,73 @@ object QualityChartComponent {
     def clearHovering = setHoveredEntity(None) >> setHoveredSubCriteria(None)
 
     private def findClosestEntity(model: QualityModel, selectionModel: EntitySelectionModel, cursorPt: SVGPoint): Option[Entity] = {
-
       val layout = model.layout
+      if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY))
+        findClosestEntityViaCriteria(model.criteria, layout, selectionModel, cursorPt)
+      else if ((cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY))
+        findClosestEntityViaSubCriteria(model.criteria.flatMap(_.subCriteria), layout, selectionModel, cursorPt)
+      else
+        None
+    }
 
-      if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY) ||
-        (cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
+    private def findClosestEntityViaCriteria(criteria: Seq[GroupedCriteria], layout: QualityChartLayout, selectionModel: EntitySelectionModel, cursorPt: SVGPoint) = {
 
-        if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY)) {
+      var minDistance = Double.MaxValue
+      var closestEntity: Option[Entity] = None
 
-          var minDistance = Double.MaxValue
-          var closestEntity: Option[Entity] = None
+      for (i <- 1 until criteria.size) {
+        val criteria1 = criteria(i - 1)
+        val criteria2 = criteria(i)
+        val x1 = layout.getCriteriaAxisX(criteria1)
+        val x2 = layout.getCriteriaAxisX(criteria2)
+        if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
+          for (entity <- selectionModel.visible) {
+            val axisValue1 = computeAxisValue(criteria1.groupedValues(entity).get, layout, AxisType.Criteria)
+            val axisValue2 = computeAxisValue(criteria2.groupedValues(entity).get, layout, AxisType.Criteria)
+            val y = layout.criteriaAxisBotY - cursorPt.y
 
-          for (i <- 1 until model.criteria.size) {
-            val x1 = layout.getCriteriaAxisX(model.criteria(i - 1))
-            val x2 = layout.getCriteriaAxisX(model.criteria(i))
-            if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
-              for (entity <- selectionModel.visible) {
-                val val1 = computeAxisValue(model.criteria(i - 1).groupedValues(entity).get, layout, AxisType.Criteria)
-                val val2 = computeAxisValue(model.criteria(i).groupedValues(entity).get, layout, AxisType.Criteria)
-                val y = layout.criteriaAxisBotY - cursorPt.y
+            val interpolatedValue = axisValue1 + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2 - axisValue1))
+            val distance = Math.abs(interpolatedValue - y)
 
-                val interpolatedValue = val1 + ((cursorPt.x - x1) / (x2 - x1) * (val2 - val1))
-                val distance = Math.abs(interpolatedValue - y)
-
-                if (distance < minDistance) {
-                  minDistance = distance
-                  closestEntity = Some(entity)
-                }
-              }
+            if (distance < minDistance) {
+              minDistance = distance
+              closestEntity = Some(entity)
             }
           }
-
-          closestEntity
-        } else if ((cursorPt.y > layout.subCriteriaAxisTopY) && (cursorPt.y < layout.subCriteriaAxisBotY)) {
-          None
-        } else {
-          None
         }
-
-      } else {
-        None
       }
 
+      closestEntity
+    }
+
+    private def findClosestEntityViaSubCriteria(subCriteria: Seq[GroupedSubCriteria], layout: QualityChartLayout, selectionModel: EntitySelectionModel, cursorPt: SVGPoint) = {
+
+      var minDistance = Double.MaxValue
+      var closestEntity: Option[Entity] = None
+
+      for (i <- 1 until subCriteria.size) {
+        val subCriteria1 = subCriteria(i - 1)
+        val subCriteria2 = subCriteria(i)
+        val x1 = layout.getSubCriteriaAxisX(subCriteria1)
+        val x2 = layout.getSubCriteriaAxisX(subCriteria2)
+        if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
+          for (entity <- selectionModel.visible) {
+            val axisValue1 = computeAxisValue(subCriteria1.groupedValues(entity).get, layout, AxisType.Subcriteria)
+            val axisValue2 = computeAxisValue(subCriteria2.groupedValues(entity).get, layout, AxisType.Subcriteria)
+            val y = layout.subCriteriaAxisBotY - cursorPt.y
+
+            val interpolatedValue = axisValue1 + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2 - axisValue1))
+            val distance = Math.abs(interpolatedValue - y)
+
+            if (distance < minDistance) {
+              minDistance = distance
+              closestEntity = Some(entity)
+            }
+          }
+        }
+      }
+
+      closestEntity
     }
 
     /**
