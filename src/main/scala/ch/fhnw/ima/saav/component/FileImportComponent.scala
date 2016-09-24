@@ -7,8 +7,9 @@ import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Entity, Review}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{Callback, ReactComponentB}
+import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}
 import org.scalajs.dom.DragEvent
+import org.scalajs.dom.raw.URL
 import org.singlespaced.d3js.d3
 
 import scala.scalajs.js
@@ -166,6 +167,6 @@ object FileImportComponent {
     })
     .build
 
-  def apply(proxy: ModelProxy[NoDataAppModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[NoDataAppModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(proxy))
 
 }

@@ -16,7 +16,7 @@ object Settings {
     val scala = "2.11.8"
 
     // libraryDependencies
-    val scalaJsReact = "0.11.1"
+    val scalaJsReact = "0.11.2"
     val scalaCSS = "0.4.1"
     val scalaJsD3 = "0.3.3"
     val diode = "1.0.0"
