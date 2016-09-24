@@ -176,7 +176,7 @@ object QualityChartComponent {
       */
     def render(p: Props, s: State) = {
 
-      dom.window.onresize = (e: dom.Event) => {
+      dom.window.onresize = (_: dom.Event) => {
         onWindowResize(p.proxy).runNow()
       }
 
@@ -245,10 +245,17 @@ object QualityChartComponent {
         )
 
         val label =
-          <.svg.text(
-            ^.svg.textAnchor := "middle",
-            ^.svg.x := layout.getCriteriaAxisX(criteria),
-            ^.svg.y := layout.boxTopY - layout.padding, criteria.name
+          <.svg.foreignObject(
+            ^.svg.x := layout.getCriteriaAxisX(criteria) - (width / 2f),
+            ^.svg.y := layout.boxTopY - layout.padding,
+            ^.svg.width := width, ^.svg.height := layout.padding,
+            <.div(
+              ^.textAlign.center,
+              ^.overflow.hidden, ^.textOverflow.ellipsis, ^.whiteSpace.nowrap,
+              ^.width := s"${width}px", ^.height := s"${layout.padding}px", ^.minWidth := "0",
+              ^.title := criteria.name,
+              criteria.name
+            )
           )
 
         <.svg.g(box, axis, label)
