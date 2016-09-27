@@ -109,7 +109,7 @@ object app {
   case object ByAlphabetEntitySortingStrategy extends EntitySortingStrategy
   final case class ByCriteriaEntitySortingStrategy(criteria: Criteria)
 
-  final case class GroupedEntity(id: Entity, value: Option[Double] = None) {
+  final case class GroupedEntity(id: Entity, value: Option[Double]) {
     def name: String = id.name
   }
 

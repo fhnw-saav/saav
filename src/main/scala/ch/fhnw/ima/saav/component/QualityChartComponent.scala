@@ -197,9 +197,9 @@ object QualityChartComponent {
 
       <.svg.svg(
         ^.ref := svgRef,
-        ^.svg.viewBox := s"0 0 ${layout.width} ${layout.height}",
+        ^.svg.viewBox := s"0 0 ${layout.width} ${QualityChartLayout.height}",
         ^.svg.width := "100%",
-        ^.svg.height := s"${layout.height}px",
+        ^.svg.height := s"${QualityChartLayout.height}px",
         ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
         ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
         ^.onMouseLeave --> clearHovering,

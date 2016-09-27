@@ -6,17 +6,22 @@ import ch.fhnw.ima.saav.model.domain.{Criteria, SubCriteria}
 
 object layout {
 
+  object QualityChartLayout {
+    val height = 500
+  }
+
   /**
     * Computes layout parameters for presenting quality aspects of given criteria.
     */
   class QualityChartLayout(val width: Int, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
-    val height = 500
+    import QualityChartLayout._
+
 
     // TODO: Calculate margin, padding, and gaps relative to width
 
-    private val margin = 20
     val padding = 20
+    private val margin = 20
     private val verticalAxisGap = 70
     private val headerTextGap = 40
 

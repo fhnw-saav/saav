@@ -49,6 +49,8 @@ object GlobalStyles extends StyleSheet.Inline {
   val colXs11 = styleWrap("col-xs-11")
   val colXs12 = styleWrap("col-xs-12")
 
+  val centerBlock = styleWrap("center-block")
+
   // SVG responsiveness (http://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js)
   val svgContainer = style(
     display.inlineBlock,

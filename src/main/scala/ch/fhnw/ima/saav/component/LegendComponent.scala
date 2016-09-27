@@ -11,8 +11,7 @@ import japgolly.scalajs.react.extra.components.TriStateCheckbox
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, _}
-import org.scalajs.dom.html.Table
-import org.scalajs.dom.raw.HTMLInputElement
+import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement}
 
 import scalacss.ScalaCssReact._
 
@@ -126,7 +125,7 @@ object LegendComponent {
         ^.onChange ==> updateEntityColor(entity))
     }
 
-    def render(p: Props): ReactTagOf[Table] = {
+    def render(p: Props): ReactTagOf[HTMLElement] = {
 
       val rows = p.entities.map(_.id).zipWithIndex.map {
         case (e, i) =>
@@ -136,9 +135,19 @@ object LegendComponent {
           createRow(e, i, isVisible, isPinned, color, p.showRank)
       }
 
-      <.table(css.table,
+      val legendTable = <.table(css.table,
         <.thead(header(p.entities, p.allVisibilityState, p.showRank)),
         <.tbody(rows))
+
+      if (p.showRank) {
+        <.div(css.row,
+          <.div(css.colXs2, VisualRankingComponent(p.entities, p.entitySelectionModel, p.colorMap)),
+          <.div(css.colXs10, legendTable)
+        )
+      } else {
+        legendTable
+      }
+
     }
 
   }
