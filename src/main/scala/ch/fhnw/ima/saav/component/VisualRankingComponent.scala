@@ -55,13 +55,13 @@ object VisualRankingComponent {
       val max = values.max.getOrElse(Double.NaN)
       val valueSpan = max - min
 
-      println(s"$min / $max")
-
       def isVisible(e: GroupedEntity) = p.selectionModel.visible.contains(e.id)
 
       def isPinned(e: GroupedEntity) = p.selectionModel.pinned.contains(e.id)
 
-      val entitiesInPaintingOrder = p.entities.sortBy(e => (isPinned(e), isVisible(e)))
+      val entitiesInPaintingOrder = p.entities.sortBy { e =>
+        (isPinned(e), isVisible(e), e.sortingPosition) // higher ranks should be painted last (i.e. in front)
+      }
 
       val dots = for {
         entity <- entitiesInPaintingOrder
@@ -81,11 +81,14 @@ object VisualRankingComponent {
             else p.colorMap(entity.id).hexValue
           } else "#cccccc"
 
+        val formattedValue = entity.value.map(_.toString).getOrElse("-")
+
         <.svg.circle(
           ^.svg.cx := width / 2,
           ^.svg.cy := paddingTop + (ySpan - y),
           ^.svg.r := radius,
-          ^.svg.fill := color
+          ^.svg.fill := color,
+          <.svg.title(s"${entity.name}: $formattedValue")
         )
 
       }

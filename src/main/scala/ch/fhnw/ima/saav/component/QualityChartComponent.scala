@@ -326,7 +326,9 @@ object QualityChartComponent {
 
       def isHovered(e: GroupedEntity) = hoveredEntity.contains(e.id)
 
-      val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy(e => (isPinned(e), isVisible(e)))
+      val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy { e =>
+        (isPinned(e), isVisible(e), e.sortingPosition) // higher ranks should be painted last (i.e. in front)
+      }
       val entities = for (groupedEntity <- entitiesInPaintingOrder) yield {
 
         val (strokeColor, strokeWidth) =

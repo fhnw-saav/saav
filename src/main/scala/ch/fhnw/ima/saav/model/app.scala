@@ -65,9 +65,9 @@ object app {
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
-      val rankedEntities = analysis.entities.map { e =>
+      val rankedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
         val value = median(criteria.flatMap(_.groupedValues(e)))
-        GroupedEntity(e, value = value)
+        GroupedEntity(e, value = value, sortingPosition = i)
       }.sortBy(_.value).reverse
 
       val (minValue, maxValue) = safeMinMax(criteria)
@@ -91,9 +91,9 @@ object app {
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
       // TODO: Support different sorting strategies
-      val sortedEntities = analysis.entities.map { e =>
+      val sortedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
         val value = median(criteria.flatMap(_.groupedValues(e)))
-        GroupedEntity(e, value = value)
+        GroupedEntity(e, value = value, sortingPosition = i)
       }.sortBy(_.name)
 
       val (minValue, maxValue) = safeMinMax(criteria)
@@ -106,10 +106,12 @@ object app {
   }
 
   trait EntitySortingStrategy
+
   case object ByAlphabetEntitySortingStrategy extends EntitySortingStrategy
+
   final case class ByCriteriaEntitySortingStrategy(criteria: Criteria)
 
-  final case class GroupedEntity(id: Entity, value: Option[Double]) {
+  final case class GroupedEntity(id: Entity, value: Option[Double], sortingPosition: Int) {
     def name: String = id.name
   }
 
