@@ -35,7 +35,7 @@ package object model {
 
     populateIndicator(builder, "Inf...", "x1", "Indikator 1")
 
-    populateIndicator(builder, "Aus...", "x1", "Indikator 1")
+    populateIndicator(builder, "A very looooong criteria name", "A very loooooong sub-criteria name", "Indikator 1")
 
 
     builder.build

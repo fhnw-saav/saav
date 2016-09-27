@@ -8,7 +8,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
 import org.scalajs.dom
-import org.scalajs.dom.raw.{HTMLElement, SVGPoint, SVGSVGElement}
+import org.scalajs.dom.raw._
 
 // noinspection TypeAnnotation
 object QualityChartComponent {
@@ -17,13 +17,16 @@ object QualityChartComponent {
 
   case class State(hoveredEntity: Option[Entity] = None)
 
-  private val svgRef = Ref[SVGSVGElement]("svgRef")
+  private val svgRootRef = Ref[SVGSVGElement]("svgRootRef")
+  private val svgSubCriteriaLabelRef = Ref[SVGTextElement]("svgSubCriteriaLabelRef")
 
   class Backend($: BackendScope[Props, State]) {
 
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteria]) =
       $.props >>= { p =>
-        p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
+        val dispatchAction = p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
+        val width = p.proxy.value.qualityModel.layout.width
+        dispatchAction >> alignSubCriteriaLabel(width)
       }
 
     def setHoveredEntity(hoveredEntity: Option[Entity]) =
@@ -46,7 +49,7 @@ object QualityChartComponent {
       * The global mouse handler.
       */
     def onSvgMouseEvent(proxy: ModelProxy[AppModel], isClicked: Boolean)(e: ReactMouseEvent) =
-      svgRef($).map { svg =>
+      svgRootRef($).map { svg =>
 
         val pt = svg.createSVGPoint()
         pt.x = e.clientX
@@ -66,12 +69,32 @@ object QualityChartComponent {
       }.getOrElse(Callback.empty)
 
     def onWindowResize(proxy: ModelProxy[AppModel]) = {
-      svgRef($).map { svg =>
+      svgRootRef($).map { svg =>
         val parent = svg.parentNode.asInstanceOf[HTMLElement]
         val width = parent.clientWidth
         proxy.dispatch(UpdateChartWidthAction(width))
       }.getOrElse(Callback.empty)
     }
+
+    private def alignSubCriteriaLabel(svgWidth: Int) =
+      svgSubCriteriaLabelRef($).map { svgText =>
+        Callback {
+          val padding = QualityChartLayout.subCriteriaLabelPadding
+          val textWidth = svgText.getBBox().width
+          val halfTextWidth = textWidth / 2d
+          val currentMiddleX = svgText.getAttribute("x").toDouble
+
+          val leftCutoff = halfTextWidth + padding
+          if (currentMiddleX < leftCutoff) {
+            svgText.setAttribute("x", s"$leftCutoff")
+          }
+
+          val rightCutoff = svgWidth - padding - halfTextWidth
+          if (currentMiddleX > rightCutoff) {
+            svgText.setAttribute("x", s"$rightCutoff")
+          }
+        }
+      }.getOrElse(Callback.empty)
 
     private def findClosestSubCriteria(model: QualityModel, cursorPt: SVGPoint): Option[SubCriteria] = {
       val layout = model.layout
@@ -196,7 +219,7 @@ object QualityChartComponent {
       val layout = p.proxy.value.qualityModel.layout
 
       <.svg.svg(
-        ^.ref := svgRef,
+        ^.ref := svgRootRef,
         ^.svg.viewBox := s"0 0 ${layout.width} ${QualityChartLayout.height}",
         ^.svg.width := "100%",
         ^.svg.height := s"${QualityChartLayout.height}px",
@@ -297,9 +320,9 @@ object QualityChartComponent {
         <.svg.g(axes)
       }
 
-      // TODO: alignment, how do we get the bounding box of an SVG text element?
       val hoveredAxisLabel =
         <.svg.text(
+          ^.ref := svgSubCriteriaLabelRef,
           ^.svg.textAnchor := "middle",
           ^.svg.x := hoveredAxisX,
           ^.svg.y := layout.subCriteriaAxisTopY - layout.padding + 5, hoveredAxisName

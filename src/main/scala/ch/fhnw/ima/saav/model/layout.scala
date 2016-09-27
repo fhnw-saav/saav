@@ -8,6 +8,7 @@ object layout {
 
   object QualityChartLayout {
     val height = 500
+    val subCriteriaLabelPadding = 5
   }
 
   /**
