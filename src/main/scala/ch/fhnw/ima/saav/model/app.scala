@@ -192,8 +192,8 @@ object app {
 
   object GroupedSubCriteria {
 
-    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], enabledIndicators: Set[Indicator]): GroupedSubCriteria = {
-      val indicators = subCriteria.indicators.filter(enabledIndicators.contains).map { i =>
+    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], enabledIndicators: Set[IndicatorId]): GroupedSubCriteria = {
+      val indicators = subCriteria.indicators.filter(i => enabledIndicators.contains(i.id)).map { i =>
         GroupedIndicator(i, entities, reviews)
       }
 
@@ -212,9 +212,7 @@ object app {
 
   }
 
-  final case class GroupedIndicator(id: Indicator, groupedValues: Map[Entity, Option[Double]]) {
-    def name: String = id.name
-  }
+  final case class GroupedIndicator(id: IndicatorId, name: String, groupedValues: Map[Entity, Option[Double]])
 
   object GroupedIndicator {
 
@@ -229,7 +227,7 @@ object app {
           } yield value
           entity -> median(values)
         }).toMap
-      GroupedIndicator(indicator, groupedValues)
+      GroupedIndicator(indicator.id, indicator.name, groupedValues)
     }
 
   }

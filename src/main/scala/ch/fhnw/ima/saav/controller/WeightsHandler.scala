@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.{Indicator, SubCriteria}
+import ch.fhnw.ima.saav.model.domain.{IndicatorId, SubCriteria}
 import ch.fhnw.ima.saav.model.weight.{Weight, Weights}
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
 
@@ -9,7 +9,7 @@ import diode.{Action, ActionHandler, ActionResult, ModelRW}
 
 final case class UpdateWeightsAction(weights: Weights) extends Action
 
-final case class UpdateIndicatorWeightAction(indicator: Indicator, isEnabled: Boolean) extends Action
+final case class UpdateIndicatorWeightAction(indicatorId: IndicatorId, isEnabled: Boolean) extends Action
 
 final case class UpdateSubCriteriaWeightAction(subCriteria: SubCriteria, weight: Weight) extends Action
 
@@ -17,11 +17,11 @@ class WeightsHandler[M](modelRW: ModelRW[M, Weights]) extends ActionHandler(mode
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
     case UpdateWeightsAction(weights) => updated(weights)
-    case UpdateIndicatorWeightAction(indicator, isEnabled) =>
+    case UpdateIndicatorWeightAction(indicatorId, isEnabled) =>
       val newEnabledIndicators = if (isEnabled) {
-        value.enabledIndicators + indicator
+        value.enabledIndicators + indicatorId
       } else {
-        value.enabledIndicators - indicator
+        value.enabledIndicators - indicatorId
       }
       updated(value.copy(enabledIndicators = newEnabledIndicators))
     case UpdateSubCriteriaWeightAction(subCriteria, weight) =>

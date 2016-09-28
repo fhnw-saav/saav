@@ -4,7 +4,7 @@ import java.util.UUID
 
 import ch.fhnw.ima.saav.controller._
 import ch.fhnw.ima.saav.model.config.Config
-import ch.fhnw.ima.saav.model.domain.{Analysis, Criteria, Indicator, SubCriteria}
+import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weight, Weights}
 import diode.Action
 import diode.react.ModelProxy
@@ -57,11 +57,11 @@ object ExpertConfigComponent {
         s.copy(subCriteriaToggleStates = newStates)
       }
 
-    private def toggleIndicatorWeight(indicator: Indicator) =
+    private def toggleIndicatorWeight(indicatorId: IndicatorId) =
       $.props >>= { p =>
-        val isCurrentlyEnabled = p.weights.enabledIndicators.contains(indicator)
+        val isCurrentlyEnabled = p.weights.enabledIndicators.contains(indicatorId)
         val toggled = !isCurrentlyEnabled
-        p.dispatch(UpdateIndicatorWeightAction(indicator, toggled))
+        p.dispatch(UpdateIndicatorWeightAction(indicatorId, toggled))
       }
 
     private def updateSubCriteria(subCriteria: SubCriteria, weight: Weight) =
@@ -236,7 +236,7 @@ object ExpertConfigComponent {
 
     private final case class IndicatorListProps(
       indicators: Seq[Indicator],
-      enabledIndicators: Set[Indicator]
+      enabledIndicators: Set[IndicatorId]
     )
 
     private lazy val IndicatorList =
@@ -244,9 +244,9 @@ object ExpertConfigComponent {
         .render_P { p =>
           <.ul(css.expertIndicatorList,
             for (indicator <- p.indicators) yield {
-              val isChecked = p.enabledIndicators.contains(indicator)
+              val isChecked = p.enabledIndicators.contains(indicator.id)
               <.li(^.whiteSpace.nowrap, ^.overflow.hidden, ^.textOverflow.ellipsis,
-                <.input.checkbox(^.checked := isChecked, ^.onChange --> toggleIndicatorWeight(indicator)),
+                <.input.checkbox(^.checked := isChecked, ^.onChange --> toggleIndicatorWeight(indicator.id)),
                 " " + indicator.name
               )
             })

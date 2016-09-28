@@ -4,7 +4,7 @@ import ch.fhnw.ima.saav.component.bootstrap.Button
 import ch.fhnw.ima.saav.controller.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Entity, Review}
+import ch.fhnw.ima.saav.model.domain._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}

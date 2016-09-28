@@ -1,12 +1,12 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Entity, Review}
+import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Entity, Review}
 
 import scala.util.Random
 
 package object model {
 
-  def mockAnalysis = {
+  def mockAnalysis: Analysis = {
     val builder = AnalysisBuilder()
 
     populateIndicator(builder, "Methodologie", "Klare Fragestellung und Zielsetzung", "Indikator 1")
@@ -42,7 +42,7 @@ package object model {
 
   }
 
-  def alphabetSoupAnalysis = {
+  def alphabetSoupAnalysis: Analysis = {
     val review = Review("Review")
 
     val helloWorld = Entity("Hello World")

@@ -30,8 +30,8 @@ class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppMod
 
       val subCriteria = analysis.criteria.flatMap(_.subCriteria)
       val subCriteriaWeights = subCriteria.map(_ -> Quality(1.0)) toMap
-      val indicators = subCriteria.flatMap(_.indicators)
-      val weights = Weights(subCriteriaWeights, indicators.toSet)
+      val indicatorIds = subCriteria.flatMap(_.indicators).map(_.id)
+      val weights = Weights(subCriteriaWeights, indicatorIds.toSet)
 
       val config = new Config {
         val defaultWeights: Weights = weights

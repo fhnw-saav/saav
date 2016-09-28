@@ -173,11 +173,11 @@ class SaavCircuitSpec extends FunSpec with Matchers {
     }
 
     it("should control enabled indicators") {
-      val indicator = Indicator("x", Map.empty)
+      val indicatorId = IndicatorId(42)
       val circuit = circuitWithAnalysis()
-      circuit.dispatch(UpdateIndicatorWeightAction(indicator, isEnabled = false))
+      circuit.dispatch(UpdateIndicatorWeightAction(indicatorId, isEnabled = true))
       val weights = circuit.zoom(WeightsHandler.modelGet).value
-      weights.enabledIndicators shouldBe empty
+      weights.enabledIndicators.size shouldBe 1
     }
 
     it("should control sub-criteria weights") {

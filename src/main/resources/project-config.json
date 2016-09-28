@@ -1,0 +1,37 @@
+{
+  "criteria" : [
+    {
+      "name" : "",
+      "subCriteria" : [
+        {
+          "name" : "Sub-Criteria A1",
+          "indicators" : [
+            {
+              "name" : "Indicator Foo",
+              "weight" : { "Profile" : { } }
+            },
+            {
+              "name" : "Indicator Bar",
+              "weight" : { "Quality" : { "weight" : 0.42 }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "Criteria B",
+      "subCriteria" : [
+        {
+          "name" : "Sub-Criteria B1",
+          "indicators" : [
+            {
+              "name" : "Indicator Foo",
+              "weight" : { "Profile" : { } }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.model
 
 import ch.fhnw.ima.saav._
-import ch.fhnw.ima.saav.model.domain.{Indicator, SubCriteria}
+import ch.fhnw.ima.saav.model.domain.{Indicator, IndicatorId, SubCriteria}
 
 object weight {
 
@@ -11,7 +11,7 @@ object weight {
 
   case object Profile extends Weight
 
-  final case class Weights(subCriteriaWeights: Map[SubCriteria, Weight], enabledIndicators: Set[Indicator])
+  final case class Weights(subCriteriaWeights: Map[SubCriteria, Weight], enabledIndicators: Set[IndicatorId])
 
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 
