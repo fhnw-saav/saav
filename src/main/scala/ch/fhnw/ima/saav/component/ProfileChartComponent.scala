@@ -25,7 +25,7 @@ object ProfileChartComponent {
             <.li(criteria.name,
               <.ul(
                 for (subCriteria <- criteria.subCriteria) yield {
-                  <.li(subCriteria.name)
+                  <.li(subCriteria.displayName)
                 }
               )
             )

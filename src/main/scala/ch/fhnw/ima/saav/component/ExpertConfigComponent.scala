@@ -64,11 +64,11 @@ object ExpertConfigComponent {
         p.dispatch(UpdateIndicatorWeightAction(indicatorId, toggled))
       }
 
-    private def updateSubCriteria(subCriteria: SubCriteria, weight: Weight) =
-      $.props >>= (_.dispatch(UpdateSubCriteriaWeightAction(subCriteria, weight)))
+    private def updateSubCriteria(subCriteriaId: SubCriteriaId, weight: Weight) =
+      $.props >>= (_.dispatch(UpdateSubCriteriaWeightAction(subCriteriaId, weight)))
 
-    private def updateSubCriteriaQualityWeightValue(subCriteria: SubCriteria)(e: ReactEventI) =
-      updateSubCriteria(subCriteria, Quality(e.target.value.toDouble))
+    private def updateSubCriteriaQualityWeightValue(subCriteriaId: SubCriteriaId)(e: ReactEventI) =
+      updateSubCriteria(subCriteriaId, Quality(e.target.value.toDouble))
 
     private def reset =
       $.props >>= (p => p.dispatch(UpdateWeightsAction(p.defaultWeights)))
@@ -132,12 +132,12 @@ object ExpertConfigComponent {
             case Collapsed =>
               <.td(css.overflowHidden, ^.paddingLeft := 0, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
                 <.div(^.display.inline, ^.onClick --> expandCriteria(p.criteria), rightGlyph),
-                p.criteria.name
+                p.criteria.displayName
               )
             case Expanded =>
               <.td(css.overflowHidden, ^.paddingLeft := 0, ^.paddingRight := 0, ^.backgroundColor := "transparent", ^.textOverflow.ellipsis, ^.colSpan := 4,
                 <.div(^.display.inline, ^.onClick --> collapseCriteria(p.criteria), downGlyph),
-                p.criteria.name,
+                p.criteria.displayName,
                 SubCriteriaTable(SubCriteriaTableProps(p.criteria.subCriteria, p.subCriteriaToggleStates, p.weights))
               )
           })
@@ -173,21 +173,21 @@ object ExpertConfigComponent {
 
         // TODO: Is this fast enough? Optionally introduce an ID in SubCriteria
         val radioButtonGroupName = String.valueOf(UUID.randomUUID())
-        val subCriteriaWeight = p.weights.subCriteriaWeights(p.subCriteria)
+        val subCriteriaWeight = p.weights.subCriteriaWeights(p.subCriteria.id)
         val isProfile = subCriteriaWeight == Profile
 
         val qualityRadioButton = <.td(css.colXs1, ^.textAlign.center,
           <.input.radio(
             ^.name := radioButtonGroupName,
             ^.checked := !isProfile,
-            ^.onChange --> updateSubCriteria(p.subCriteria, Quality(1.0)))
+            ^.onChange --> updateSubCriteria(p.subCriteria.id, Quality(1.0)))
         )
 
         val profileRadioButton = <.td(css.colXs1, ^.textAlign.center,
           <.input.radio(
             ^.name := radioButtonGroupName,
             ^.checked := isProfile,
-            ^.onChange --> updateSubCriteria(p.subCriteria, Profile))
+            ^.onChange --> updateSubCriteria(p.subCriteria.id, Profile))
         )
 
         val weightValue: Double = subCriteriaWeight match {
@@ -206,7 +206,7 @@ object ExpertConfigComponent {
               ^.step := 0.1,
               ^.disabled := isProfile,
               ^.value := weightValue,
-              ^.onChange ==> updateSubCriteriaQualityWeightValue(p.subCriteria)
+              ^.onChange ==> updateSubCriteriaQualityWeightValue(p.subCriteria.id)
             ),
             <.div(css.expertInputGroupAddon, formattedWeightValue)
           )
@@ -216,12 +216,12 @@ object ExpertConfigComponent {
           case Collapsed =>
             <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.paddingLeft := "20px", ^.colSpan := 4,
               <.div(^.display.inline, ^.onClick --> expandSubCriteria(p.subCriteria), rightGlyph),
-              p.subCriteria.name
+              p.subCriteria.displayName
             )
           case Expanded =>
             <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.paddingLeft := "20px", ^.colSpan := 4,
               <.div(^.display.inline, ^.onClick --> collapseSubCriteria(p.subCriteria), downGlyph),
-              p.subCriteria.name,
+              p.subCriteria.displayName,
               IndicatorList(IndicatorListProps(p.subCriteria.indicators, p.weights.enabledIndicators))
             )
         }
@@ -247,7 +247,7 @@ object ExpertConfigComponent {
               val isChecked = p.enabledIndicators.contains(indicator.id)
               <.li(^.whiteSpace.nowrap, ^.overflow.hidden, ^.textOverflow.ellipsis,
                 <.input.checkbox(^.checked := isChecked, ^.onChange --> toggleIndicatorWeight(indicator.id)),
-                " " + indicator.name
+                " " + indicator.displayName
               )
             })
         }

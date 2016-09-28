@@ -24,7 +24,7 @@ object app {
 
   final case class EntitySelectionModel(visible: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
 
-  final case class SubCriteriaSelectionModel(hovered: Option[SubCriteria] = None)
+  final case class SubCriteriaSelectionModel(hovered: Option[SubCriteriaId] = None)
 
   final case class AppModel(
     config: Config,
@@ -115,8 +115,8 @@ object app {
     def name: String = id.name
   }
 
-  final case class GroupedCriteria(id: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]]) {
-    def name: String = id.name
+  final case class GroupedCriteria(id: CriteriaId, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]]) {
+    def name: String = id.path
 
     // Deliberately not using min/max of groupedValues for our purpose
     val minValue: Option[Double] = safeMinMax(subCriteria.map(_.minValue))._1
@@ -179,14 +179,12 @@ object app {
 
     private def apply(entities: Seq[Entity], criteria: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValue: Entity => Option[Double]): GroupedCriteria = {
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
-      GroupedCriteria(criteria, subCriteria, groupedValues)
+      GroupedCriteria(criteria.id, subCriteria, groupedValues)
     }
 
   }
 
-  final case class GroupedSubCriteria(id: SubCriteria, groupedValues: Map[Entity, Option[Double]], indicators: Seq[GroupedIndicator]) {
-    def name: String = id.name
-
+  final case class GroupedSubCriteria(id: SubCriteriaId, displayName: String, groupedValues: Map[Entity, Option[Double]], indicators: Seq[GroupedIndicator]) {
     val (minValue, maxValue) = safeMinMax(groupedValues.values)
   }
 
@@ -207,7 +205,7 @@ object app {
 
       val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
 
-      GroupedSubCriteria(subCriteria, groupedValues, indicators)
+      GroupedSubCriteria(subCriteria.id, subCriteria.displayName, groupedValues, indicators)
     }
 
   }
@@ -227,7 +225,7 @@ object app {
           } yield value
           entity -> median(values)
         }).toMap
-      GroupedIndicator(indicator.id, indicator.name, groupedValues)
+      GroupedIndicator(indicator.id, indicator.displayName, groupedValues)
     }
 
   }

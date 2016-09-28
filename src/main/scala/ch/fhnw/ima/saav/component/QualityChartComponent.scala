@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria}
+import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria, SubCriteriaId}
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -22,7 +22,7 @@ object QualityChartComponent {
 
   class Backend($: BackendScope[Props, State]) {
 
-    def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteria]) =
+    def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteriaId]) =
       $.props >>= { p =>
         val dispatchAction = p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
         val width = p.proxy.value.qualityModel.layout.width
@@ -96,11 +96,11 @@ object QualityChartComponent {
         }
       }.getOrElse(Callback.empty)
 
-    private def findClosestSubCriteria(model: QualityModel, cursorPt: SVGPoint): Option[SubCriteria] = {
+    private def findClosestSubCriteria(model: QualityModel, cursorPt: SVGPoint): Option[SubCriteriaId] = {
       val layout = model.layout
       if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
         var xmin = Double.MaxValue
-        var closestSubCriteria: Option[SubCriteria] = None
+        var closestSubCriteria: Option[SubCriteriaId] = None
         for (criteria <- model.criteria) {
           for (subCriteria <- criteria.subCriteria) {
             val x = layout.getSubCriteriaAxisX(subCriteria)
@@ -307,7 +307,7 @@ object QualityChartComponent {
 
           if (hoveredSubCriteria.contains(subCriteria.id)) {
             hoveredAxisX = layout.getSubCriteriaAxisX(subCriteria)
-            hoveredAxisName = hoveredSubCriteria.get.name
+            hoveredAxisName = subCriteria.displayName
           }
 
           val stroke = if (hoveredSubCriteria.contains(subCriteria.id)) "black" else "#cccccc"

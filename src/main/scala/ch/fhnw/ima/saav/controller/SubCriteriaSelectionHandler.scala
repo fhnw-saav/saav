@@ -1,10 +1,10 @@
 package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.model.app.{SaavModel, SubCriteriaSelectionModel}
-import ch.fhnw.ima.saav.model.domain.SubCriteria
+import ch.fhnw.ima.saav.model.domain.SubCriteriaId
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
 
-final case class UpdateSubCriteriaHoveringAction(hoveredSubCriteria: Option[SubCriteria]) extends Action
+final case class UpdateSubCriteriaHoveringAction(hoveredSubCriteria: Option[SubCriteriaId]) extends Action
 
 class SubCriteriaSelectionHandler[M](modelRW: ModelRW[M, SubCriteriaSelectionModel]) extends ActionHandler(modelRW) {
 

@@ -9,6 +9,10 @@ import org.scalatest._
 
 class SaavCircuitSpec extends FunSpec with Matchers {
 
+  private val criteriaId = CriteriaId("c")
+  private val subCriteriaId = SubCriteriaId(criteriaId, "sc")
+  private val indicatorId = IndicatorId(subCriteriaId, "i")
+
   private val analysis = AnalysisBuilder().build
 
   private def circuitWithAnalysis() = {
@@ -123,7 +127,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
   describe(s"${SubCriteriaSelectionHandler.getClass.getSimpleName}") {
 
     it("should wire/clear a hovered sub-criteria") {
-      val hoveredSubCriteria = Some(SubCriteria("x", Seq.empty))
+      val hoveredSubCriteria = Some(subCriteriaId)
       val circuit = circuitWithAnalysis()
 
       circuit.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
@@ -173,7 +177,6 @@ class SaavCircuitSpec extends FunSpec with Matchers {
     }
 
     it("should control enabled indicators") {
-      val indicatorId = IndicatorId(42)
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateIndicatorWeightAction(indicatorId, isEnabled = true))
       val weights = circuit.zoom(WeightsHandler.modelGet).value
@@ -181,11 +184,10 @@ class SaavCircuitSpec extends FunSpec with Matchers {
     }
 
     it("should control sub-criteria weights") {
-      val subCriteria = SubCriteria("foo", Seq.empty)
       val circuit = circuitWithAnalysis()
-      circuit.dispatch(UpdateSubCriteriaWeightAction(subCriteria, Profile))
+      circuit.dispatch(UpdateSubCriteriaWeightAction(subCriteriaId, Profile))
       val weights = circuit.zoom(WeightsHandler.modelGet).value
-      weights.subCriteriaWeights(subCriteria) shouldBe Profile
+      weights.subCriteriaWeights(subCriteriaId) shouldBe Profile
     }
 
   }

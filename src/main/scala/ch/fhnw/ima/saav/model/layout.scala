@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package model
 
 import ch.fhnw.ima.saav.model.app.{GroupedCriteria, GroupedSubCriteria}
-import ch.fhnw.ima.saav.model.domain.{Criteria, SubCriteria}
+import ch.fhnw.ima.saav.model.domain.{Criteria, CriteriaId, SubCriteria, SubCriteriaId}
 
 object layout {
 
@@ -29,10 +29,10 @@ object layout {
     val minValue: Double = Math.min(0, minValueOption.getOrElse(0d))
     val maxValue: Double = Math.max(0, maxValueOption.getOrElse(0d))
 
-    private val criteriaBoxesMap = new scala.collection.mutable.HashMap[Criteria, (Int, Int)]
-    private val criteriaAxesMap = new scala.collection.mutable.HashMap[Criteria, Int]
-    private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[SubCriteria, Int]
-    private val subCriteriaDomainMap = new scala.collection.mutable.HashMap[SubCriteria, GroupedSubCriteria]
+    private val criteriaBoxesMap = new scala.collection.mutable.HashMap[CriteriaId, (Int, Int)]
+    private val criteriaAxesMap = new scala.collection.mutable.HashMap[CriteriaId, Int]
+    private val subCriteriaAxesMap = new scala.collection.mutable.HashMap[SubCriteriaId, Int]
+    private val subCriteriaDomainMap = new scala.collection.mutable.HashMap[SubCriteriaId, GroupedSubCriteria]
 
     // Compute general parameters
 
@@ -99,11 +99,6 @@ object layout {
     def getCriteriaAxisX(criteria: GroupedCriteria): Int = criteriaAxesMap(criteria.id)
 
     def getSubCriteriaAxisX(subCriteria: GroupedSubCriteria): Int = subCriteriaAxesMap(subCriteria.id)
-
-    // TODO: does not work if called from text element in component
-    def getAppSubCriteria(hoveredSubCriteria: Option[SubCriteria]): GroupedSubCriteria = {
-      subCriteriaDomainMap(hoveredSubCriteria.get)
-    }
 
   }
 

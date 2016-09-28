@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.controller
 
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.{IndicatorId, SubCriteria}
+import ch.fhnw.ima.saav.model.domain.{IndicatorId, SubCriteria, SubCriteriaId}
 import ch.fhnw.ima.saav.model.weight.{Weight, Weights}
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
 
@@ -11,7 +11,7 @@ final case class UpdateWeightsAction(weights: Weights) extends Action
 
 final case class UpdateIndicatorWeightAction(indicatorId: IndicatorId, isEnabled: Boolean) extends Action
 
-final case class UpdateSubCriteriaWeightAction(subCriteria: SubCriteria, weight: Weight) extends Action
+final case class UpdateSubCriteriaWeightAction(subCriteriaId: SubCriteriaId, weight: Weight) extends Action
 
 class WeightsHandler[M](modelRW: ModelRW[M, Weights]) extends ActionHandler(modelRW) {
 

@@ -29,7 +29,7 @@ class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppMod
       // TODO: Read config from external JSON
 
       val subCriteria = analysis.criteria.flatMap(_.subCriteria)
-      val subCriteriaWeights = subCriteria.map(_ -> Quality(1.0)) toMap
+      val subCriteriaWeights = subCriteria.map(_.id -> Quality(1.0)) toMap
       val indicatorIds = subCriteria.flatMap(_.indicators).map(_.id)
       val weights = Weights(subCriteriaWeights, indicatorIds.toSet)
 

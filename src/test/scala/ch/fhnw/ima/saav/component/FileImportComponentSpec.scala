@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.FileImportComponent.Row
-import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, IndicatorId}
+import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder}
 import org.scalatest.FlatSpec
 
 import scala.scalajs.js
@@ -24,11 +24,11 @@ class FileImportComponentSpec extends FlatSpec {
 
     val analysis = builder.build
     assert(analysis.criteria.size == 1)
-    assert(analysis.criteria(0).name == criteriaName)
+    assert(analysis.criteria(0).displayName == criteriaName)
     assert(analysis.criteria(0).subCriteria.size == 1)
-    assert(analysis.criteria(0).subCriteria(0).name == subCriteriaName)
+    assert(analysis.criteria(0).subCriteria(0).displayName == subCriteriaName)
     assert(analysis.criteria(0).subCriteria(0).indicators.length == 1)
-    assert(analysis.criteria(0).subCriteria(0).indicators(0).name == indicatorName)
+    assert(analysis.criteria(0).subCriteria(0).indicators(0).displayName == indicatorName)
 
   }
 

@@ -3,21 +3,35 @@ package model
 
 object domain {
 
+  // For the time being, our input format does not contain unique identifiers. Names are used in the role of
+  // an identifying 'path' as well as for display ==> for the sake of maintainability, these aspects should be kept
+  // separate, i.e. GUI code should only ever use 'displayName'
+
+  final case class CriteriaId(path: String) {
+    override lazy val hashCode: Int = super.hashCode()
+  }
+
+  final case class SubCriteriaId(criteriaId: CriteriaId, path: String) {
+    override lazy val hashCode: Int = super.hashCode()
+  }
+
+  final case class IndicatorId(subCriteriaId: SubCriteriaId, path: String) {
+    override lazy val hashCode: Int = super.hashCode()
+  }
+
   final case class Analysis(criteria: Seq[Criteria], entities: Seq[Entity], reviews: Seq[Review])
 
-  final case class Criteria(name: String, subCriteria: Seq[SubCriteria]) {
-    override lazy val hashCode: Int = super.hashCode()
+  final case class Criteria(id: CriteriaId, subCriteria: Seq[SubCriteria]) {
+    val displayName: String = id.path
   }
 
-  final case class SubCriteria(name: String, indicators: Seq[Indicator]) {
-    override lazy val hashCode: Int = super.hashCode()
+  final case class SubCriteria(id: SubCriteriaId, indicators: Seq[Indicator]) {
+    val displayName: String = id.path
   }
 
-  final case class IndicatorId(value: Int) {
-    override lazy val hashCode: Int = super.hashCode()
+  final case class Indicator(id: IndicatorId, values: Map[(Entity, Review), Double]) {
+    val displayName: String = id.path
   }
-
-  final case class Indicator(id: IndicatorId, name: String, values: Map[(Entity, Review), Double])
 
   final case class Review(name: String)
 
@@ -30,11 +44,11 @@ object domain {
     private var reviews: Seq[Review] = Seq()
 
     def criteria(criteriaName: String): CriteriaBuilder = {
-      val existing = criteriaBuilders.find(_.criteriaName == criteriaName)
+      val existing = criteriaBuilders.find(_.id.path == criteriaName)
       existing match {
         case Some(c) => c
         case None =>
-          val criteriaBuilder = new CriteriaBuilderImpl(criteriaName)
+          val criteriaBuilder = new CriteriaBuilderImpl(CriteriaId(criteriaName))
           criteriaBuilders :+= criteriaBuilder
           criteriaBuilder
       }
@@ -46,36 +60,36 @@ object domain {
     }
 
     trait CriteriaBuilder {
-      def criteriaName: String
+      def id: CriteriaId
       def subCriteria(name: String): SubCriteriaBuilder
       def build: AnalysisBuilder
     }
 
-    private class CriteriaBuilderImpl(val criteriaName: String, var subCriteriaBuilders: Seq[SubCriteriaBuilderImpl] = Seq()) extends CriteriaBuilder {
+    private class CriteriaBuilderImpl(val id: CriteriaId, var subCriteriaBuilders: Seq[SubCriteriaBuilderImpl] = Seq()) extends CriteriaBuilder {
 
       override def subCriteria(subCriteriaName: String): SubCriteriaBuilder = {
-        val existing = subCriteriaBuilders.find(_.subCriteriaName == subCriteriaName)
+        val existing = subCriteriaBuilders.find(_.id.path == subCriteriaName)
         existing match {
           case Some(c) => c
           case None =>
-            val subCriteriaBuilder = new SubCriteriaBuilderImpl(this, subCriteriaName)
+            val subCriteriaBuilder = new SubCriteriaBuilderImpl(this, SubCriteriaId(id, subCriteriaName))
             subCriteriaBuilders :+= subCriteriaBuilder
             subCriteriaBuilder
         }
       }
 
-      def toCriteria = Criteria(criteriaName, subCriteriaBuilders.map(_.toSubCriteria))
+      def toCriteria = Criteria(id, subCriteriaBuilders.map(_.toSubCriteria))
 
       override def build: AnalysisBuilder = AnalysisBuilder.this
     }
 
     trait SubCriteriaBuilder {
-      def subCriteriaName: String
+      def id: SubCriteriaId
       def indicator(name: String): IndicatorBuilder
       def build: CriteriaBuilder
     }
 
-    private class SubCriteriaBuilderImpl(private val criteriaBuilder: CriteriaBuilder, val subCriteriaName: String, var indicatorBuilders: Seq[IndicatorBuilderImpl] = Seq()) extends SubCriteriaBuilder {
+    private class SubCriteriaBuilderImpl(private val criteriaBuilder: CriteriaBuilder, val id: SubCriteriaId, var indicatorBuilders: Seq[IndicatorBuilderImpl] = Seq()) extends SubCriteriaBuilder {
 
       override def indicator(indicatorName: String): IndicatorBuilder = {
         val existing = indicatorBuilders.find(_.indicatorName == indicatorName)
@@ -83,8 +97,7 @@ object domain {
           case Some(i) => i
           case None =>
 
-            // uniquely identified by hierarchical path --> taking the hashCode to prevent any semantic abuse
-            val indicatorId = IndicatorId(s"${criteriaBuilder.criteriaName}/$subCriteriaName/$indicatorName".hashCode)
+            val indicatorId = IndicatorId(id, indicatorName)
 
             val indicatorBuilder = new IndicatorBuilderImpl(this, indicatorId, indicatorName)
             indicatorBuilders :+= indicatorBuilder
@@ -92,7 +105,7 @@ object domain {
         }
       }
 
-      def toSubCriteria = SubCriteria(subCriteriaName, indicatorBuilders.map(_.toIndicator))
+      def toSubCriteria = SubCriteria(id, indicatorBuilders.map(_.toIndicator))
 
       def build: CriteriaBuilder = criteriaBuilder
 
@@ -116,7 +129,7 @@ object domain {
         this
       }
 
-      def toIndicator = Indicator(id, indicatorName, values)
+      def toIndicator = Indicator(id, values)
 
       def build: SubCriteriaBuilder = subCriteriaBuilder
 
