@@ -17,15 +17,15 @@ class ConfigModelSpec extends FunSpec with Matchers {
             "subCriteria" : [
               {
                 "name" : "Sub-Criteria A1",
+                "weight" : { "Profile" : { } },
                 "indicators" : [
                   {
                     "name" : "Indicator Foo",
-                    "weight" : { "Profile" : { } }
+                    "enabled" : true
                   },
                   {
                     "name" : "Indicator Bar",
-                    "weight" : { "Quality" : { "weight" : 0.42 }
-                    }
+                    "enabled" : false
                   }
                 ]
               }
@@ -36,17 +36,18 @@ class ConfigModelSpec extends FunSpec with Matchers {
             "subCriteria" : [
               {
                 "name" : "Sub-Criteria B1",
+                "weight" : { "Quality" : { "weight" : 0.42 } },
                 "indicators" : [
                   {
                     "name" : "Indicator Foo",
-                    "weight" : { "Profile" : { } }
+                    "enabled" : false
                   }
                 ]
               }
             ]
           }
         ]
-      }"""
+  }"""
 
   it("should parse an analysis config") {
 
@@ -57,9 +58,10 @@ class ConfigModelSpec extends FunSpec with Matchers {
           Seq(
             SubCriteriaConfig(
               "Sub-Criteria A1",
+              Profile,
               Seq(
-                IndicatorConfig("Indicator Foo", Profile),
-                IndicatorConfig("Indicator Bar", Quality(0.42d))
+                IndicatorConfig("Indicator Foo", enabled = true),
+                IndicatorConfig("Indicator Bar", enabled = false)
               )
             )
           )
@@ -69,7 +71,8 @@ class ConfigModelSpec extends FunSpec with Matchers {
           Seq(
             SubCriteriaConfig(
               "Sub-Criteria B1",
-              Seq(IndicatorConfig("Indicator Foo", Profile))
+              Quality(0.42d),
+              Seq(IndicatorConfig("Indicator Foo", enabled = false))
             )
           )
         )

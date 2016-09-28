@@ -15,8 +15,8 @@ object config {
 
   final case class CriteriaConfig(name: String, subCriteria: Seq[SubCriteriaConfig])
 
-  final case class SubCriteriaConfig(name: String, indicators: Seq[IndicatorConfig])
+  final case class SubCriteriaConfig(name: String, weight: Weight, indicators: Seq[IndicatorConfig])
 
-  final case class IndicatorConfig(name: String, weight: Weight)
+  final case class IndicatorConfig(name: String, enabled: Boolean)
 
 }
