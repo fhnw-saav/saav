@@ -117,8 +117,8 @@ object app {
   final case class GroupedCriteria(id: CriteriaId, displayName: String, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[EntityId, Double]) {
 
     // Deliberately not using min/max of groupedValues for our purpose
-    val minValue: Option[Double] = safeMinMax(subCriteria.map(_.minValue).flatten)._1
-    val maxValue: Option[Double] = safeMinMax(subCriteria.map(_.maxValue).flatten)._2
+    val minValue: Option[Double] = safeMinMax(subCriteria.flatMap(_.minValue))._1
+    val maxValue: Option[Double] = safeMinMax(subCriteria.flatMap(_.maxValue))._2
 
   }
 
