@@ -4,7 +4,7 @@ package component
 import ch.fhnw.ima.saav.controller.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntityVisibilityAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color._
-import ch.fhnw.ima.saav.model.domain.Entity
+import ch.fhnw.ima.saav.model.domain.EntityId
 import diode.Action
 import diode.react.ModelProxy
 import japgolly.scalajs.react.extra.components.TriStateCheckbox
@@ -22,7 +22,7 @@ object LegendComponent {
     entities: Seq[GroupedEntity],
     entitySelectionModel: EntitySelectionModel,
     allVisibilityState: TriStateCheckbox.State,
-    colorMap: Map[Entity, WebColor],
+    colorMap: Map[EntityId, WebColor],
     dispatch: Action => Callback
   )
 
@@ -36,12 +36,12 @@ object LegendComponent {
       }
     }
 
-    private def updateEntityColor(entity: Entity)(e: SyntheticEvent[HTMLInputElement]) = {
+    private def updateEntityColor(entity: EntityId)(e: SyntheticEvent[HTMLInputElement]) = {
       val newColor = WebColor(e.target.value)
       $.props >>= (_.dispatch(UpdateEntityColorAction(entity, newColor)))
     }
 
-    private def toggleEntityVisibility(entity: Entity) = {
+    private def toggleEntityVisibility(entity: EntityId) = {
       $.props >>= { p =>
         val isVisible = p.entitySelectionModel.visible.contains(entity)
         p.dispatch(UpdateEntityVisibilityAction(Set(entity), !isVisible))
@@ -59,7 +59,7 @@ object LegendComponent {
       }
     }
 
-    private def toggleEntityPinning(entity: Entity)(e: ReactEvent) = {
+    private def toggleEntityPinning(entity: EntityId)(e: ReactEvent) = {
       // only control pinning if the click happens in a blank table row area (i.e NOT on the checkbox, color widget)
       if (e.target.isInstanceOf[HTMLInputElement]) {
         Callback.empty
@@ -91,21 +91,21 @@ object LegendComponent {
       )
     }
 
-    private def createRow(entity: Entity, index: Int, isVisible: Boolean, isPinned: Boolean, color: WebColor, isShowRank: Boolean) = {
+    private def createRow(entity: GroupedEntity, index: Int, isVisible: Boolean, isPinned: Boolean, color: WebColor, isShowRank: Boolean) = {
 
       val visibleStyle = if (isVisible) css.empty else css.textMuted
       val pinStyle = if (isPinned) css.active else css.empty
       val cursor = if (isVisible) ^.cursor.pointer else EmptyTag
       val togglePinOnClick =
         if (isVisible)
-          ^.onClick ==> toggleEntityPinning(entity)
+          ^.onClick ==> toggleEntityPinning(entity.id)
         else EmptyTag
 
       <.tr(visibleStyle, pinStyle, cursor, togglePinOnClick,
         isShowRank ?= <.th(^.scope := "row", index + 1),
-        <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.title := entity.name, entity.name),
-        <.td(checkbox(entity, isVisible)),
-        <.td(^.textAlign.center, colorPicker(entity, isVisible, color)),
+        <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.title := entity.displayName, entity.displayName),
+        <.td(checkbox(entity.id, isVisible)),
+        <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color)),
         <.td(^.textAlign.center, if (isPinned) pinGlyph else EmptyTag)
       )
     }
@@ -114,11 +114,11 @@ object LegendComponent {
       TriStateCheckbox.Component(TriStateCheckbox.Props(allVisibilityState, updateAllEntityVisibility()))
     }
 
-    private def checkbox(entity: Entity, isVisible: Boolean) = {
+    private def checkbox(entity: EntityId, isVisible: Boolean) = {
       <.input.checkbox(^.checked := isVisible, ^.onChange --> toggleEntityVisibility(entity))
     }
 
-    private def colorPicker(entity: Entity, isVisible: Boolean, color: WebColor) = {
+    private def colorPicker(entity: EntityId, isVisible: Boolean, color: WebColor) = {
       <.input.color(
         ^.value := (if (isVisible) color else DisabledColor).hexValue,
         ^.disabled := !isVisible,
@@ -127,11 +127,11 @@ object LegendComponent {
 
     def render(p: Props): ReactTagOf[HTMLElement] = {
 
-      val rows = p.entities.map(_.id).zipWithIndex.map {
+      val rows = p.entities.zipWithIndex.map {
         case (e, i) =>
-          val isVisible = p.entitySelectionModel.visible.contains(e)
-          val isPinned = p.entitySelectionModel.pinned.contains(e)
-          val color = p.colorMap(e)
+          val isVisible = p.entitySelectionModel.visible.contains(e.id)
+          val isPinned = p.entitySelectionModel.pinned.contains(e.id)
+          val color = p.colorMap(e.id)
           createRow(e, i, isVisible, isPinned, color, p.showRank)
       }
 

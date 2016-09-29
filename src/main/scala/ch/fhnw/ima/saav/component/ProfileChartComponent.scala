@@ -22,7 +22,7 @@ object ProfileChartComponent {
         TodoComponent("Profile Chart"),
         <.ul(
           for (criteria <- model.criteria) yield {
-            <.li(criteria.name,
+            <.li(criteria.displayName,
               <.ul(
                 for (subCriteria <- criteria.subCriteria) yield {
                   <.li(subCriteria.displayName)

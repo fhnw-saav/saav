@@ -10,13 +10,13 @@ class AppModelSpec extends FunSpec with Matchers {
 
   describe(s"A ${AppModel.getClass.getSimpleName}") {
 
-    val entityOne = Entity("P1")
-    val entityTwo = Entity("P2")
-    val entityThree = Entity("P3")
+    val entityOne = Entity(EntityId("P1"))
+    val entityTwo = Entity(EntityId("P2"))
+    val entityThree = Entity(EntityId("P3"))
 
-    val reviewOne = Review("Review1")
-    val reviewTwo = Review("Review2")
-    val reviewThree = Review("Review3")
+    val reviewOne = ReviewId("Review1")
+    val reviewTwo = ReviewId("Review2")
+    val reviewThree = ReviewId("Review3")
 
     val analysis = AnalysisBuilder()
       .criteria("Cat 1")
@@ -59,35 +59,35 @@ class AppModelSpec extends FunSpec with Matchers {
 
       // ranking (highest global median first)
       qualityModel.rankedEntities.size shouldBe 3
-      qualityModel.rankedEntities(0).id shouldBe entityTwo
+      qualityModel.rankedEntities(0).id shouldBe entityTwo.id
       qualityModel.rankedEntities(0).value shouldBe Some(100)
 
-      qualityModel.rankedEntities(1).id shouldBe entityOne
+      qualityModel.rankedEntities(1).id shouldBe entityOne.id
       qualityModel.rankedEntities(1).value shouldBe Some(22.25)
 
-      qualityModel.rankedEntities(2).id shouldBe entityThree
+      qualityModel.rankedEntities(2).id shouldBe entityThree.id
       qualityModel.rankedEntities(2).value shouldBe Some(0)
 
       qualityModel.criteria.size shouldBe 2
 
       val criteriaOne = qualityModel.criteria(0)
-      criteriaOne.groupedValues(entityTwo) shouldBe Some(101)
-      criteriaOne.groupedValues(entityThree) shouldBe Some(0)
-      criteriaOne.groupedValues(entityOne) shouldBe Some(2)
+      criteriaOne.groupedValues(entityTwo.id) shouldBe 101
+      criteriaOne.groupedValues(entityThree.id) shouldBe 0
+      criteriaOne.groupedValues(entityOne.id) shouldBe 2
       criteriaOne.subCriteria.size shouldBe 1
-      criteriaOne.subCriteria(0).groupedValues(entityOne) shouldBe Some(2)
-      criteriaOne.subCriteria(0).groupedValues(entityTwo) shouldBe Some(101)
-      criteriaOne.subCriteria(0).groupedValues(entityThree) shouldBe Some(0)
+      criteriaOne.subCriteria(0).groupedValues(entityOne.id) shouldBe 2
+      criteriaOne.subCriteria(0).groupedValues(entityTwo.id) shouldBe 101
+      criteriaOne.subCriteria(0).groupedValues(entityThree.id) shouldBe 0
 
 
       val criteriaTwo = qualityModel.criteria(1)
-      criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
-      criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
-      criteriaTwo.groupedValues(entityThree) shouldBe None
+      criteriaTwo.groupedValues(entityOne.id) shouldBe 42.5
+      criteriaTwo.groupedValues(entityTwo.id) shouldBe 99
+      criteriaTwo.groupedValues.get(entityThree.id) shouldBe None
       criteriaTwo.subCriteria.size shouldBe 1
-      criteriaTwo.subCriteria(0).groupedValues(entityOne) shouldBe Some(42.5)
-      criteriaTwo.subCriteria(0).groupedValues(entityTwo) shouldBe Some(99)
-      criteriaTwo.subCriteria(0).groupedValues(entityThree) shouldBe None
+      criteriaTwo.subCriteria(0).groupedValues(entityOne.id) shouldBe 42.5
+      criteriaTwo.subCriteria(0).groupedValues(entityTwo.id) shouldBe 99
+      criteriaTwo.subCriteria(0).groupedValues.get(entityThree.id) shouldBe None
 
     }
 
@@ -101,26 +101,26 @@ class AppModelSpec extends FunSpec with Matchers {
 
       // ranking (highest global median first)
       qualityModel.rankedEntities.size shouldBe 3
-      qualityModel.rankedEntities(0).id shouldBe entityTwo
+      qualityModel.rankedEntities(0).id shouldBe entityTwo.id
       qualityModel.rankedEntities(0).value shouldBe Some(99)
 
-      qualityModel.rankedEntities(1).id shouldBe entityOne
+      qualityModel.rankedEntities(1).id shouldBe entityOne.id
       qualityModel.rankedEntities(1).value shouldBe Some(42.5)
 
-      qualityModel.rankedEntities(2).id shouldBe entityThree
+      qualityModel.rankedEntities(2).id shouldBe entityThree.id
       qualityModel.rankedEntities(2).value shouldBe None
 
       qualityModel.criteria.size shouldBe 1
 
       // weights unchanged --> same expectations as with defaults
       val criteriaTwo = qualityModel.criteria(0)
-      criteriaTwo.groupedValues(entityOne) shouldBe Some(42.5)
-      criteriaTwo.groupedValues(entityTwo) shouldBe Some(99)
-      criteriaTwo.groupedValues(entityThree) shouldBe None
+      criteriaTwo.groupedValues(entityOne.id) shouldBe 42.5
+      criteriaTwo.groupedValues(entityTwo.id) shouldBe 99
+      criteriaTwo.groupedValues.get(entityThree.id) shouldBe None
       criteriaTwo.subCriteria.size shouldBe 1
-      criteriaTwo.subCriteria(0).groupedValues(entityOne) shouldBe Some(42.5)
-      criteriaTwo.subCriteria(0).groupedValues(entityTwo) shouldBe Some(99)
-      criteriaTwo.subCriteria(0).groupedValues(entityThree) shouldBe None
+      criteriaTwo.subCriteria(0).groupedValues(entityOne.id) shouldBe 42.5
+      criteriaTwo.subCriteria(0).groupedValues(entityTwo.id) shouldBe 99
+      criteriaTwo.subCriteria(0).groupedValues.get(entityThree.id) shouldBe None
 
     }
   }

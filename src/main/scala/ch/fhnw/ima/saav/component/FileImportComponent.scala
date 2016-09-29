@@ -119,12 +119,12 @@ object FileImportComponent {
 
     val keyIt = row.keys.iterator
 
-    val project = Entity(row(keyIt.next()))
+    val project = Entity(EntityId(row(keyIt.next())))
     val hierarchyLevels = row(keyIt.next()).split(":::")
     val criteria = hierarchyLevels(0)
     val subCriteria = hierarchyLevels(1)
     val indicator = hierarchyLevels(2)
-    val review = Review(row(keyIt.next()))
+    val review = ReviewId(row(keyIt.next()))
     val value = row(keyIt.next()).toDouble
 
     builder

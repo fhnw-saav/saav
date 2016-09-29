@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder, Entity, Review}
+import ch.fhnw.ima.saav.model.domain._
 
 import scala.util.Random
 
@@ -43,16 +43,16 @@ package object model {
   }
 
   def alphabetSoupAnalysis: Analysis = {
-    val review = Review("Review")
+    val review = ReviewId("Review")
 
-    val helloWorld = Entity("Hello World")
-    val foo = Entity("Foo")
-    val bar = Entity("Bar")
-    val baz = Entity("Baz")
-    val obama = Entity("Obama")
-    val clinton = Entity("Clinton")
-    val trump = Entity("Trump")
-    val chuchichaeschtli = Entity("Chuchichäschtli")
+    val helloWorld = Entity(EntityId("Hello World"))
+    val foo = Entity(EntityId("Foo"))
+    val bar = Entity(EntityId("Bar"))
+    val baz = Entity(EntityId("Baz"))
+    val obama = Entity(EntityId("Obama"))
+    val clinton = Entity(EntityId("Clinton"))
+    val trump = Entity(EntityId("Trump"))
+    val chuchichaeschtli = Entity(EntityId("Chuchichäschtli"))
 
     val entities = Seq(helloWorld, foo, bar, baz, obama, clinton, trump, chuchichaeschtli)
 
@@ -75,10 +75,10 @@ package object model {
     def isSpace(c: Char) = c == ' '
 
     for (e <- entities) {
-      val length = e.name.length
-      val consonantCount = e.name.toLowerCase.filterNot(isVowel).filterNot(isSpace).length
-      val vowelCount = e.name.toLowerCase.filter(isVowel).length
-      val wordCount = e.name.filter(isSpace).length + 1
+      val length = e.displayName.length
+      val consonantCount = e.displayName.toLowerCase.filterNot(isVowel).filterNot(isSpace).length
+      val vowelCount = e.displayName.toLowerCase.filter(isVowel).length
+      val wordCount = e.displayName.filter(isSpace).length + 1
 
       lengthIndicatorScope.addValue(e, review, length)
       consonantIndicatorScope.addValue(e, review, consonantCount)
@@ -93,13 +93,13 @@ package object model {
   private def populateIndicator(builder: AnalysisBuilder, criteriaName: String, subCriteriaName: String, indicatorName: String) = {
     val indicatorScope = builder.criteria(criteriaName).subCriteria(subCriteriaName).indicator(indicatorName)
 
-    val reviewOne = Review("Review 1")
-    val reviewTwo = Review("Review 2")
+    val reviewOne = ReviewId("Review 1")
+    val reviewTwo = ReviewId("Review 2")
 
     val r = Random
 
     for (i <- 1 to 10) {
-      val project = Entity(s"Project $i")
+      val project = Entity(EntityId(s"Project $i"))
       indicatorScope.addValue(project, reviewOne, r.nextInt(100))
       indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
     }

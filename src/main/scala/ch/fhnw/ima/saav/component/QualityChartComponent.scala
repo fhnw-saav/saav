@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.{Entity, SubCriteria, SubCriteriaId}
+import ch.fhnw.ima.saav.model.domain.{EntityId, SubCriteriaId}
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -15,7 +15,7 @@ object QualityChartComponent {
 
   case class Props(proxy: ModelProxy[AppModel])
 
-  case class State(hoveredEntity: Option[Entity] = None)
+  case class State(hoveredEntity: Option[EntityId] = None)
 
   private val svgRootRef = Ref[SVGSVGElement]("svgRootRef")
   private val svgSubCriteriaLabelRef = Ref[SVGTextElement]("svgSubCriteriaLabelRef")
@@ -29,7 +29,7 @@ object QualityChartComponent {
         dispatchAction >> alignSubCriteriaLabel(width)
       }
 
-    def setHoveredEntity(hoveredEntity: Option[Entity]) =
+    def setHoveredEntity(hoveredEntity: Option[EntityId]) =
       $.state >>= { s =>
         if (s.hoveredEntity != hoveredEntity) {
           $.setState(s.copy(hoveredEntity = hoveredEntity))
@@ -38,7 +38,7 @@ object QualityChartComponent {
         }
       }
 
-    def toggleEntityPinning(entity: Entity) =
+    def toggleEntityPinning(entity: EntityId) =
       $.props >>= { p =>
         val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
         val pinnedOrNone = if (isPinned) None else Some(entity)
@@ -120,7 +120,7 @@ object QualityChartComponent {
 
     def clearHovering = setHoveredEntity(None) >> setHoveredSubCriteria(None)
 
-    private def findClosestEntity(model: QualityModel, selectionModel: EntitySelectionModel, cursorPt: SVGPoint): Option[Entity] = {
+    private def findClosestEntity(model: QualityModel, selectionModel: EntitySelectionModel, cursorPt: SVGPoint): Option[EntityId] = {
       val layout = model.layout
       if ((cursorPt.y > layout.criteriaAxisTopY) && (cursorPt.y < layout.criteriaAxisBotY))
         findClosestEntityViaCriteria(model.criteria, layout, selectionModel, cursorPt)
@@ -133,7 +133,7 @@ object QualityChartComponent {
     private def findClosestEntityViaCriteria(criteria: Seq[GroupedCriteria], layout: QualityChartLayout, selectionModel: EntitySelectionModel, cursorPt: SVGPoint) = {
 
       var minDistance = Double.MaxValue
-      var closestEntity: Option[Entity] = None
+      var closestEntity: Option[EntityId] = None
 
       for (i <- 1 until criteria.size) {
         val criteria1 = criteria(i - 1)
@@ -142,8 +142,8 @@ object QualityChartComponent {
         val x2 = layout.getCriteriaAxisX(criteria2)
         if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
           for (entity <- selectionModel.visible) {
-            val axisValue1 = computeAxisValue(criteria1.groupedValues(entity).get, layout, AxisType.Criteria)
-            val axisValue2 = computeAxisValue(criteria2.groupedValues(entity).get, layout, AxisType.Criteria)
+            val axisValue1 = computeAxisValue(criteria1.groupedValues.get(entity), layout, AxisType.Criteria)
+            val axisValue2 = computeAxisValue(criteria2.groupedValues.get(entity), layout, AxisType.Criteria)
             val y = layout.criteriaAxisBotY - cursorPt.y
 
             val interpolatedValue = axisValue1 + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2 - axisValue1))
@@ -163,7 +163,7 @@ object QualityChartComponent {
     private def findClosestEntityViaSubCriteria(subCriteria: Seq[GroupedSubCriteria], layout: QualityChartLayout, selectionModel: EntitySelectionModel, cursorPt: SVGPoint) = {
 
       var minDistance = Double.MaxValue
-      var closestEntity: Option[Entity] = None
+      var closestEntity: Option[EntityId] = None
 
       for (i <- 1 until subCriteria.size) {
         val subCriteria1 = subCriteria(i - 1)
@@ -172,8 +172,8 @@ object QualityChartComponent {
         val x2 = layout.getSubCriteriaAxisX(subCriteria2)
         if ((cursorPt.x > x1) && (cursorPt.x < x2)) {
           for (entity <- selectionModel.visible) {
-            val axisValue1 = computeAxisValue(subCriteria1.groupedValues(entity).get, layout, AxisType.Subcriteria)
-            val axisValue2 = computeAxisValue(subCriteria2.groupedValues(entity).get, layout, AxisType.Subcriteria)
+            val axisValue1 = computeAxisValue(subCriteria1.groupedValues.get(entity), layout, AxisType.Subcriteria)
+            val axisValue2 = computeAxisValue(subCriteria2.groupedValues.get(entity), layout, AxisType.Subcriteria)
             val y = layout.subCriteriaAxisBotY - cursorPt.y
 
             val interpolatedValue = axisValue1 + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2 - axisValue1))
@@ -276,8 +276,8 @@ object QualityChartComponent {
               ^.textAlign.center,
               ^.overflow.hidden, ^.textOverflow.ellipsis, ^.whiteSpace.nowrap,
               ^.width := s"${width}px", ^.height := s"${layout.padding}px", ^.minWidth := "0",
-              ^.title := criteria.name,
-              criteria.name
+              ^.title := criteria.displayName,
+              criteria.displayName
             )
           )
 
@@ -338,7 +338,7 @@ object QualityChartComponent {
       * @param model the application model
       * @return a group of SVG elements containing the representation of the entities
       */
-    private def constructEntities(model: AppModel, hoveredEntity: Option[Entity]) = {
+    private def constructEntities(model: AppModel, hoveredEntity: Option[EntityId]) = {
 
       val layout = model.qualityModel.layout
       val hoveredSubCriteria = model.subCriteriaSelectionModel.hovered
@@ -373,7 +373,7 @@ object QualityChartComponent {
         var valueCoordinates =
           for (criteria <- model.qualityModel.criteria) yield {
             val x = layout.getCriteriaAxisX(criteria)
-            val value = computeAxisValue(criteria.groupedValues(groupedEntity.id).get, layout, AxisType.Criteria)
+            val value = computeAxisValue(criteria.groupedValues.get(groupedEntity.id), layout, AxisType.Criteria)
             val y = layout.criteriaAxisBotY - value
 
             if (index == 1) coordString += " L"
@@ -399,7 +399,7 @@ object QualityChartComponent {
           val valueSubCoordinates =
             for (subCriteria <- criteria.subCriteria) yield {
               val x = layout.getSubCriteriaAxisX(subCriteria)
-              val value = computeAxisValue(subCriteria.groupedValues(groupedEntity.id).get, layout, AxisType.Subcriteria)
+              val value = computeAxisValue(subCriteria.groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria)
               val y = layout.subCriteriaAxisBotY - value
 
               if (index == 1) coordString += " L"
@@ -444,23 +444,26 @@ object QualityChartComponent {
           for (criteria <- model.qualityModel.criteria) {
             val containsHoveredSubCriteria = criteria.subCriteria.count(sc => hoveredSubCriteria.contains(sc.id)) > 0
             if (containsHoveredSubCriteria) {
+              val label = criteria.groupedValues.get(groupedEntity.id).map(_.toString).getOrElse("-")
               criteriaValueLabel =
                 <.svg.text(
                   ^.svg.textAnchor := "middle",
                   ^.svg.x := layout.getCriteriaAxisX(criteria),
                   ^.svg.y := layout.criteriaAxisBotY + layout.padding - 5,
-                  criteria.groupedValues(groupedEntity.id).get
+                  label
                 )
             }
 
             for (subCriteria <- criteria.subCriteria) {
               if (hoveredSubCriteria.contains(subCriteria.id)) {
+                val label = subCriteria.groupedValues.get(groupedEntity.id).map(_.toString).getOrElse("-")
                 subCriteriaValueLabel =
                   <.svg.text(
                     ^.svg.textAnchor := "middle",
                     ^.svg.x := layout.getSubCriteriaAxisX(subCriteria),
                     ^.svg.y := layout.subCriteriaAxisBotY + layout.padding - 5,
-                    subCriteria.groupedValues(groupedEntity.id).get)
+                    label
+                  )
               }
 
             }
@@ -488,13 +491,16 @@ object QualityChartComponent {
       val Criteria, Subcriteria = Value
     }
 
-    private def computeAxisValue(value: Double, layout: QualityChartLayout, axisType: AxisType.Value): Double = {
+    private def computeAxisValue(value: Option[Double], layout: QualityChartLayout, axisType: AxisType.Value): Double = {
       val (topY, botY) = axisType match {
         case AxisType.Criteria => (layout.criteriaAxisTopY, layout.criteriaAxisBotY)
         case AxisType.Subcriteria => (layout.subCriteriaAxisTopY, layout.subCriteriaAxisBotY)
       }
 
-      value / (layout.maxValue - layout.minValue) * (botY - topY)
+      value.map { v =>
+        v / (layout.maxValue - layout.minValue) * (botY - topY)
+      }.getOrElse(0) // TODO: Handle missing values (Nan will blow up SVG)
+
     }
 
   }

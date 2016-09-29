@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.domain.Entity
+import ch.fhnw.ima.saav.model.domain.EntityId
 import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -11,7 +11,7 @@ import scalacss.ScalaCssReact._
 
 object IndicatorComponent {
 
-  case class Props(pinnedEntity: Option[Entity], indicators: Seq[GroupedIndicator])
+  case class Props(pinnedEntity: Option[EntityId], indicators: Seq[GroupedIndicator])
 
   private val component = ReactComponentB[Props](IndicatorComponent.getClass.getSimpleName)
     .render_P { p =>
@@ -22,7 +22,7 @@ object IndicatorComponent {
       } yield {
         val value = indicator.groupedValues(pinnedEntity)
         <.tr(
-          <.td(css.colXs10, css.overflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.name, indicator.name),
+          <.td(css.colXs10, css.overflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.displayName, indicator.displayName),
           <.td(css.colXs2, value)
         )
       }

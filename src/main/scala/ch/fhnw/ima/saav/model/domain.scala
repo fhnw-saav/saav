@@ -1,25 +1,26 @@
 package ch.fhnw.ima.saav
 package model
 
+import scala.collection.immutable.ListSet
+
 object domain {
 
   // For the time being, our input format does not contain unique identifiers. Names are used in the role of
   // an identifying 'path' as well as for display ==> for the sake of maintainability, these aspects should be kept
   // separate, i.e. GUI code should only ever use 'displayName'
 
-  final case class CriteriaId(path: String) {
-    override lazy val hashCode: Int = super.hashCode()
-  }
+  final case class CriteriaId(path: String)
 
-  final case class SubCriteriaId(criteriaId: CriteriaId, path: String) {
-    override lazy val hashCode: Int = super.hashCode()
-  }
+  final case class SubCriteriaId(criteriaId: CriteriaId, path: String)
 
-  final case class IndicatorId(subCriteriaId: SubCriteriaId, path: String) {
-    override lazy val hashCode: Int = super.hashCode()
-  }
+  final case class IndicatorId(subCriteriaId: SubCriteriaId, path: String)
 
-  final case class Analysis(criteria: Seq[Criteria], entities: Seq[Entity], reviews: Seq[Review])
+  final case class EntityId(path: String)
+
+  // Reviews are not yet used in the UI --> the Id class is all we need
+  final case class ReviewId(name: String)
+
+  final case class Analysis(criteria: Seq[Criteria], entities: Seq[Entity], reviews: Seq[ReviewId])
 
   final case class Criteria(id: CriteriaId, subCriteria: Seq[SubCriteria]) {
     val displayName: String = id.path
@@ -29,19 +30,20 @@ object domain {
     val displayName: String = id.path
   }
 
-  final case class Indicator(id: IndicatorId, values: Map[(Entity, Review), Double]) {
+  final case class Indicator(id: IndicatorId, values: Map[(EntityId, ReviewId), Double]) {
     val displayName: String = id.path
   }
 
-  final case class Review(name: String)
-
-  final case class Entity(name: String)
+  final case class Entity(id: EntityId) {
+    val displayName: String = id.path
+    override lazy val hashCode: Int = super.hashCode()
+  }
 
   final case class AnalysisBuilder() {
 
     private var criteriaBuilders: Seq[CriteriaBuilderImpl] = Seq()
-    private var entities: Seq[Entity] = Seq()
-    private var reviews: Seq[Review] = Seq()
+    private var entities: ListSet[Entity] = ListSet()
+    private var reviews: ListSet[ReviewId] = ListSet()
 
     def criteria(criteriaName: String): CriteriaBuilder = {
       val existing = criteriaBuilders.find(_.id.path == criteriaName)
@@ -56,7 +58,7 @@ object domain {
 
     def build: Analysis = {
       val criteria = criteriaBuilders.map(_.toCriteria)
-      Analysis(criteria, entities.distinct, reviews.distinct)
+      Analysis(criteria, entities.toList.reverse, reviews.toList.reverse)
     }
 
     trait CriteriaBuilder {
@@ -92,14 +94,11 @@ object domain {
     private class SubCriteriaBuilderImpl(private val criteriaBuilder: CriteriaBuilder, val id: SubCriteriaId, var indicatorBuilders: Seq[IndicatorBuilderImpl] = Seq()) extends SubCriteriaBuilder {
 
       override def indicator(indicatorName: String): IndicatorBuilder = {
-        val existing = indicatorBuilders.find(_.indicatorName == indicatorName)
+        val existing = indicatorBuilders.find(_.id.path == indicatorName)
         existing match {
           case Some(i) => i
           case None =>
-
-            val indicatorId = IndicatorId(id, indicatorName)
-
-            val indicatorBuilder = new IndicatorBuilderImpl(this, indicatorId, indicatorName)
+            val indicatorBuilder = new IndicatorBuilderImpl(this, IndicatorId(id, indicatorName), indicatorName)
             indicatorBuilders :+= indicatorBuilder
             indicatorBuilder
         }
@@ -113,19 +112,19 @@ object domain {
 
     trait IndicatorBuilder {
 
-      def addValue(entity: Entity, review: Review, value: Double): IndicatorBuilder
+      def addValue(entity: Entity, review: ReviewId, value: Double): IndicatorBuilder
 
       def build: SubCriteriaBuilder
 
     }
 
-    private class IndicatorBuilderImpl(private val subCriteriaBuilder: SubCriteriaBuilder, val id: IndicatorId, val indicatorName: String, var values: Map[(Entity, Review), Double] = Map()) extends IndicatorBuilder {
+    private class IndicatorBuilderImpl(private val subCriteriaBuilder: SubCriteriaBuilder, val id: IndicatorId, val indicatorName: String, var values: Map[(EntityId, ReviewId), Double] = Map()) extends IndicatorBuilder {
 
-      override def addValue(entity: Entity, review: Review, value: Double): IndicatorBuilder = {
-        values += (entity, review) -> value
+      override def addValue(entity: Entity, review: ReviewId, value: Double): IndicatorBuilder = {
+        values += (entity.id, review) -> value
         // track entities and reviews in insertion order
-        entities :+= entity
-        reviews :+= review
+        entities += entity
+        reviews += review
         this
       }
 

@@ -3,7 +3,7 @@ package component
 
 import ch.fhnw.ima.saav.model.app.{EntitySelectionModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color.WebColor
-import ch.fhnw.ima.saav.model.domain.Entity
+import ch.fhnw.ima.saav.model.domain.EntityId
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -22,7 +22,7 @@ object VisualRankingComponent {
 
   private val radius = 5
 
-  final case class Props(entities: Seq[GroupedEntity], selectionModel: EntitySelectionModel, colorMap: Map[Entity, WebColor])
+  final case class Props(entities: Seq[GroupedEntity], selectionModel: EntitySelectionModel, colorMap: Map[EntityId, WebColor])
 
   class Backend($: BackendScope[Props, Unit]) {
 
@@ -88,7 +88,7 @@ object VisualRankingComponent {
           ^.svg.cy := paddingTop + (ySpan - y),
           ^.svg.r := radius,
           ^.svg.fill := color,
-          <.svg.title(s"${entity.name}: $formattedValue")
+          <.svg.title(s"${entity.displayName}: $formattedValue")
         )
 
       }
@@ -100,6 +100,6 @@ object VisualRankingComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(entities: Seq[GroupedEntity], selectionModel: EntitySelectionModel, colorMap: Map[Entity, WebColor]): ReactComponentU[Props, Unit, Backend, TopNode] = component(Props(entities, selectionModel, colorMap))
+  def apply(entities: Seq[GroupedEntity], selectionModel: EntitySelectionModel, colorMap: Map[EntityId, WebColor]): ReactComponentU[Props, Unit, Backend, TopNode] = component(Props(entities, selectionModel, colorMap))
 
 }

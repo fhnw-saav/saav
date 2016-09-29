@@ -62,7 +62,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
   describe(s"${EntitySelectionHandler.getClass.getSimpleName}") {
 
     it("should wire visible entities") {
-      val visibleEntities = Set(Entity("x"), Entity("y"))
+      val visibleEntities = Set(EntityId("x"), EntityId("y"))
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateEntityVisibilityAction(visibleEntities, visible = true))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
@@ -75,7 +75,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
     }
 
     it("should clear pinning if entity is no longer visible") {
-      val anEntity = Entity("x")
+      val anEntity = EntityId("x")
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
       circuit.dispatch(UpdateEntityVisibilityAction(Set.empty, visible = false))
@@ -89,7 +89,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
     }
 
     it("should not touch pinning if entity is still visible") {
-      val anEntity = Entity("x")
+      val anEntity = EntityId("x")
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
       circuit.dispatch(UpdateEntityVisibilityAction(Set(anEntity), visible = true))
@@ -103,7 +103,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
     }
 
     it("should clear pinning") {
-      val anEntity = Entity("x")
+      val anEntity = EntityId("x")
       val circuit = circuitWithAnalysis()
 
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
@@ -151,7 +151,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
   describe(s"${ColorHandler.getClass.getSimpleName}") {
 
     it("should update and auto-colorize colors") {
-      val anEntity = Entity("x")
+      val anEntity = EntityId("x")
       val aColor = WebColor("#999999")
       val circuit = circuitWithAnalysis()
 

@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.domain.Entity
+import ch.fhnw.ima.saav.model.domain.EntityId
 
 object color {
 
@@ -23,7 +23,7 @@ object color {
 
   val DisabledColor = WebColor("#777777")
 
-  def autoColorMap(entities: Seq[Entity]): Map[Entity, WebColor] =
+  def autoColorMap(entities: Seq[EntityId]): Map[EntityId, WebColor] =
     entities.zipWithIndex.map {
       case (e, i) => (e, SolarizedPalette(i % SolarizedPalette.size))
     }.toMap.withDefaultValue(color.DefaultColor)

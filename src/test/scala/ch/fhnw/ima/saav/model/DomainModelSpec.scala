@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Entity, Review}
+import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Entity, EntityId, ReviewId}
 import org.scalatest.FlatSpec
 
 class DomainModelSpec extends FlatSpec {
@@ -75,12 +75,12 @@ class DomainModelSpec extends FlatSpec {
     val builder = AnalysisBuilder()
     val indicatorScope = builder.criteria("Criteria").subCriteria("Sub-Criteria").indicator("Indicator")
 
-    val entityOne = Entity("Project 1")
-    val entityTwo = Entity("Project 2")
-    val entityThree = Entity("Project 3")
+    val entityOne = Entity(EntityId("Project 1"))
+    val entityTwo = Entity(EntityId("Project 2"))
+    val entityThree = Entity(EntityId("Project 3"))
 
-    val reviewOne = Review("Review 1")
-    val reviewTwo = Review("Review 2")
+    val reviewOne = ReviewId("Review 1")
+    val reviewTwo = ReviewId("Review 2")
 
     indicatorScope.addValue(entityOne, reviewOne, 11)
     indicatorScope.addValue(entityOne, reviewTwo, 12)
@@ -95,11 +95,11 @@ class DomainModelSpec extends FlatSpec {
 
     val indicator = analysis.criteria(0).subCriteria(0).indicators(0)
 
-    assert(indicator.values((entityOne, reviewOne)) == 11)
-    assert(indicator.values((entityOne, reviewTwo)) == 12)
-    assert(indicator.values((entityTwo, reviewOne)) == 21)
-    assert(indicator.values((entityThree, reviewOne)) == 31)
-    assert(indicator.values((entityThree, reviewTwo)) == 32)
+    assert(indicator.values((entityOne.id, reviewOne)) == 11)
+    assert(indicator.values((entityOne.id, reviewTwo)) == 12)
+    assert(indicator.values((entityTwo.id, reviewOne)) == 21)
+    assert(indicator.values((entityThree.id, reviewOne)) == 31)
+    assert(indicator.values((entityThree.id, reviewTwo)) == 32)
   }
 
   it should "be truly immutable" in {
@@ -113,11 +113,11 @@ class DomainModelSpec extends FlatSpec {
 
   it should "contain entities in insertion order" in {
 
-    val project1 = Entity("Project 1")
-    val project2 = Entity("Project 2")
-    val project3 = Entity("Project 3")
+    val project1 = Entity(EntityId("Project 1"))
+    val project2 = Entity(EntityId("Project 2"))
+    val project3 = Entity(EntityId("Project 3"))
 
-    val review = Review("Review")
+    val review = ReviewId("Review")
 
     val analysis = AnalysisBuilder()
       .criteria("Criteria")

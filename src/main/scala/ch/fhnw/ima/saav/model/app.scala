@@ -22,7 +22,7 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  final case class EntitySelectionModel(visible: Set[Entity] = Set.empty, pinned: Option[Entity] = None)
+  final case class EntitySelectionModel(visible: Set[EntityId] = Set.empty, pinned: Option[EntityId] = None)
 
   final case class SubCriteriaSelectionModel(hovered: Option[SubCriteriaId] = None)
 
@@ -32,7 +32,7 @@ object app {
     weights: Weights,
     entitySelectionModel: EntitySelectionModel,
     subCriteriaSelectionModel: SubCriteriaSelectionModel,
-    colorMap: Map[Entity, WebColor],
+    colorMap: Map[EntityId, WebColor],
     qualityModel: QualityModel,
     profileModel: ProfileModel
   )
@@ -40,10 +40,11 @@ object app {
   object AppModel {
 
     def apply(analysis: Analysis, config: Config): AppModel = {
+
       val defaultLayoutWidth = 1000
       val qualityModel = QualityModel(analysis, config.defaultWeights, defaultLayoutWidth)
       val profileModel = ProfileModel(analysis, config.defaultWeights, defaultLayoutWidth)
-      val entitySelectionModel = EntitySelectionModel(analysis.entities.toSet, None)
+      val entitySelectionModel = EntitySelectionModel(analysis.entities.map(_.id).toSet, None)
       val subCriteriaSelectionModel = SubCriteriaSelectionModel()
 
       // colorize _after_ ranking to get optimally distinct colors by default
@@ -61,13 +62,13 @@ object app {
     def apply(analysis: Analysis, weights: Weights, layoutWidth: Int): QualityModel = {
 
       val allCriteria = analysis.criteria.map { c =>
-        GroupedCriteria.forQuality(analysis.entities, c, analysis.reviews, weights)
+        GroupedCriteria.forQuality(analysis.entities.map(_.id), c, analysis.reviews, weights)
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
       val rankedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
-        val value = median(criteria.flatMap(_.groupedValues(e)))
-        GroupedEntity(e, value = value, sortingPosition = i)
+        val value = median(criteria.flatMap(_.groupedValues.get(e.id)))
+        GroupedEntity(e.id, e.displayName, value = value, sortingPosition = i)
       }.sortBy(_.value).reverse
 
       val (minValue, maxValue) = safeMinMax(criteria)
@@ -86,15 +87,15 @@ object app {
     def apply(analysis: Analysis, weights: Weights, layoutWidth: Int): ProfileModel = {
 
       val allCriteria = analysis.criteria.map { c =>
-        GroupedCriteria.forProfile(analysis.entities, c, analysis.reviews, weights)
+        GroupedCriteria.forProfile(analysis.entities.map(_.id), c, analysis.reviews, weights)
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
       // TODO: Support different sorting strategies
       val sortedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
-        val value = median(criteria.flatMap(_.groupedValues(e)))
-        GroupedEntity(e, value = value, sortingPosition = i)
-      }.sortBy(_.name)
+        val value = median(criteria.map(_.groupedValues(e.id)))
+        GroupedEntity(e.id, e.displayName, value = value, sortingPosition = i)
+      }.sortBy(_.displayName)
 
       val (minValue, maxValue) = safeMinMax(criteria)
 
@@ -111,21 +112,19 @@ object app {
 
   final case class ByCriteriaEntitySortingStrategy(criteria: Criteria)
 
-  final case class GroupedEntity(id: Entity, value: Option[Double], sortingPosition: Int) {
-    def name: String = id.name
-  }
+  final case class GroupedEntity(id: EntityId, displayName: String, value: Option[Double], sortingPosition: Int)
 
-  final case class GroupedCriteria(id: CriteriaId, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[Entity, Option[Double]]) {
-    def name: String = id.path
+  final case class GroupedCriteria(id: CriteriaId, displayName: String, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[EntityId, Double]) {
 
     // Deliberately not using min/max of groupedValues for our purpose
-    val minValue: Option[Double] = safeMinMax(subCriteria.map(_.minValue))._1
-    val maxValue: Option[Double] = safeMinMax(subCriteria.map(_.maxValue))._2
+    val minValue: Option[Double] = safeMinMax(subCriteria.map(_.minValue).flatten)._1
+    val maxValue: Option[Double] = safeMinMax(subCriteria.map(_.maxValue).flatten)._2
+
   }
 
   object GroupedCriteria {
 
-    def forQuality(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
+    def forQuality(entities: Seq[EntityId], criteria: Criteria, reviews: Seq[ReviewId], weights: Weights): GroupedCriteria = {
 
       val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
       val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
@@ -136,10 +135,10 @@ object app {
         }
       }
 
-      val groupedValue = (entity: Entity) => {
+      val groupedValue = (entity: EntityId) => {
         val valuesWithWeights = for {
           subCriterion <- qualitySubCriteria
-          value <- subCriterion.groupedValues(entity)
+          value <- subCriterion.groupedValues.get(entity)
           weight = weights.subCriteriaWeights(subCriterion.id)
           weightValue <- weight match {
             case Quality(wv) => Some(wv)
@@ -155,7 +154,7 @@ object app {
 
     }
 
-    def forProfile(entities: Seq[Entity], criteria: Criteria, reviews: Seq[Review], weights: Weights): GroupedCriteria = {
+    def forProfile(entities: Seq[EntityId], criteria: Criteria, reviews: Seq[ReviewId], weights: Weights): GroupedCriteria = {
 
       val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
       val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
@@ -163,10 +162,10 @@ object app {
         weights.subCriteriaWeights(sc.id) == Profile
       }
 
-      val groupedValue = (entity: Entity) => {
+      val groupedValue = (entity: EntityId) => {
         val valuesWithWeights = for {
           subCriterion <- profileSubCriteria
-          value <- subCriterion.groupedValues(entity)
+          value <- subCriterion.groupedValues.get(entity)
         } yield {
           (value, 1d) // no weighting for profile chart
         }
@@ -177,54 +176,60 @@ object app {
 
     }
 
-    private def apply(entities: Seq[Entity], criteria: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValue: Entity => Option[Double]): GroupedCriteria = {
-      val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
-      GroupedCriteria(criteria.id, subCriteria, groupedValues)
+    private def apply(entities: Seq[EntityId], criteria: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValue: EntityId => Option[Double]): GroupedCriteria = {
+      val groupedValues = (for {
+        entity <- entities
+        groupedValue <- groupedValue(entity)
+      } yield entity -> groupedValue).toMap
+      GroupedCriteria(criteria.id, criteria.displayName, subCriteria, groupedValues)
     }
 
   }
 
-  final case class GroupedSubCriteria(id: SubCriteriaId, displayName: String, groupedValues: Map[Entity, Option[Double]], indicators: Seq[GroupedIndicator]) {
+  final case class GroupedSubCriteria(id: SubCriteriaId, displayName: String, groupedValues: Map[EntityId, Double], indicators: Seq[GroupedIndicator]) {
     val (minValue, maxValue) = safeMinMax(groupedValues.values)
   }
 
   object GroupedSubCriteria {
 
-    def apply(entities: Seq[Entity], subCriteria: SubCriteria, reviews: Seq[Review], enabledIndicators: Set[IndicatorId]): GroupedSubCriteria = {
+    def apply(entities: Seq[EntityId], subCriteria: SubCriteria, reviews: Seq[ReviewId], enabledIndicators: Set[IndicatorId]): GroupedSubCriteria = {
+
       val indicators = subCriteria.indicators.filter(i => enabledIndicators.contains(i.id)).map { i =>
-        GroupedIndicator(i, entities, reviews)
+        GroupedIndicator(i)
       }
 
-      def groupedValue(entity: Entity): Option[Double] = {
-        val values = for {
-          indicator <- indicators
-          value <- indicator.groupedValues(entity)
-        } yield value
-        median(values)
+      val groupedValues = (for {
+        entity <- entities
+        values = indicators.flatMap(i => i.groupedValues.get(entity))
+        groupedValue <- median(values)
+      } yield {
+        entity -> groupedValue
       }
-
-      val groupedValues = entities.map(e => e -> groupedValue(e)).toMap
+      ).toMap
 
       GroupedSubCriteria(subCriteria.id, subCriteria.displayName, groupedValues, indicators)
     }
 
   }
 
-  final case class GroupedIndicator(id: IndicatorId, name: String, groupedValues: Map[Entity, Option[Double]])
+  final case class GroupedIndicator(id: IndicatorId, displayName: String, groupedValues: Map[EntityId, Double])
 
   object GroupedIndicator {
 
-    def apply(indicator: Indicator, entities: Seq[Entity], reviews: Seq[Review]): GroupedIndicator = {
-      val groupedValues =
-        (for {
+    def apply(indicator: Indicator): GroupedIndicator = {
+
+      val (entities, reviews) = indicator.values.keys.unzip
+      val groupedValues = (
+        for {
           entity <- entities
+          values = reviews.flatMap(r => indicator.values.get((entity, r))).toSeq
+          groupedValue <- median(values)
         } yield {
-          val values = for {
-            review <- reviews
-            value <- indicator.values.get((entity, review))
-          } yield value
-          entity -> median(values)
-        }).toMap
+          entity -> groupedValue
+        }
+        ).toMap
+
+
       GroupedIndicator(indicator.id, indicator.displayName, groupedValues)
     }
 
@@ -238,13 +243,13 @@ object app {
     }
   }
 
-  private[model] def safeMinMax(optionalValues: Iterable[Option[Double]]): (Option[Double], Option[Double]) = {
-    val values = optionalValues.flatten
+  private[model] def safeMinMax(values: Iterable[Double]): (Option[Double], Option[Double]) = {
     if (values.isEmpty) {
       (None, None)
     } else {
       (Some(values.min), Some(values.max))
     }
   }
+
 
 }
