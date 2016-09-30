@@ -7,8 +7,14 @@ import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.layout.{ProfileChartLayout, QualityChartLayout}
 import ch.fhnw.ima.saav.model.weight._
 
-/** Application models (incl. presentation state). */
+/**
+ * Application model classes complement the domain model with grouped values (medians) and presentation state.
+ */
 object app {
+
+  // --------------------------------------------------------------------------
+  // Algebraic data types expressing model import flow
+  // --------------------------------------------------------------------------
 
   case class SaavModel(model: Either[NoDataAppModel, AppModel] = Left(NoDataAppModel(ImportNotStarted())))
 
@@ -22,9 +28,9 @@ object app {
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
-  final case class EntitySelectionModel(visible: Set[EntityId] = Set.empty, pinned: Option[EntityId] = None)
-
-  final case class SubCriteriaSelectionModel(hovered: Option[SubCriteriaId] = None)
+  // --------------------------------------------------------------------------
+  // Actual application model (available once import is complete)
+  // --------------------------------------------------------------------------
 
   final case class AppModel(
     config: Config,
@@ -55,6 +61,18 @@ object app {
 
   }
 
+  // --------------------------------------------------------------------------
+  // Selection Models
+  // --------------------------------------------------------------------------
+
+  final case class EntitySelectionModel(visible: Set[EntityId] = Set.empty, pinned: Option[EntityId] = None)
+
+  final case class SubCriteriaSelectionModel(hovered: Option[SubCriteriaId] = None)
+
+  // --------------------------------------------------------------------------
+  // Presentation model behind the 'Quality' tab
+  // --------------------------------------------------------------------------
+
   final case class QualityModel(rankedEntities: Seq[GroupedEntity], criteria: Seq[GroupedCriteria], layout: QualityChartLayout)
 
   object QualityModel {
@@ -62,7 +80,7 @@ object app {
     def apply(analysis: Analysis, weights: Weights, layoutWidth: Int): QualityModel = {
 
       val allCriteria = analysis.criteria.map { c =>
-        GroupedCriteria.forQuality(analysis.entities.map(_.id), c, analysis.reviews, weights)
+        GroupedCriteria.forQuality(analysis.entities.map(_.id), c, weights)
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
@@ -79,6 +97,10 @@ object app {
     }
 
   }
+
+  // --------------------------------------------------------------------------
+  // Presentation model behind the 'Profile' tab
+  // --------------------------------------------------------------------------
 
   final case class ProfileModel(sortedEntities: Seq[GroupedEntity], entitySortingStrategy: EntitySortingStrategy, criteria: Seq[GroupedCriteria], layout: ProfileChartLayout)
 
@@ -114,6 +136,10 @@ object app {
 
   final case class GroupedEntity(id: EntityId, displayName: String, value: Option[Double], sortingPosition: Int)
 
+  // --------------------------------------------------------------------------
+  // GroupedXXX classes enrich the plain domain classes with grouped values
+  // --------------------------------------------------------------------------
+
   final case class GroupedCriteria(id: CriteriaId, displayName: String, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[EntityId, Double]) {
 
     // Deliberately not using min/max of groupedValues for our purpose
@@ -124,9 +150,9 @@ object app {
 
   object GroupedCriteria {
 
-    def forQuality(entities: Seq[EntityId], criteria: Criteria, reviews: Seq[ReviewId], weights: Weights): GroupedCriteria = {
+    def forQuality(entities: Seq[EntityId], criteria: Criteria, weights: Weights): GroupedCriteria = {
 
-      val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
+      val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, weights.enabledIndicators))
       val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
       val qualitySubCriteria = nonEmptySubCriteria.filter { sc =>
         weights.subCriteriaWeights(sc.id) match {
@@ -156,7 +182,7 @@ object app {
 
     def forProfile(entities: Seq[EntityId], criteria: Criteria, reviews: Seq[ReviewId], weights: Weights): GroupedCriteria = {
 
-      val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, reviews, weights.enabledIndicators))
+      val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, weights.enabledIndicators))
       val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
       val profileSubCriteria = nonEmptySubCriteria.filter { sc =>
         weights.subCriteriaWeights(sc.id) == Profile
@@ -192,7 +218,7 @@ object app {
 
   object GroupedSubCriteria {
 
-    def apply(entities: Seq[EntityId], subCriteria: SubCriteria, reviews: Seq[ReviewId], enabledIndicators: Set[IndicatorId]): GroupedSubCriteria = {
+    def apply(entities: Seq[EntityId], subCriteria: SubCriteria, enabledIndicators: Set[IndicatorId]): GroupedSubCriteria = {
 
       val indicators = subCriteria.indicators.filter(i => enabledIndicators.contains(i.id)).map { i =>
         GroupedIndicator(i)
@@ -205,7 +231,7 @@ object app {
       } yield {
         entity -> groupedValue
       }
-      ).toMap
+        ).toMap
 
       GroupedSubCriteria(subCriteria.id, subCriteria.displayName, groupedValues, indicators)
     }
@@ -235,6 +261,10 @@ object app {
 
   }
 
+  // --------------------------------------------------------------------------
+  // Utility methods
+  // --------------------------------------------------------------------------
+
   private[model] def safeMinMax(criteria: Seq[GroupedCriteria]): (Option[Double], Option[Double]) = {
     if (criteria.isEmpty) {
       (None, None)
@@ -250,6 +280,5 @@ object app {
       (Some(values.min), Some(values.max))
     }
   }
-
 
 }

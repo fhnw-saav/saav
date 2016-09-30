@@ -3,19 +3,21 @@ package model
 
 import scala.collection.immutable.ListSet
 
+/**
+ * Domain model classes represent the hierarchical nature of an analysis (as read from the input data).
+ */
 object domain {
 
-  // For the time being, our input format does not contain unique identifiers. Names are used in the role of
-  // an identifying 'path' as well as for display ==> for the sake of maintainability, these aspects should be kept
-  // separate, i.e. GUI code should only ever use 'displayName'
+  // All Ids are currently based on names (our input format does not contain unique identifiers)
+  // This may change in the future --> already use `displayName` in the UI to be safe
 
-  final case class CriteriaId(path: String)
+  final case class CriteriaId(name: String)
 
-  final case class SubCriteriaId(criteriaId: CriteriaId, path: String)
+  final case class SubCriteriaId(criteriaId: CriteriaId, name: String)
 
-  final case class IndicatorId(subCriteriaId: SubCriteriaId, path: String)
+  final case class IndicatorId(subCriteriaId: SubCriteriaId, name: String)
 
-  final case class EntityId(path: String)
+  final case class EntityId(name: String)
 
   // Reviews are not yet used in the UI --> the Id class is all we need
   final case class ReviewId(name: String)
@@ -23,20 +25,19 @@ object domain {
   final case class Analysis(criteria: Seq[Criteria], entities: Seq[Entity], reviews: Seq[ReviewId])
 
   final case class Criteria(id: CriteriaId, subCriteria: Seq[SubCriteria]) {
-    val displayName: String = id.path
+    val displayName: String = id.name
   }
 
   final case class SubCriteria(id: SubCriteriaId, indicators: Seq[Indicator]) {
-    val displayName: String = id.path
+    val displayName: String = id.name
   }
 
   final case class Indicator(id: IndicatorId, values: Map[(EntityId, ReviewId), Double]) {
-    val displayName: String = id.path
+    val displayName: String = id.name
   }
 
   final case class Entity(id: EntityId) {
-    val displayName: String = id.path
-    override lazy val hashCode: Int = super.hashCode()
+    val displayName: String = id.name
   }
 
   final case class AnalysisBuilder() {
@@ -46,7 +47,7 @@ object domain {
     private var reviews: ListSet[ReviewId] = ListSet()
 
     def criteria(criteriaName: String): CriteriaBuilder = {
-      val existing = criteriaBuilders.find(_.id.path == criteriaName)
+      val existing = criteriaBuilders.find(_.id.name == criteriaName)
       existing match {
         case Some(c) => c
         case None =>
@@ -63,14 +64,16 @@ object domain {
 
     trait CriteriaBuilder {
       def id: CriteriaId
+
       def subCriteria(name: String): SubCriteriaBuilder
+
       def build: AnalysisBuilder
     }
 
     private class CriteriaBuilderImpl(val id: CriteriaId, var subCriteriaBuilders: Seq[SubCriteriaBuilderImpl] = Seq()) extends CriteriaBuilder {
 
       override def subCriteria(subCriteriaName: String): SubCriteriaBuilder = {
-        val existing = subCriteriaBuilders.find(_.id.path == subCriteriaName)
+        val existing = subCriteriaBuilders.find(_.id.name == subCriteriaName)
         existing match {
           case Some(c) => c
           case None =>
@@ -87,14 +90,16 @@ object domain {
 
     trait SubCriteriaBuilder {
       def id: SubCriteriaId
+
       def indicator(name: String): IndicatorBuilder
+
       def build: CriteriaBuilder
     }
 
     private class SubCriteriaBuilderImpl(private val criteriaBuilder: CriteriaBuilder, val id: SubCriteriaId, var indicatorBuilders: Seq[IndicatorBuilderImpl] = Seq()) extends SubCriteriaBuilder {
 
       override def indicator(indicatorName: String): IndicatorBuilder = {
-        val existing = indicatorBuilders.find(_.id.path == indicatorName)
+        val existing = indicatorBuilders.find(_.id.name == indicatorName)
         existing match {
           case Some(i) => i
           case None =>
