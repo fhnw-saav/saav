@@ -1,0 +1,89 @@
+# Architecture & Design
+
+SAAV is a single-page web application.
+It is written in http://www.scala-js.org/[Scala.js], using the https://github.com/japgolly/scalajs-react[scalajs-react] framework.
+Scala.js compiles to JavaScript (JS).
+When deployed, SAAV consists of just a few static HTML, CSS, and JS files.
+There is no application server, just a web server, serving these static files.
+
+## Model-View-Controller
+
+SAAV's architecture is based on the Model-View-Controller (MVC) pattern.
+It uses the following technologies in the individual layers:
+
+### Model
+
+The model layer is responsible for representing application state.
+All model classes are written in plain Scala.
+A _domain model_ is created by importing data from a CSV file.
+The domain model is then enriched with UI state (colors, selections etc.).
+This enriched model is known as the _application model_.
+It encapsulates all state to be rendered by the view.
+
+### View
+
+The view is responsible for rendering the application model.
+In a web app, "rendering" means "creating HTML".
+
+SAAV uses https://github.com/japgolly/scalajs-react[React] to create HTML.
+footnote:[In contrast to classical MVC frameworks like e.g. Angular, React is really _only_ the view layer.
+http://blog.andrewray.me/reactjs-for-stupid-people["ReactJS For Stupid People"] explains this in detail.]
+
+The view is also responsible for triggering model changes based on user interactions.
+It does never change the model directly, but asks the controller to do so.
+
+### Controller
+
+The controller is responsible for managing the model.
+It starts out with an initial application model (the composition of imported data and default UI state) and changes it as requested by the view.
+Whenever the model changes, the controller asks the view to re-render it.
+
+## Principles
+### Immutability
+
+At the core of the application is the `SaavModel`, a completely immutable hierarchy of Scala case classes, responsible for storing all application state.
+Because the model is immutable, a new model copy is created whenever a change is requested.
+SAAV uses the https://github.com/ochrons/diode[diode] library for application model management:
+
+* Storing the currently valid model
+* Accepting change requests in the form of actions
+* Triggering action handlers to create a new model with the requested change
+* Notifying listeners to re-render the views based on the new model
+
+In SAAV, the central controller class managing all these aspects is called `SaavCircuit`.
+
+### Action Handlers
+
+Whenever the model must change (e.g. as a result of user interaction) such a change is requested in the form of an action.
+Actions are represented by simple Scala case classes.
+They are dispatched to the `SaavCircuit`, which then triggers an action handler to actually create a new model with the requested change.
+In other words: Based on the current model and an action, an action handler creates a new model.
+For the sake of modularity, SAAV doesn't just use one action handler to transform the whole `SaavModel`.
+Instead, it uses different action handlers, each one being responsible to transform just a part of the model (e.g. the `EntitySelectionHandler` is responsible for updating the `EntitySelectionModel`, a tiny part of the `SaavModel`)
+The metaphor of "zooming" is used for this approach: An action handler is zoomed into a part of the model.
+To support zooming, each action handler must define two functions for its own construction:
+
+* `modelGet`: Given a complete model, this function returns the part of the model which needs updating
+* `modelSet`: Given a complete (old) model and the part updated by the handler, this function returns a complete (new) model containing the changed part.
+
+After a handler is constructed, it is registered with the `SaavCircuit` in order to be notified about incoming actions.
+By pattern matching on specific actions, each handler implementation decides how to update the model part it is zoomed into.
+
+### Virtual DOM
+
+The view is responsible for creating a DOM tree based on the application model.
+Whenever the model changes, the DOM tree must be changed as well.
+Changing the DOM has expensive consequences, because the browser must potentially adjust layouts ("reflow") and perform repaints.
+In order to minimize DOM changes, the React view layer does not create a real DOM, but a virtual one.
+On each model update, it diffs the old virtual DOM with the new virtual DOM and is able to minimize the real DOM manipulations.
+This diffing is very efficient thanks to the immutability of the virtual DOM (immutability guarantees that reference equality implies "deep" equality).
+
+Certain operations cannot be performed solely relying on the virtual DOM.
+It is e.g. not possible to calculate actual element widths without applying CSS and calculating the layout.
+scalajs-react provides hooks to execute code at a time where the real DOM is guaranteed to be available (`componentDidMount()`).
+It also allows to reference elements in the virtual DOM such that they are identifiable once available in the real DOM (`Ref`).
+
+### CSS
+
+SAAV uses https://github.com/japgolly/scalacss[ScalaCSS] for type safe CSS.
+This allows to catch certain errors at compile time and supports concepts that or not possible in standard CSS (e.g. style that depends on input).
