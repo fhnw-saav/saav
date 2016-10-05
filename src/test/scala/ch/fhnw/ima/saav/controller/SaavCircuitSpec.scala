@@ -102,7 +102,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
       }
     }
 
-    it("should control pinning") {
+    it("should clear pinning") {
       val anEntity = EntityId("x")
       val circuit = circuitWithAnalysis()
 
@@ -132,34 +132,15 @@ class SaavCircuitSpec extends FunSpec with Matchers {
 
       circuit.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
       circuit.zoom(SubCriteriaSelectionHandler.modelGet).value match {
-        case SubCriteriaSelectionModel(actualHoveredSubCriteria, _) =>
+        case SubCriteriaSelectionModel(actualHoveredSubCriteria) =>
           actualHoveredSubCriteria shouldBe hoveredSubCriteria
         case _ => failOnUnexpectedAction
       }
 
       circuit.dispatch(UpdateSubCriteriaHoveringAction(None))
       circuit.zoom(SubCriteriaSelectionHandler.modelGet).value match {
-        case SubCriteriaSelectionModel(actualHoveredSubCriteria, _) =>
+        case SubCriteriaSelectionModel(actualHoveredSubCriteria) =>
           actualHoveredSubCriteria shouldBe empty
-        case _ => failOnUnexpectedAction
-      }
-
-    }
-
-    it("should control pinning") {
-      val circuit = circuitWithAnalysis()
-
-      circuit.dispatch(UpdateSubCriteriaPinningAction(Some(subCriteriaId)))
-      circuit.zoom(SubCriteriaSelectionHandler.modelGet).value match {
-        case SubCriteriaSelectionModel(_, actualPinned) =>
-          actualPinned shouldBe Some(subCriteriaId)
-        case _ => failOnUnexpectedAction
-      }
-
-      circuit.dispatch(UpdateSubCriteriaPinningAction(None))
-      circuit.zoom(SubCriteriaSelectionHandler.modelGet).value match {
-        case SubCriteriaSelectionModel(_, actualPinned) =>
-          actualPinned shouldBe empty
         case _ => failOnUnexpectedAction
       }
 
