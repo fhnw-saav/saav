@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav
 package model
 
 import ch.fhnw.ima.saav.model.app.{GroupedCriteria, GroupedSubCriteria}
-import ch.fhnw.ima.saav.model.domain.{Criteria, CriteriaId, SubCriteria, SubCriteriaId}
+import ch.fhnw.ima.saav.model.domain.{CriteriaId, SubCriteriaId}
 
 object layout {
 
@@ -95,11 +95,16 @@ object layout {
     // And now for the getters or something...
 
     def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria.id)
-
     def getCriteriaAxisX(criteria: GroupedCriteria): Int = criteriaAxesMap(criteria.id)
-
     def getSubCriteriaAxisX(subCriteria: GroupedSubCriteria): Int = subCriteriaAxesMap(subCriteria.id)
 
+  }
+
+
+  // Why do we do this? And why not like the other constants in the class below?
+  object ProfileChartLayout {
+    val height = 500
+    val subCriteriaLabelPadding = 5
   }
 
   /**
@@ -107,9 +112,132 @@ object layout {
     */
   final class ProfileChartLayout(val width: Int, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
-    val height = 500
+    import ProfileChartLayout._
 
-    // TODO: Implement as required by UI
+    // TODO: share/connect with quality chart layout?
+    val margin = 20
+    val padding = 20
+    val headerTextGap = 40
+    private val labelGap = 100
+
+    val minValue: Double = Math.min(0, minValueOption.getOrElse(0d))
+    val maxValue: Double = Math.max(0, maxValueOption.getOrElse(0d))
+
+    private val criteriaBoxesMap = new scala.collection.mutable.HashMap[CriteriaId, (Int, Int)]
+    private val criteriaCenterMap = new scala.collection.mutable.HashMap[CriteriaId, Int]
+    private val subCriteriaCenterMap = new scala.collection.mutable.HashMap[SubCriteriaId, Int]
+
+    private val criteriaCount = criteria.size
+    private val subCriteriaCount = criteria.foldLeft(0)((count, c) => count + c.subCriteria.size)
+
+    private val aggregatedCriteriaCount = getAggregatedCriteriaCount(criteria)
+
+/*
+    private val totalWidthForCircles = width - labelGap - (criteriaCount * margin) - (criteriaCount * padding) - ((aggregatedCriteriaCount + subCriteriaCount) * padding)
+
+    val maxDiameterHorizontal = totalWidthForCircles / (aggregatedCriteriaCount + subCriteriaCount)
+    val maxRadius = maxDiameterHorizontal / 2
+
+    // Compute boxes y positions
+
+    val boxTopY: Int = headerTextGap
+    val boxBotY: Int = height - margin
+
+    private var index = 0
+    private var x = labelGap
+    for (criterion <- criteria) {
+
+      val circleCount = criterion.subCriteria.size + (if (isCriteriaAggregated(criterion)) 1 else 0)
+      val criteriaWidth = circleCount * (maxDiameterHorizontal + padding) + padding
+      criteriaBoxesMap(criterion.id) = (x, criteriaWidth)
+
+      if (isCriteriaAggregated(criterion)) {
+        val criteriaX = x + padding + maxRadius
+        criteriaCenterMap(criterion.id) = criteriaX
+        x = x + padding + maxDiameterHorizontal
+      }
+
+      var subIndex = 0
+      for (subCriteria <- criterion.subCriteria) {
+        val subCriteriaX = x + padding + maxRadius
+        subCriteriaCenterMap(subCriteria.id) = subCriteriaX
+
+        x = x + padding + maxDiameterHorizontal
+        subIndex += 1
+      }
+
+      x = x + padding + margin
+      index += 1
+    }
+*/
+
+    val boxTopY: Int = headerTextGap
+    val boxBotY: Int = height - margin
+
+    private val circleCount = aggregatedCriteriaCount + subCriteriaCount
+    private val columnWidth = (width - labelGap - (criteria.size * margin)) / circleCount
+
+    private var index = 0
+    private var x = labelGap
+    for (criterion <- criteria) {
+      val columnCount = criterion.subCriteria.size + (if (isCriteriaAggregated(criterion)) 1 else 0)
+      val criteriaWidth = columnCount * columnWidth
+      criteriaBoxesMap(criterion.id) = (x, criteriaWidth)
+
+      if (isCriteriaAggregated(criterion)) {
+        val criteriaX = x + columnWidth/2
+        criteriaCenterMap(criterion.id) = criteriaX
+        x = x + columnWidth
+      }
+
+      var subIndex = 0
+      for (subCriteria <- criterion.subCriteria) {
+        val subCriteriaX = x + columnWidth/2
+        subCriteriaCenterMap(subCriteria.id) = subCriteriaX
+
+        x = x + columnWidth
+        subIndex += 1
+      }
+
+      x = x + margin
+      index += 1
+    }
+
+
+
+
+
+    // Prepare for when/If we have criteria that do not get aggregated...
+
+    def getAggregatedCriteriaCount(criteria: Seq[GroupedCriteria]): Int = criteria.size
+    def isCriteriaAggregated(criteria: GroupedCriteria): Boolean = true
+
+    // And now for the getters or something...
+
+    def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria.id)
+
+    def getCriteriaCenterX(criteria: GroupedCriteria): Int = criteriaCenterMap(criteria.id)
+    def getSubCriteriaCenterX(subCriteria: GroupedSubCriteria): Int = subCriteriaCenterMap(subCriteria.id)
+
+/*
+    def getEntityCenterY(entityIndex: Int, entityCount: Int) = {
+      headerTextGap + entityIndex * (padding + maxDiameterHorizontal) + padding + maxRadius
+    }
+*/
+
+    def getRowHeight(entityCount: Int) = {
+      val availableHeight = height - headerTextGap - margin
+      availableHeight / entityCount
+    }
+
+    def getEntityCenterY(entityIndex: Int, entityCount: Int) = {
+      val rowHeight = getRowHeight(entityCount)
+      headerTextGap + (entityIndex * rowHeight) + rowHeight/2
+    }
+
+    def getMaxRadius(entityCount: Int) = {
+      Math.min(columnWidth, getRowHeight(entityCount)) * 0.9 / 2
+    }
 
   }
 
