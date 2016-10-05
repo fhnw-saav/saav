@@ -67,7 +67,7 @@ object app {
 
   final case class EntitySelectionModel(visible: Set[EntityId] = Set.empty, pinned: Option[EntityId] = None)
 
-  final case class SubCriteriaSelectionModel(hovered: Option[SubCriteriaId] = None)
+  final case class SubCriteriaSelectionModel(hovered: Option[SubCriteriaId] = None, pinned: Option[SubCriteriaId] = None)
 
   // --------------------------------------------------------------------------
   // Presentation model behind the 'Quality' tab
