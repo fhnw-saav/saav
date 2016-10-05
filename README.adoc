@@ -5,7 +5,7 @@ Software application to analyse and visualise research output in the humanities 
 # Documentation
 
 * link:CONTRIBUTING.adoc[Development Setup]
-* link:docs/architecture.adoc[Architecture]
+* link:docs/architecture-and-design.adoc[Architecture & Design]
 * link:docs/deployment.adoc[Deployment]
 
 # Live
