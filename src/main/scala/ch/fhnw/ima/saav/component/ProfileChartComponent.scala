@@ -10,6 +10,8 @@ import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, Ref}
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, SVGSVGElement, SVGTextElement}
 
+import scala.collection.mutable.ArrayBuffer
+
 object ProfileChartComponent {
 
   case class Props(proxy: ModelProxy[AppModel])
@@ -22,6 +24,58 @@ object ProfileChartComponent {
 
   class Backend($: BackendScope[Props, State]) {
 
+    /**
+      * Handle mouse events.
+      */
+/*
+    def onSvgMouseEvent(proxy: ModelProxy[AppModel], isClicked: Boolean)(e: ReactMouseEvent) =
+      svgRootRef($).map { svg =>
+
+        val pt = svg.createSVGPoint()
+        pt.x = e.clientX
+        pt.y = e.clientY
+
+        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+
+        val model = proxy.value
+        val hoveredSubCriteria = findClosestSubCriteria(model.profileModel, cursorPt)
+        val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
+
+        val togglePinningIfClicked = hoveredEntity match {
+          case Some(entity) if isClicked => toggleEntityPinning(entity)
+          case _ => Callback.empty
+        }
+
+        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
+
+      }.getOrElse(Callback.empty)
+
+    private def findClosestSubCriteria(model: ProfileModel, cursorPt: SVGPoint): Option[SubCriteriaId] = {
+      val layout = model.layout
+      if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
+        var xmin = Double.MaxValue
+        var closestSubCriteria: Option[SubCriteriaId] = None
+        for (criteria <- model.criteria) {
+          for (subCriteria <- criteria.subCriteria) {
+            val x = layout.getSubCriteriaAxisX(subCriteria)
+            val distance = Math.abs(x - cursorPt.x)
+            if (distance < xmin) {
+              xmin = distance
+              closestSubCriteria = Some(subCriteria.id)
+            }
+          }
+        }
+        closestSubCriteria
+      } else {
+        None
+      }
+
+    }
+*/
+
+    /**
+      * Handle window resize.
+      */
     def onWindowResize(proxy: ModelProxy[AppModel]) = {
       svgRootRef($).map { svg =>
         val parent = svg.parentNode.asInstanceOf[HTMLElement]
@@ -78,10 +132,10 @@ object ProfileChartComponent {
 
 
     /**
-      * Constructs the boxes and the axes for the hierarchical parallel coordinate system.
+      * Constructs the boxes that contain the entity circles.
       *
       * @param appModel the application model
-      * @return a group of SVG elements that make up the coordinate system
+      * @return a group of SVG elements that make up the boxes
       */
     private def constructCoordinateSystem(appModel: AppModel) = {
 
@@ -95,42 +149,57 @@ object ProfileChartComponent {
 
         val containsHoveredSubCriteria = criteria.subCriteria.count(sc => hoveredSubCriteria.contains(sc.id)) > 0
 
+        val elements = ArrayBuffer[TagMod]()
+
+        // The box
         val boxStroke = if (containsHoveredSubCriteria) "#999999" else "#eeeeee"
-        val (x, width) = layout.getCriteriaBox(criteria)
+        val (boxX, boxWidth) = layout.getCriteriaBox(criteria)
         val box = <.svg.rect(
           ^.svg.fill := "#eeeeee",
           ^.svg.stroke := boxStroke,
-          ^.svg.x := x, ^.svg.y := layout.boxTopY,
-          ^.svg.width := width, ^.svg.height := (layout.boxBotY - layout.boxTopY))
+          ^.svg.x := boxX, ^.svg.y := layout.boxTopY,
+          ^.svg.width := boxWidth, ^.svg.height := (layout.boxBotY - layout.boxTopY))
+        elements += box
 
+        // The line that separates the aggregated criteria column from the subcriteria columns
+        if (layout.getCriteriaCenterX(criteria).isDefined) {
+          val separatorLineX = boxX + (boxWidth / (criteria.subCriteria.size + 1))
+          val separatorLine = <.svg.line(
+            ^.svg.x1 := separatorLineX, ^.svg.y1 := layout.boxTopY,
+            ^.svg.x2 := separatorLineX, ^.svg.y2 := layout.boxBotY,
+            ^.svg.stroke := "#ffffff", ^.svg.strokeWidth := "3"
+          )
+          elements += separatorLine
+        }
+
+        // The criteria label
         val stroke = if (containsHoveredSubCriteria) "black" else "#cccccc"
-
         val label =
           <.svg.foreignObject(
-            ^.svg.x := x,
+            ^.svg.x := boxX,
             ^.svg.y := layout.boxTopY - layout.padding,
-            ^.svg.width := width, ^.svg.height := layout.padding,
+            ^.svg.width := boxWidth, ^.svg.height := layout.padding,
             <.div(
               ^.textAlign.center,
               ^.overflow.hidden, ^.textOverflow.ellipsis, ^.whiteSpace.nowrap,
-              ^.width := s"${width}px", ^.height := s"${layout.padding}px", ^.minWidth := "0",
+              ^.width := s"${boxWidth}px", ^.height := s"${layout.padding}px", ^.minWidth := "0",
               ^.title := criteria.displayName,
               criteria.displayName
             )
           )
+        elements += label
 
-        <.svg.g(box, label)
+        // Return the collected elements
+        <.svg.g(elements)
       }
 
-
-//      <.svg.g(criteriaBoxesAndStuff, criteriaAxes, subCriteriaAxes, hoveredAxisLabel)
       <.svg.g(criteriaBoxesAndStuff)
     }
 
 
 
     /**
-      * Constructs the horizontal lines for the entities.
+      * Constructs the circles for the entities.
       *
       * @param appModel the application model
       * @return a group of SVG elements containing the representation of the entities
@@ -163,15 +232,23 @@ object ProfileChartComponent {
 
         // Create the circles
 
-        val entityLine = for (criteria <- model.criteria) yield {
-          val x = layout.getCriteriaCenterX(criteria)
-          val y = layout.getEntityCenterY(entityIndex, model.sortedEntities.size)
-          val criteriaCircle = <.svg.circle(
-            ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := computeRadius(criteria.groupedValues.get(groupedEntity.id), layout, maxRadius),
-            ^.svg.fill := strokeColor,
-            ^.svg.strokeWidth := 0
-          )
+        val y = layout.getEntityCenterY(entityIndex, model.sortedEntities.size)
 
+        val entityLine = for (criteria <- model.criteria) yield {
+          // Create aggregated criteria circle, if it is defined
+          val x = layout.getCriteriaCenterX(criteria)
+          val criteriaCircle = if (x.isDefined) {
+            val circle = <.svg.circle(
+              ^.svg.cx := x.get, ^.svg.cy := y, ^.svg.r := computeRadius(criteria.groupedValues.get(groupedEntity.id), layout, maxRadius),
+              ^.svg.fill := strokeColor,
+              ^.svg.strokeWidth := 0
+            )
+            Option(circle)
+          } else {
+            Option.empty
+          }
+
+          // Create subcriteria cricles
           val subCriteriaCircles = for (subCriteria <- criteria.subCriteria) yield {
             val x = layout.getSubCriteriaCenterX(subCriteria)
             <.svg.circle(
@@ -182,7 +259,12 @@ object ProfileChartComponent {
             )
           }
 
-          <.svg.g(criteriaCircle, subCriteriaCircles)
+          // Combine the circles
+          if (criteriaCircle.isDefined) {
+            <.svg.g(criteriaCircle.get, subCriteriaCircles)
+          } else {
+            <.svg.g(subCriteriaCircles)
+          }
         }
 
         entityIndex += 1

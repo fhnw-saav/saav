@@ -17,8 +17,7 @@ object layout {
   class QualityChartLayout(val width: Int, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
     import QualityChartLayout._
-
-
+    
     // TODO: Calculate margin, padding, and gaps relative to width
 
     val padding = 20
@@ -205,8 +204,6 @@ object layout {
 
 
 
-
-
     // Prepare for when/If we have criteria that do not get aggregated...
 
     def getAggregatedCriteriaCount(criteria: Seq[GroupedCriteria]): Int = criteria.size
@@ -216,14 +213,8 @@ object layout {
 
     def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria.id)
 
-    def getCriteriaCenterX(criteria: GroupedCriteria): Int = criteriaCenterMap(criteria.id)
-    def getSubCriteriaCenterX(subCriteria: GroupedSubCriteria): Int = subCriteriaCenterMap(subCriteria.id)
-
-/*
-    def getEntityCenterY(entityIndex: Int, entityCount: Int) = {
-      headerTextGap + entityIndex * (padding + maxDiameterHorizontal) + padding + maxRadius
-    }
-*/
+    def getCriteriaCenterX(criteria: GroupedCriteria): Option[Int] = criteriaCenterMap.get(criteria.id)
+    def getSubCriteriaCenterX(subCriteria: GroupedSubCriteria): Option[Int] = subCriteriaCenterMap.get(subCriteria.id)
 
     def getRowHeight(entityCount: Int) = {
       val availableHeight = height - headerTextGap - margin
