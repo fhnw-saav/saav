@@ -117,7 +117,6 @@ object layout {
     val margin = 20
     val padding = 20
     val headerTextGap = 40
-    private val labelGap = 100
 
     val minValue: Double = Math.min(0, minValueOption.getOrElse(0d))
     val maxValue: Double = Math.max(0, maxValueOption.getOrElse(0d))
@@ -135,10 +134,10 @@ object layout {
     val boxBotY: Int = height - margin
 
     private val circleCount = aggregatedCriteriaCount + subCriteriaCount
-    private val columnWidth = (width - labelGap - (criteria.size * margin)) / circleCount
+    private val columnWidth = (width - margin - (criteria.size * margin)) / circleCount
 
     private var index = 0
-    private var x = labelGap
+    private var x = margin
     for (criterion <- criteria) {
       val columnCount = criterion.subCriteria.size + (if (isCriteriaAggregated(criterion)) 1 else 0)
       val criteriaWidth = columnCount * columnWidth
