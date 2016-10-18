@@ -17,7 +17,7 @@ object layout {
   class QualityChartLayout(val width: Int, val criteria: Seq[GroupedCriteria], minValueOption: Option[Double], maxValueOption: Option[Double]) {
 
     import QualityChartLayout._
-    
+
     // TODO: Calculate margin, padding, and gaps relative to width
 
     val padding = 20
@@ -130,45 +130,6 @@ object layout {
     private val subCriteriaCount = criteria.foldLeft(0)((count, c) => count + c.subCriteria.size)
 
     private val aggregatedCriteriaCount = getAggregatedCriteriaCount(criteria)
-
-/*
-    private val totalWidthForCircles = width - labelGap - (criteriaCount * margin) - (criteriaCount * padding) - ((aggregatedCriteriaCount + subCriteriaCount) * padding)
-
-    val maxDiameterHorizontal = totalWidthForCircles / (aggregatedCriteriaCount + subCriteriaCount)
-    val maxRadius = maxDiameterHorizontal / 2
-
-    // Compute boxes y positions
-
-    val boxTopY: Int = headerTextGap
-    val boxBotY: Int = height - margin
-
-    private var index = 0
-    private var x = labelGap
-    for (criterion <- criteria) {
-
-      val circleCount = criterion.subCriteria.size + (if (isCriteriaAggregated(criterion)) 1 else 0)
-      val criteriaWidth = circleCount * (maxDiameterHorizontal + padding) + padding
-      criteriaBoxesMap(criterion.id) = (x, criteriaWidth)
-
-      if (isCriteriaAggregated(criterion)) {
-        val criteriaX = x + padding + maxRadius
-        criteriaCenterMap(criterion.id) = criteriaX
-        x = x + padding + maxDiameterHorizontal
-      }
-
-      var subIndex = 0
-      for (subCriteria <- criterion.subCriteria) {
-        val subCriteriaX = x + padding + maxRadius
-        subCriteriaCenterMap(subCriteria.id) = subCriteriaX
-
-        x = x + padding + maxDiameterHorizontal
-        subIndex += 1
-      }
-
-      x = x + padding + margin
-      index += 1
-    }
-*/
 
     val boxTopY: Int = headerTextGap
     val boxBotY: Int = height - margin
