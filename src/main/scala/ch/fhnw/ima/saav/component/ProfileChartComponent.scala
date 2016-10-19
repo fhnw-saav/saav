@@ -140,6 +140,8 @@ object ProfileChartComponent {
         }
       }
 
+    // TODO: unify duplicate functionality with quality chart
+    def clearHovering = setHoveredEntity(None) >> setHoveredSubCriteria(None)
 
     /**
       * Handle window resize.
@@ -187,8 +189,7 @@ object ProfileChartComponent {
         ^.svg.height := s"${QualityChartLayout.height}px",
         ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
         ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
-//        ^.onMouseLeave --> clearHovering,
-
+        ^.onMouseLeave --> clearHovering,
         background,
         coordinateSystem,
         entities
