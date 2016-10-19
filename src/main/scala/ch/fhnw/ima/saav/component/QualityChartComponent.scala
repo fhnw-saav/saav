@@ -270,7 +270,7 @@ object QualityChartComponent {
         val label =
           <.svg.foreignObject(
             ^.svg.x := layout.getCriteriaAxisX(criteria) - (width / 2f),
-            ^.svg.y := layout.boxTopY - layout.padding,
+            ^.svg.y := layout.padding/2,
             ^.svg.width := width, ^.svg.height := layout.padding,
             <.div(
               ^.textAlign.center,

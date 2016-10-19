@@ -24,15 +24,34 @@ object ProfileChartComponent {
 
   class Backend($: BackendScope[Props, State]) {
 
+    // TODO: unify duplicate functionality with quality chart
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteriaId]) =
       $.props >>= { p =>
         val dispatchAction = p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
         val width = p.proxy.value.qualityModel.layout.width
-//        dispatchAction >> alignSubCriteriaLabel(width)
-        dispatchAction
-
-        //        println(hoveredSubCriteria.get.name)
+        dispatchAction >> alignSubCriteriaLabel(width)
       }
+
+    // TODO: unify duplicate functionality with quality chart
+    private def alignSubCriteriaLabel(svgWidth: Int) =
+      svgSubCriteriaLabelRef($).map { svgText =>
+        Callback {
+          val padding = ProfileChartLayout.subCriteriaLabelPadding
+          val textWidth = svgText.getBBox().width
+          val halfTextWidth = textWidth / 2d
+          val currentMiddleX = svgText.getAttribute("x").toDouble
+
+          val leftCutoff = halfTextWidth + padding
+          if (currentMiddleX < leftCutoff) {
+            svgText.setAttribute("x", s"$leftCutoff")
+          }
+
+          val rightCutoff = svgWidth - padding - halfTextWidth
+          if (currentMiddleX > rightCutoff) {
+            svgText.setAttribute("x", s"$rightCutoff")
+          }
+        }
+      }.getOrElse(Callback.empty)
 
     /**
       * Handle mouse events.
@@ -185,7 +204,10 @@ object ProfileChartComponent {
         // The box for the probed column/subcriteria
         if (containsHoveredSubCriteria) {
           if (hoveredSubCriteria.isDefined) {
+
+            // have to do this conversion because the selection models work with ids, and the painting works with the objects
             val hovc = criterion.subCriteria.filter(sc => hoveredSubCriteria.get == sc.id).head
+
             val x = layout.getSubCriteriaCenterX(hovc).get
             val columnWidth = boxWidth / (criterion.subCriteria.size + 1)
             val hoveredBox = <.svg.rect(
@@ -194,6 +216,16 @@ object ProfileChartComponent {
               ^.svg.x := (x - (columnWidth/2)), ^.svg.y := layout.boxTopY,
               ^.svg.width := columnWidth, ^.svg.height := (layout.boxBotY - layout.boxTopY))
             elements += hoveredBox
+
+            val hoveredLabel =
+              <.svg.text(
+                ^.ref := svgSubCriteriaLabelRef,
+                ^.svg.textAnchor := "middle",
+                ^.svg.x := x,
+                ^.svg.y := layout.boxTopY - ProfileChartLayout.subCriteriaLabelPadding, hovc.displayName
+              )
+            elements += hoveredLabel
+
           }
         }
 
@@ -202,7 +234,7 @@ object ProfileChartComponent {
         val label =
           <.svg.foreignObject(
             ^.svg.x := boxX,
-            ^.svg.y := layout.boxTopY - layout.padding,
+            ^.svg.y := ProfileChartLayout.subCriteriaLabelPadding,
             ^.svg.width := boxWidth, ^.svg.height := layout.padding,
             <.div(
               ^.textAlign.center,
