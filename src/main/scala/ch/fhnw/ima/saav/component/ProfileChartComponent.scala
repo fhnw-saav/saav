@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateSubCriteriaHoveringAction}
-import ch.fhnw.ima.saav.model.app.{AppModel, GroupedEntity, ProfileModel}
+import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
+import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity, ProfileModel}
 import ch.fhnw.ima.saav.model.domain.{EntityId, SubCriteriaId}
 import ch.fhnw.ima.saav.model.layout.{ProfileChartLayout, QualityChartLayout}
 import diode.react.ModelProxy
@@ -23,6 +23,75 @@ object ProfileChartComponent {
   private val svgSubCriteriaLabelRef = Ref[SVGTextElement]("svgSubCriteriaLabelRef")
 
   class Backend($: BackendScope[Props, State]) {
+
+    /**
+      * Handle mouse events.
+      */
+    def onSvgMouseEvent(proxy: ModelProxy[AppModel], isClicked: Boolean)(e: ReactMouseEvent) =
+      svgRootRef($).map { svg =>
+
+        val pt = svg.createSVGPoint()
+        pt.x = e.clientX
+        pt.y = e.clientY
+
+        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+
+        val model = proxy.value
+        val hoveredSubCriteria = findClosestSubCriteria(model.profileModel, cursorPt)
+        val hoveredEntity = findClosestEntity(model.profileModel, model.entitySelectionModel, cursorPt)
+
+        val togglePinningIfClicked = hoveredEntity match {
+          case Some(entity) if isClicked => toggleEntityPinning(entity)
+          case _ => Callback.empty
+        }
+
+        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
+
+      }.getOrElse(Callback.empty)
+
+    private def findClosestSubCriteria(model: ProfileModel, cursorPt: SVGPoint): Option[SubCriteriaId] = {
+      val layout = model.layout
+      if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
+        var xmin = Double.MaxValue
+        var closestSubCriteria: Option[SubCriteriaId] = None
+        for (criteria <- model.criteria) {
+          for (subCriteria <- criteria.subCriteria) {
+            val x = layout.getSubCriteriaCenterX(subCriteria)
+            val distance = Math.abs(x.get - cursorPt.x)
+            if (distance < xmin) {
+              xmin = distance
+              closestSubCriteria = Some(subCriteria.id)
+            }
+          }
+        }
+        closestSubCriteria
+      } else {
+        None
+      }
+
+    }
+
+    private def findClosestEntity(model: ProfileModel, selectionModel: EntitySelectionModel, cursorPt: SVGPoint): Option[EntityId] = {
+      val layout = model.layout
+      val entities = model.sortedEntities
+
+      // if vertically inside box
+      if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
+        var entityIndex = layout.getEntityIndex(cursorPt.y, entities.size)
+        // if entity id valid
+        if ((entityIndex >= 0) && (entityIndex < entities.size)) {
+          val entityId = entities(entityIndex).id
+          // if entity visible (not switched off)
+          if (selectionModel.visible.contains(entityId)) {
+            Option(entities(entityIndex).id)
+          } else
+            None
+        } else
+          None
+      } else
+        None
+    }
+
 
     // TODO: unify duplicate functionality with quality chart
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteriaId]) =
@@ -53,55 +122,24 @@ object ProfileChartComponent {
         }
       }.getOrElse(Callback.empty)
 
-    /**
-      * Handle mouse events.
-      */
-    def onSvgMouseEvent(proxy: ModelProxy[AppModel], isClicked: Boolean)(e: ReactMouseEvent) =
-      svgRootRef($).map { svg =>
-
-        val pt = svg.createSVGPoint()
-        pt.x = e.clientX
-        pt.y = e.clientY
-
-        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
-
-        val model = proxy.value
-        val hoveredSubCriteria = findClosestSubCriteria(model.profileModel, cursorPt)
-/*
-        val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
-
-        val togglePinningIfClicked = hoveredEntity match {
-          case Some(entity) if isClicked => toggleEntityPinning(entity)
-          case _ => Callback.empty
-        }
-
-        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
-*/
-        setHoveredSubCriteria(hoveredSubCriteria)
-
-      }.getOrElse(Callback.empty)
-
-    private def findClosestSubCriteria(model: ProfileModel, cursorPt: SVGPoint): Option[SubCriteriaId] = {
-      val layout = model.layout
-      if ((cursorPt.y > layout.boxTopY) && (cursorPt.y < layout.boxBotY)) {
-        var xmin = Double.MaxValue
-        var closestSubCriteria: Option[SubCriteriaId] = None
-        for (criteria <- model.criteria) {
-          for (subCriteria <- criteria.subCriteria) {
-            val x = layout.getSubCriteriaCenterX(subCriteria)
-            val distance = Math.abs(x.get - cursorPt.x)
-            if (distance < xmin) {
-              xmin = distance
-              closestSubCriteria = Some(subCriteria.id)
-            }
-          }
-        }
-        closestSubCriteria
-      } else {
-        None
+    // TODO: unify duplicate functionality with quality chart
+    def toggleEntityPinning(entity: EntityId) =
+      $.props >>= { p =>
+        val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
+        val pinnedOrNone = if (isPinned) None else Some(entity)
+        p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
       }
 
-    }
+    // TODO: unify duplicate functionality with quality chart
+    def setHoveredEntity(hoveredEntity: Option[EntityId]) =
+      $.state >>= { s =>
+        if (s.hoveredEntity != hoveredEntity) {
+          $.setState(s.copy(hoveredEntity = hoveredEntity))
+        } else {
+          Callback.empty
+        }
+      }
+
 
     /**
       * Handle window resize.

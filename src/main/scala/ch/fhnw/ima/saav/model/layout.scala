@@ -186,6 +186,10 @@ object layout {
       headerTextGap + (entityIndex * rowHeight) + rowHeight/2
     }
 
+    def getEntityIndex(y: Double, entityCount: Int): Int = {
+      ((y - headerTextGap) / getRowHeight(entityCount)).toInt
+    }
+
     def getMaxRadius(entityCount: Int) = {
       Math.min(columnWidth, getRowHeight(entityCount)) * 0.9 / 2
     }
