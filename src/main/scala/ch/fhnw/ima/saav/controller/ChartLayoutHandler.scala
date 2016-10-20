@@ -14,7 +14,7 @@ class ChartLayoutHandler[M](modelRW: ModelRW[M, (QualityChartLayout, ProfileChar
       val ql = value._1
       val newQualityLayout = new QualityChartLayout(width, ql.criteria, Some(ql.minValue), Some(ql.maxValue))
 
-      val pl = value._1
+      val pl = value._2
       val newProfileChartLayout = new ProfileChartLayout(width, pl.criteria, Some(pl.minValue), Some(pl.maxValue))
 
       updated((newQualityLayout, newProfileChartLayout))
