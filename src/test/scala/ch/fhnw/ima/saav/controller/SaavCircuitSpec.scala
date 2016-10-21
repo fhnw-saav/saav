@@ -1,19 +1,13 @@
 package ch.fhnw.ima.saav.controller
 
-import ch.fhnw.ima.saav.model
+import ch.fhnw.ima.saav.{AnalysisTestData, model}
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Profile, Weights}
-import org.scalatest._
+import org.scalatest.{FunSpec, Matchers}
 
-class SaavCircuitSpec extends FunSpec with Matchers {
-
-  private val criteriaId = CriteriaId("c")
-  private val subCriteriaId = SubCriteriaId(criteriaId, "sc")
-  private val indicatorId = IndicatorId(subCriteriaId, "i")
-
-  private val analysis = AnalysisBuilder().build
+class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
   private def circuitWithAnalysis() = {
     val circuit = new SaavCircuit()
@@ -62,8 +56,9 @@ class SaavCircuitSpec extends FunSpec with Matchers {
   describe(s"${EntitySelectionHandler.getClass.getSimpleName}") {
 
     it("should wire visible entities") {
-      val visibleEntities = Set(EntityId("x"), EntityId("y"))
+      val visibleEntities = Set(entityOne.id, entityTwo.id)
       val circuit = circuitWithAnalysis()
+      circuit.dispatch(UpdateEntityVisibilityAction(allEntityIds, visible = false))
       circuit.dispatch(UpdateEntityVisibilityAction(visibleEntities, visible = true))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
@@ -78,7 +73,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
       val anEntity = EntityId("x")
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
-      circuit.dispatch(UpdateEntityVisibilityAction(Set.empty, visible = false))
+      circuit.dispatch(UpdateEntityVisibilityAction(allEntityIds, visible = false))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
         case EntitySelectionModel(actualVisibleEntities, actualPinned) =>
@@ -89,8 +84,9 @@ class SaavCircuitSpec extends FunSpec with Matchers {
     }
 
     it("should not touch pinning if entity is still visible") {
-      val anEntity = EntityId("x")
+      val anEntity = entityOne.id
       val circuit = circuitWithAnalysis()
+      circuit.dispatch(UpdateEntityVisibilityAction(allEntityIds, visible = false))
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
       circuit.dispatch(UpdateEntityVisibilityAction(Set(anEntity), visible = true))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
@@ -178,6 +174,9 @@ class SaavCircuitSpec extends FunSpec with Matchers {
 
     it("should control enabled indicators") {
       val circuit = circuitWithAnalysis()
+      allIndicatorIds.foreach { i =>
+        circuit.dispatch(UpdateIndicatorWeightAction(i, isEnabled = false))
+      }
       circuit.dispatch(UpdateIndicatorWeightAction(indicatorId, isEnabled = true))
       val weights = circuit.zoom(WeightsHandler.modelGet).value
       weights.enabledIndicators.size shouldBe 1
@@ -193,6 +192,7 @@ class SaavCircuitSpec extends FunSpec with Matchers {
   }
 
   describe(s"${ChartLayoutHandler.getClass.getSimpleName}") {
+
     it("should update layout in both chart models") {
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateChartWidthAction(42))
@@ -200,6 +200,25 @@ class SaavCircuitSpec extends FunSpec with Matchers {
       model._1.width shouldBe 42
       model._2.width shouldBe 42
     }
+
+    it("should preserve sub-criteria assignment when updating layout in both chart models") {
+      val circuit = circuitWithAnalysis()
+
+      // move everything to profile chart
+      allSubCriteriaIds.foreach { id =>
+        circuit.dispatch(UpdateSubCriteriaWeightAction(id, Profile))
+      }
+      val modelWithQualityAndProfileCategories = circuit.zoom(ChartLayoutHandler.modelGet).value
+      modelWithQualityAndProfileCategories._1.criteria.size shouldBe 0
+      modelWithQualityAndProfileCategories._2.criteria.size shouldBe 2
+
+      // assert that the quality vs. profile assignment is not lost after updating chart layouts
+      circuit.dispatch(UpdateChartWidthAction(42))
+      val model = circuit.zoom(ChartLayoutHandler.modelGet).value
+      model._1.criteria.size shouldBe 0
+      model._2.criteria.size shouldBe 2
+    }
+
   }
 
 }

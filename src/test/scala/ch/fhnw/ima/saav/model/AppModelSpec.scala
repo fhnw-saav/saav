@@ -1,55 +1,15 @@
 package ch.fhnw.ima.saav.model
 
+import ch.fhnw.ima.saav.AnalysisTestData
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Quality, Weights}
 import org.scalatest.{FunSpec, Matchers}
 
-class AppModelSpec extends FunSpec with Matchers {
+class AppModelSpec extends FunSpec with Matchers with AnalysisTestData {
 
   describe(s"A ${AppModel.getClass.getSimpleName}") {
-
-    val entityOne = Entity(EntityId("P1"))
-    val entityTwo = Entity(EntityId("P2"))
-    val entityThree = Entity(EntityId("P3"))
-
-    val reviewOne = ReviewId("Review1")
-    val reviewTwo = ReviewId("Review2")
-    val reviewThree = ReviewId("Review3")
-
-    val analysis = AnalysisBuilder()
-      .criteria("Cat 1")
-        .subCriteria("Sub-Cat 11")
-          .indicator("Indicator 111")
-            .addValue(entityOne, reviewOne, 1)
-            .addValue(entityOne, reviewTwo, 0.1)
-            .addValue(entityOne, reviewThree, 2)
-            .addValue(entityTwo, reviewOne, 101)
-            .addValue(entityTwo, reviewTwo, 100)
-            .addValue(entityTwo, reviewThree, 102)
-          .build
-          .indicator("Indicator 112")
-            .addValue(entityOne, reviewOne, 3)
-            .addValue(entityTwo, reviewOne, 101)
-            .addValue(entityThree, reviewOne, 0)
-          .build
-        .build
-      .build
-      .criteria("Cat 2")
-        .subCriteria("Sub-Cat 21")
-          .indicator("Indicator 211")
-            .addValue(entityOne, reviewOne, 41)
-            .addValue(entityOne, reviewTwo, 43)
-            .addValue(entityTwo, reviewOne, 99)
-          .build
-          .indicator("Indicator 212")
-            .addValue(entityOne, reviewOne, 43)
-          .build
-        .build
-      .build
-    .build
-
 
     val model = AppModel(analysis, createConfig(analysis))
 
