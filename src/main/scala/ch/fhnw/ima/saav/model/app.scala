@@ -109,13 +109,13 @@ object app {
     def apply(analysis: Analysis, weights: Weights, layoutWidth: Int): ProfileModel = {
 
       val allCriteria = analysis.criteria.map { c =>
-        GroupedCriteria.forProfile(analysis.entities.map(_.id), c, analysis.reviews, weights)
+        GroupedCriteria.forProfile(analysis.entities.map(_.id), c, weights)
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
       // TODO: Support different sorting strategies
       val sortedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
-        val value = median(criteria.map(_.groupedValues(e.id)))
+        val value = median(criteria.flatMap(_.groupedValues.get(e.id)))
         GroupedEntity(e.id, e.displayName, value = value, sortingPosition = i)
       }.sortBy(_.displayName)
 
@@ -180,7 +180,7 @@ object app {
 
     }
 
-    def forProfile(entities: Seq[EntityId], criteria: Criteria, reviews: Seq[ReviewId], weights: Weights): GroupedCriteria = {
+    def forProfile(entities: Seq[EntityId], criteria: Criteria, weights: Weights): GroupedCriteria = {
 
       val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, weights.enabledIndicators))
       val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
