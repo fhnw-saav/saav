@@ -29,25 +29,25 @@ object pages {
 
     case object ProjectAnalysisPage extends SubPage {
 
-      def displayName = "Project Application"
+      def displayName = "Projects"
 
-      def hashLink = "project"
+      def hashLink = "projects"
 
     }
 
     case object PersonAnalysisPage extends SubPage {
 
-      def displayName = "Academic Appointment"
+      def displayName = "Persons"
 
-      def hashLink = "person"
+      def hashLink = "persons"
 
     }
 
     case object OrganisationAnalysisPage extends SubPage {
 
-      def displayName = "Research Organisation"
+      def displayName = "Organisations"
 
-      def hashLink = "organisation"
+      def hashLink = "organisations"
 
     }
 
@@ -70,23 +70,24 @@ object pages {
 
   }
 
-  object ProjectAnalysisPageComponent {
+  object AnalysisPageComponent {
 
-    case class Props(proxy: ModelProxy[SaavModel])
+    case class Props(title: String, proxy: ModelProxy[SaavModel])
 
-    private val component = ReactComponentB[Props](ProjectAnalysisPageComponent.getClass.getSimpleName)
+    private val component = ReactComponentB[Props](AnalysisPageComponent.getClass.getSimpleName)
       .render_P(p => {
 
-        val content: TagMod = p.proxy.value.model match {
-          case Left(noData) => FileImportComponent(p.proxy.zoom(_ => noData))
-          case Right(data) => PageWithDataComponent(p.proxy.zoom(_ => data))
+        val (title, content): (String, TagMod) = p.proxy.value.model match {
+          case Left(noData) => (s"Import ${p.title}", FileImportComponent(p.proxy.zoom(_ => noData)))
+          case Right(data) => (p.title, PageWithDataComponent(p.proxy.zoom(_ => data)))
         }
 
-        <.div(<.h1(ProjectAnalysisPage.displayName), content)
+        <.div(<.h1(title), content)
+
       })
       .build
 
-    def apply(proxy: ModelProxy[SaavModel]) = component(Props(proxy))
+    def apply(title: String, proxy: ModelProxy[SaavModel]) = component(Props(title, proxy))
 
   }
 

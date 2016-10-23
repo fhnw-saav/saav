@@ -1,7 +1,6 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.component.TodoComponent
-import ch.fhnw.ima.saav.component.pages.Page.{HomePage, ProjectAnalysisPage}
+import ch.fhnw.ima.saav.component.pages.Page.HomePage
 import ch.fhnw.ima.saav.component.pages._
 import ch.fhnw.ima.saav.controller.SaavCircuit
 import ch.fhnw.ima.saav.style.GlobalStyles
@@ -32,8 +31,7 @@ object MainApp extends js.JSApp {
     // defines how hash-prefixed locations are mapped to a rendered component
     def routeSubPage(subPage: SubPage): Rule = staticRoute("#/" + subPage.hashLink, subPage) ~> renderR(_ => {
       subPage match {
-        case ProjectAnalysisPage => modelConnection(ProjectAnalysisPageComponent(_))
-        case _ => TodoComponent(subPage.displayName)
+        case _ => modelConnection(proxy => AnalysisPageComponent(subPage.displayName, proxy))
       }
     })
 
