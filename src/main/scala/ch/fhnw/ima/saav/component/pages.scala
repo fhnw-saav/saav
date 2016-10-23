@@ -4,8 +4,8 @@ package component
 import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
 import ch.fhnw.ima.saav.model.app.{AppModel, SaavModel}
 import diode.react.ModelProxy
-import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
 import scalacss.ScalaCssReact._
 
@@ -129,8 +129,10 @@ object pages {
               )
             },
             <.div(css.row,
-              <.div(css.colXs3, IndicatorComponent(p.proxy)),
-              <.div(css.colXs9, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.config, m.weights))))
+              <.div(css.colXs12, IndicatorComponent(p.proxy))
+            ),
+            <.div(css.row,
+              <.div(css.colXs12, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.config, m.weights))))
             )
           )
         )

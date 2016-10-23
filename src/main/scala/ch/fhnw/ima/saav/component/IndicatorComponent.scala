@@ -20,17 +20,17 @@ object IndicatorComponent {
         pinnedEntity <- p.pinnedEntity.toSeq
         indicator <- p.indicators
       } yield {
-        val value = indicator.groupedValues(pinnedEntity)
+        val value = indicator.groupedValues.get(pinnedEntity).map(_.toString).getOrElse("-")
         <.tr(
-          <.td(css.colXs10, css.overflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.displayName, indicator.displayName),
-          <.td(css.colXs2, value)
+          <.td(css.colXs1, value),
+          <.td(css.colXs11, css.overflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.displayName, indicator.displayName)
         )
       }
 
       <.div(
         <.h2("Indicators"),
         <.table(css.table,
-          <.thead(<.tr(<.th(css.colXs10, "Indicator"), <.th(css.colXs2, "Median"))),
+          <.thead(<.tr(<.th(css.colXs1, "Median"), <.th(css.colXs11, "Indicator"))),
           <.tbody(
             if (indicators.isEmpty) {
               <.tr(<.td(^.colSpan := 2, <.i("Pin a row and move your mouse over an axis to see something here")))
