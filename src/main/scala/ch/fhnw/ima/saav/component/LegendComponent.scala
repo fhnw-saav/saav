@@ -131,7 +131,7 @@ object LegendComponent {
           createRow(e, i, isVisible, isPinned, color, p.showRank)
       }
 
-      val legendTable = <.table(css.table,
+      val legendTable = <.table(css.legendTable,
         <.thead(header(p.entities, p.allVisibilityState, p.showRank)),
         <.tbody(rows))
 

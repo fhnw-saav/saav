@@ -99,16 +99,20 @@ object GlobalStyles extends StyleSheet.Inline {
     color(c"#bbb")
   )
 
-  val expertIndicatorList = style(
-    addClassName("list-unstyled"),
-    marginLeft(18 px) // align with font awesome fixed-width glyph
-  )
-
-  val table = style(
+  val legendTable = style(
     addClassName("table"),
     width(100 %%),
     paddingRight(`0`),
-    marginTop(10 px)
+    marginTop(10 px),
+    unsafeChild("thead tr th")(
+      padding(`0`)
+    ),
+    unsafeChild("tbody tr td")(
+      padding(`0`)
+    ),
+    unsafeChild("tbody tr th")(
+      padding(`0`)
+    )
   )
 
   val colorCell = style(
@@ -118,6 +122,18 @@ object GlobalStyles extends StyleSheet.Inline {
     margin(`0`),
     padding(`0`),
     border.none
+  )
+
+  val table = style(
+    addClassName("table"),
+    width(100 %%),
+    paddingRight(`0`),
+    marginTop(10 px)
+  )
+
+  val expertIndicatorList = style(
+    addClassName("list-unstyled"),
+    marginLeft(18 px) // align with font awesome fixed-width glyph
   )
 
   val expertFormControl = style(
