@@ -54,7 +54,9 @@ object app {
       val subCriteriaSelectionModel = SubCriteriaSelectionModel()
 
       // colorize _after_ ranking to get optimally distinct colors by default
-      val colorMap = autoColorMap(qualityModel.rankedEntities.map(_.id))
+      val colorMap = qualityModel.rankedEntities.zipWithIndex.map {
+        case (e, i) => e.id -> ColorPalette(i % ColorPalette.size)
+      }.toMap
 
       AppModel(config, analysis, config.defaultWeights, entitySelectionModel, subCriteriaSelectionModel, colorMap, qualityModel, profileModel)
     }

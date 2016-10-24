@@ -198,7 +198,6 @@ object GlobalStyles extends StyleSheet.Inline {
   )
 
   object glyph {
-    val magic = styleWrap("fa fa-fw fa-magic")
     val right = styleWrap("fa fa-fw fa-chevron-right")
     val down = styleWrap("fa fa-fw fa-chevron-down")
     val reset = styleWrap("fa fa-fw fa-rotate-left")

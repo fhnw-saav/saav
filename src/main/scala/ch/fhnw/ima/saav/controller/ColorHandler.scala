@@ -1,19 +1,15 @@
 package ch.fhnw.ima.saav.controller
 
-import ch.fhnw.ima.saav._
 import ch.fhnw.ima.saav.model.app.SaavModel
-import ch.fhnw.ima.saav.model.color.{WebColor, _}
+import ch.fhnw.ima.saav.model.color.WebColor
 import ch.fhnw.ima.saav.model.domain.EntityId
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
-
-final case class AutoColorizeAction(entities: Seq[EntityId]) extends Action
 
 final case class UpdateEntityColorAction(entity: EntityId, webColor: WebColor) extends Action
 
 class ColorHandler[M](modelRW: ModelRW[M, Map[EntityId, WebColor]]) extends ActionHandler(modelRW) {
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
-    case AutoColorizeAction(entities) => updated(autoColorMap(entities))
     case UpdateEntityColorAction(entity, color) => updated(value + (entity -> color))
   }
 

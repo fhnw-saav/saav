@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.controller
 
-import ch.fhnw.ima.saav.{AnalysisTestData, model}
+import ch.fhnw.ima.saav.AnalysisTestData
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain._
@@ -146,7 +146,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
   describe(s"${ColorHandler.getClass.getSimpleName}") {
 
-    it("should update and auto-colorize colors") {
+    it("should update colors") {
       val anEntity = EntityId("x")
       val aColor = WebColor("#999999")
       val circuit = circuitWithAnalysis()
@@ -154,10 +154,6 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
       circuit.dispatch(UpdateEntityColorAction(anEntity, aColor))
       val updatedColors = circuit.zoom(ColorHandler.modelGet).value
       updatedColors(anEntity) shouldBe aColor
-
-      circuit.dispatch(AutoColorizeAction(Seq(anEntity)))
-      val autoColors = circuit.zoom(ColorHandler.modelGet).value
-      autoColors(anEntity) shouldBe model.color.SolarizedPalette(0)
     }
 
   }

@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.controller.{AutoColorizeAction, UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntityVisibilityAction}
+import ch.fhnw.ima.saav.controller.{UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntityVisibilityAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.EntityId
@@ -27,14 +27,6 @@ object LegendComponent {
   )
 
   class Backend($: BackendScope[Props, Unit]) {
-
-    private def autoColorize() = {
-      $.props >>= { p =>
-        val sm = p.entitySelectionModel
-        val visibleEntities = p.entities.map(_.id).filter(sm.visible.contains)
-        p.dispatch(AutoColorizeAction(visibleEntities))
-      }
-    }
 
     private def updateEntityColor(entity: EntityId)(e: SyntheticEvent[HTMLInputElement]) = {
       val newColor = WebColor(e.target.value)
@@ -74,17 +66,11 @@ object LegendComponent {
 
     private def header(entities: Seq[GroupedEntity], allVisibilityState: TriStateCheckbox.State, isShowRank: Boolean) = {
 
-      val autoColorizeGlyph = <.i(
-        css.glyph.magic,
-        ^.cursor.pointer,
-        ^.onClick --> autoColorize,
-        ^.title := "Auto-Colorize")
-
       <.tr(
         isShowRank ?= <.th(""),
         <.th("Name"),
         <.th(allCheckbox(allVisibilityState)),
-        <.th(^.textAlign.center, autoColorizeGlyph)
+        <.th("")
       )
     }
 

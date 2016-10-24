@@ -1,31 +1,26 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.domain.EntityId
-
 object color {
 
-  // org.scalajs.dom.ext.Color doesn't support hex value access
+  // TODO: Replace when https://github.com/scala-js/scala-js-dom/pull/243 is released
   final case class WebColor(hexValue: String)
 
-  val SolarizedPalette = Seq(
-    WebColor("#b58900"),
-    WebColor("#cb4b16"),
-    WebColor("#dc322f"),
-    WebColor("#d33682"),
-    WebColor("#6c71c4"),
-    WebColor("#268bd2"),
-    WebColor("#2aa198"),
-    WebColor("#859900")
+  val ColorPalette = Seq(
+    WebColor("#a6cee3"),
+    WebColor("#1f78b4"),
+    WebColor("#b2df8a"),
+    WebColor("#33a02c"),
+    WebColor("#fb9a99"),
+    WebColor("#e31a1c"),
+    WebColor("#fdbf6f"),
+    WebColor("#ff7f00"),
+    WebColor("#cab2d6"),
+    WebColor("#6a3d9a"),
+    WebColor("#ffff99"),
+    WebColor("#b15928")
   )
 
-  val DefaultColor = WebColor("#000000")
-
   val DisabledColor = WebColor("#777777")
-
-  def autoColorMap(entities: Seq[EntityId]): Map[EntityId, WebColor] =
-    entities.zipWithIndex.map {
-      case (e, i) => (e, SolarizedPalette(i % SolarizedPalette.size))
-    }.toMap.withDefaultValue(color.DefaultColor)
 
 }
