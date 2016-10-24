@@ -82,7 +82,7 @@ object pages {
           case Right(data) => (p.title, PageWithDataComponent(p.proxy.zoom(_ => data)))
         }
 
-        <.div(<.h1(title), content)
+        <.div(<.h3(title), content)
 
       })
       .build
@@ -112,12 +112,11 @@ object pages {
     class Backend($: BackendScope[Props, State]) {
       def render(p: Props, s: State) = {
         <.div(
-          <.ul(css.navTabs,
-            for (tab <- Seq(QualityTab, ProfileTab)) yield {
-              val style = if (s.activeTab == tab) css.active else css.nonActive
-              <.li(style, ^.cursor.pointer, <.a(^.onClick --> $.modState(s => s.copy(activeTab = tab)), tab.name))
-            }
-          ),
+          for (tab <- Seq(QualityTab, ProfileTab)) yield {
+            val style = if (s.activeTab == tab) css.activeTab else css.inactiveTab
+            <.div(style, ^.cursor.pointer, ^.onClick --> $.modState(s => s.copy(activeTab = tab)), tab.name)
+          }
+          ,
           <.div(
             s.activeTab match {
               case QualityTab => <.div(css.row, css.vSpaced,

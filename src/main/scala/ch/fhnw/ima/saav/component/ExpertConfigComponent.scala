@@ -85,7 +85,7 @@ object ExpertConfigComponent {
       )
 
       <.div(
-        <.h2("Expert Configuration", (p.defaultWeights != p.weights) ?= resetWidget),
+        <.h3("Expert Configuration", (p.defaultWeights != p.weights) ?= resetWidget),
         CriteriaTable(CriteriaTableProps(p.analysis.criteria, s.criteriaToggleStates, s.subCriteriaToggleStates, p.weights))
       )
 

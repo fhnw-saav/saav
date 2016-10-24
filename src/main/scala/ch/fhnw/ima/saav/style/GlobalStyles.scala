@@ -22,7 +22,17 @@ object GlobalStyles extends StyleSheet.Inline {
     paddingTop(20 px)
   )
 
-  val navTabs = styleWrap("nav", "nav-tabs")
+  val activeTab = style(
+    addClassName("btn"),
+    addClassName("btn-primary"),
+    marginRight(5 px)
+  )
+
+  val inactiveTab = style(
+    addClassName("btn"),
+    addClassName("btn-default"),
+    marginRight(5 px)
+  )
 
   // bootstrap's button-style anchors
   val mainLinkButton = styleWrap("btn", "btn-primary", "btn-lg", "btn-block", "active")
