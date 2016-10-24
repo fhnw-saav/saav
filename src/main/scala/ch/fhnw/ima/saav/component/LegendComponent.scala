@@ -72,8 +72,6 @@ object LegendComponent {
       }
     }
 
-    private val pinGlyph = <.i(css.glyph.pin, ^.title := "Pin")
-
     private def header(entities: Seq[GroupedEntity], allVisibilityState: TriStateCheckbox.State, isShowRank: Boolean) = {
 
       val autoColorizeGlyph = <.i(
@@ -86,27 +84,25 @@ object LegendComponent {
         isShowRank ?= <.th("#"),
         <.th("Name"),
         <.th(allCheckbox(allVisibilityState)),
-        <.th(^.textAlign.center, autoColorizeGlyph),
-        <.th(^.textAlign.center, pinGlyph)
+        <.th(^.textAlign.center, autoColorizeGlyph)
       )
     }
 
     private def createRow(entity: GroupedEntity, index: Int, isVisible: Boolean, isPinned: Boolean, color: WebColor, isShowRank: Boolean) = {
 
       val visibleStyle = if (isVisible) css.empty else css.textMuted
-      val pinStyle = if (isPinned) css.active else css.empty
+      val pinnedStyle = if (isPinned) css.bgPrimary else css.empty
       val cursor = if (isVisible) ^.cursor.pointer else EmptyTag
       val togglePinOnClick =
         if (isVisible)
           ^.onClick ==> toggleEntityPinning(entity.id)
         else EmptyTag
 
-      <.tr(visibleStyle, pinStyle, cursor, togglePinOnClick,
+      <.tr(visibleStyle, pinnedStyle, cursor, togglePinOnClick,
         isShowRank ?= <.th(^.scope := "row", index + 1),
         <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.title := entity.displayName, entity.displayName),
         <.td(checkbox(entity.id, isVisible)),
-        <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color)),
-        <.td(^.textAlign.center, if (isPinned) pinGlyph else EmptyTag)
+        <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color))
       )
     }
 

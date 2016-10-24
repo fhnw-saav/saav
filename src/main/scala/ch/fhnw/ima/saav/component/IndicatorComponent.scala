@@ -33,7 +33,7 @@ object IndicatorComponent {
           <.thead(<.tr(<.th(css.colXs1, "Median"), <.th(css.colXs11, "Indicator"))),
           <.tbody(
             if (indicators.isEmpty) {
-              <.tr(<.td(^.colSpan := 2, <.i("Pin a row and move your mouse over an axis to see something here")))
+              <.tr(<.td(^.colSpan := 2, <.i("Select a row and move your mouse over an axis to see something here")))
             } else {
               indicators.toSeq
             }))
