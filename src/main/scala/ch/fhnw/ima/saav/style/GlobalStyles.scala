@@ -111,6 +111,15 @@ object GlobalStyles extends StyleSheet.Inline {
     marginTop(10 px)
   )
 
+  val colorCell = style(
+    width(20 px),
+    height(20 px),
+    backgroundColor.transparent,
+    margin(`0`),
+    padding(`0`),
+    border.none
+  )
+
   val expertFormControl = style(
     addClassName("form-control"),
     borderColor.transparent,

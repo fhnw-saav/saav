@@ -115,7 +115,7 @@ object LegendComponent {
     }
 
     private def colorPicker(entity: EntityId, isVisible: Boolean, color: WebColor) = {
-      <.input.color(
+      <.input.color(css.colorCell,
         ^.value := (if (isVisible) color else DisabledColor).hexValue,
         ^.disabled := !isVisible,
         ^.onChange ==> updateEntityColor(entity))
