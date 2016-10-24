@@ -7,7 +7,6 @@ import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.EntityId
 import diode.Action
 import diode.react.ModelProxy
-import japgolly.scalajs.react.extra.components.TriStateCheckbox
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, _}
@@ -21,7 +20,6 @@ object LegendComponent {
     showRank: Boolean,
     entities: Seq[GroupedEntity],
     entitySelectionModel: EntitySelectionModel,
-    allVisibilityState: TriStateCheckbox.State,
     colorMap: Map[EntityId, WebColor],
     dispatch: Action => Callback
   )
@@ -40,14 +38,10 @@ object LegendComponent {
       }
     }
 
-    private def updateAllEntityVisibility() = {
+    private def updateAllEntityVisibility(visible: Boolean) = {
       $.props >>= { p =>
-        val newVisible = p.allVisibilityState match {
-          case TriStateCheckbox.Checked => false
-          case _ => true
-        }
         val allEntities = p.entities.map(_.id).toSet
-        p.dispatch(UpdateEntityVisibilityAction(allEntities, visible = newVisible))
+        p.dispatch(UpdateEntityVisibilityAction(allEntities, visible = visible))
       }
     }
 
@@ -64,13 +58,13 @@ object LegendComponent {
       }
     }
 
-    private def header(entities: Seq[GroupedEntity], allVisibilityState: TriStateCheckbox.State, isShowRank: Boolean) = {
-
+    private def header(entities: Seq[GroupedEntity], isShowRank: Boolean) = {
       <.tr(
-        isShowRank ?= <.th(""),
-        <.th("Name"),
-        <.th(allCheckbox(allVisibilityState)),
-        <.th("")
+        <.th(^.textAlign.right, ^.colSpan := (if (isShowRank) 4 else 3),
+          "Select: ",
+          <.a(^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(true), "All"),
+          " ",
+          <.a(^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(false), "None"))
       )
     }
 
@@ -86,14 +80,10 @@ object LegendComponent {
 
       <.tr(visibleStyle, pinnedStyle, cursor, togglePinOnClick,
         isShowRank ?= <.th(css.rankTableCell, ^.scope := "row", index + 1 + "."),
-        <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.title := entity.displayName, entity.displayName),
-        <.td(checkbox(entity.id, isVisible)),
-        <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color))
+        <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.width := "70%", ^.title := entity.displayName, entity.displayName),
+        <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color)),
+        <.td(checkbox(entity.id, isVisible))
       )
-    }
-
-    private def allCheckbox(allVisibilityState: TriStateCheckbox.State) = {
-      TriStateCheckbox.Component(TriStateCheckbox.Props(allVisibilityState, updateAllEntityVisibility()))
     }
 
     private def checkbox(entity: EntityId, isVisible: Boolean) = {
@@ -118,7 +108,7 @@ object LegendComponent {
       }
 
       val legendTable = <.table(css.legendTable,
-        <.thead(header(p.entities, p.allVisibilityState, p.showRank)),
+        <.thead(header(p.entities, p.showRank)),
         <.tbody(rows))
 
       if (p.showRank) {
@@ -141,15 +131,8 @@ object LegendComponent {
   def apply(proxy: ModelProxy[AppModel], entityProvider: (AppModel) => Seq[GroupedEntity], showRank: Boolean = true): ReactComponentU[Props, Unit, Backend, TopNode] = {
     val model = proxy.value
     val entitySelectionModel = model.entitySelectionModel
-    val visibleEntitiesCount = entitySelectionModel.visible.size
     val entities = entityProvider(model)
-    val entitiesCount = entities.size
-    val allVisibilityState =
-      if (visibleEntitiesCount == 0) TriStateCheckbox.Unchecked
-      else if (visibleEntitiesCount == entitiesCount) TriStateCheckbox.Checked
-      else TriStateCheckbox.Indeterminate
-
-    val props = Props(showRank, entities, entitySelectionModel, allVisibilityState, model.colorMap, proxy.theDispatch)
+    val props = Props(showRank, entities, entitySelectionModel, model.colorMap, proxy.theDispatch)
     component(props)
   }
 

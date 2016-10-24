@@ -105,7 +105,8 @@ object GlobalStyles extends StyleSheet.Inline {
     paddingRight(`0`),
     marginTop(10 px),
     unsafeChild("thead tr th")(
-      padding(`0`)
+      padding(`0`),
+      fontWeight.normal
     ),
     unsafeChild("tbody tr td")(
       padding(`0`)
@@ -127,7 +128,9 @@ object GlobalStyles extends StyleSheet.Inline {
     width(20 px),
     height(20 px),
     backgroundColor.transparent,
+    verticalAlign.middle,
     margin(`0`),
+    marginBottom(2 px),
     padding(`0`),
     border.none
   )
