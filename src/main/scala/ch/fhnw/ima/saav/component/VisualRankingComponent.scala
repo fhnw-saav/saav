@@ -31,7 +31,7 @@ object VisualRankingComponent {
       val axis = <.svg.line(
         ^.svg.x1 := width / 2, ^.svg.y1 := paddingTop,
         ^.svg.x2 := width / 2, ^.svg.y2 := height - paddingBottom,
-        ^.svg.stroke := "#999999", ^.svg.strokeWidth := "1"
+        ^.svg.stroke := "#cccccc", ^.svg.strokeWidth := "1"
       )
 
       <.svg.svg(

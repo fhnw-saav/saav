@@ -171,9 +171,10 @@ object ProfileChartComponent {
 
       val background = <.svg.rect(
         ^.svg.fill := "white",
-        ^.svg.stroke := "black",
-        ^.svg.x := "0", ^.svg.y := "0",
-        ^.svg.width := "100%", ^.svg.height := "100%")
+        ^.svg.stroke := "#eeeeee",
+        ^.svg.strokeWidth := 2,
+        ^.svg.x := "1", ^.svg.y := "0",
+        ^.svg.width := p.proxy.value.profileModel.layout.width - 2, ^.svg.height := "100%")
 
       val coordinateSystem = constructCoordinateSystem(model)
       val entities = if (model.profileModel.criteria.isEmpty) Seq.empty else constructEntities(model, s.hoveredEntity)
