@@ -81,7 +81,7 @@ object LegendComponent {
         ^.title := "Auto-Colorize")
 
       <.tr(
-        isShowRank ?= <.th("#"),
+        isShowRank ?= <.th(""),
         <.th("Name"),
         <.th(allCheckbox(allVisibilityState)),
         <.th(^.textAlign.center, autoColorizeGlyph)
@@ -99,7 +99,7 @@ object LegendComponent {
         else EmptyTag
 
       <.tr(visibleStyle, pinnedStyle, cursor, togglePinOnClick,
-        isShowRank ?= <.th(^.scope := "row", index + 1),
+        isShowRank ?= <.th(css.rankTableCell, ^.scope := "row", index + 1 + "."),
         <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.title := entity.displayName, entity.displayName),
         <.td(checkbox(entity.id, isVisible)),
         <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color))

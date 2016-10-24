@@ -111,8 +111,16 @@ object GlobalStyles extends StyleSheet.Inline {
       padding(`0`)
     ),
     unsafeChild("tbody tr th")(
-      padding(`0`)
+      paddingLeft(5 px),
+      paddingLeft(5 px),
+      paddingTop(`0`),
+      paddingBottom(`0`)
     )
+  )
+
+  val rankTableCell = style(
+    width(1 px),
+    textAlign.right
   )
 
   val colorCell = style(
