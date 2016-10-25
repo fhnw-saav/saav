@@ -104,24 +104,25 @@ object GlobalStyles extends StyleSheet.Inline {
     width(100 %%),
     paddingRight(`0`),
     marginTop(10 px),
-    unsafeChild("thead tr th")(
+    unsafeChild("thead tr th")( // `All` / `None` actions
       padding(`0`),
       fontWeight.normal
     ),
-    unsafeChild("tbody tr td")(
-      padding(`0`)
+    unsafeChild("tbody tr td")( // checkbox and color
+      width(1 px),
+      paddingTop(`0`),
+      paddingRight(5 px),
+      paddingBottom(`0`),
+      paddingLeft(`0`)
     ),
-    unsafeChild("tbody tr th")(
+    unsafeChild("tbody tr th")( // rank column
+      textAlign.right,
+      width(1 px),
       paddingLeft(5 px),
       paddingLeft(5 px),
       paddingTop(`0`),
       paddingBottom(`0`)
     )
-  )
-
-  val rankTableCell = style(
-    width(1 px),
-    textAlign.right
   )
 
   val colorCell = style(
@@ -213,6 +214,10 @@ object GlobalStyles extends StyleSheet.Inline {
   val vSpaced = style(
     marginTop(10 px),
     marginBottom(10 px)
+  )
+
+  val hSpaced = style(
+    marginLeft(5 px)
   )
 
   val textMuted = styleWrap("text-muted")

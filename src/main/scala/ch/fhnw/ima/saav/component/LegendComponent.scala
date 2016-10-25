@@ -60,11 +60,9 @@ object LegendComponent {
 
     private def header(entities: Seq[GroupedEntity], isShowRank: Boolean) = {
       <.tr(
-        <.th(^.textAlign.right, ^.colSpan := (if (isShowRank) 4 else 3),
-          "Select: ",
+        <.th(^.colSpan := (if (isShowRank) 4 else 3),
           <.a(^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(true), "All"),
-          " ",
-          <.a(^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(false), "None"))
+          <.a(css.hSpaced, ^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(false), "None"))
       )
     }
 
@@ -79,10 +77,10 @@ object LegendComponent {
         else EmptyTag
 
       <.tr(visibleStyle, pinnedStyle, cursor, togglePinOnClick,
-        isShowRank ?= <.th(css.rankTableCell, ^.scope := "row", index + 1 + "."),
-        <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.width := "70%", ^.title := entity.displayName, entity.displayName),
-        <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color)),
-        <.td(checkbox(entity.id, isVisible))
+        <.td(checkbox(entity.id, isVisible)),
+        isShowRank ?= <.th(^.scope := "row", index + 1 + "."),
+        <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.width := "100%", ^.title := entity.displayName, entity.displayName),
+        <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color))
       )
     }
 
