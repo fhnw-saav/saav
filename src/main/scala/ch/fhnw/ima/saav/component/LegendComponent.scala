@@ -66,7 +66,8 @@ object LegendComponent {
     private def header(entities: Seq[GroupedEntity], isShowRank: Boolean) = {
       <.tr(
         <.th(^.colSpan := (if (isShowRank) 4 else 3),
-          <.a(^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(true), "All"),
+          "Select:",
+          <.a(css.hSpaced, ^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(true), "All"),
           <.a(css.hSpaced, ^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(false), "None"))
       )
     }
