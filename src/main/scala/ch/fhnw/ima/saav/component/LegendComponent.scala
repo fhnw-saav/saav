@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.controller.{UpdateEntityColorAction, UpdateEntityPinningAction, UpdateEntityVisibilityAction}
+import ch.fhnw.ima.saav.controller.{UpdateEntityColorAction, UpdateEntityHoveringAction, UpdateEntityPinningAction, UpdateEntityVisibilityAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity}
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.domain.EntityId
@@ -9,7 +9,7 @@ import diode.Action
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{ReactComponentB, _}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, _}
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement}
 
 import scalacss.ScalaCssReact._
@@ -58,6 +58,11 @@ object LegendComponent {
       }
     }
 
+    private def setHoveredEntity(hoveredEntity: Option[EntityId]) =
+      $.props >>= { p =>
+        p.dispatch(UpdateEntityHoveringAction(hoveredEntity))
+      }
+
     private def header(entities: Seq[GroupedEntity], isShowRank: Boolean) = {
       <.tr(
         <.th(^.colSpan := (if (isShowRank) 4 else 3),
@@ -66,17 +71,15 @@ object LegendComponent {
       )
     }
 
-    private def createRow(entity: GroupedEntity, index: Int, isVisible: Boolean, isPinned: Boolean, color: WebColor, isShowRank: Boolean) = {
+    private def createRow(entity: GroupedEntity, index: Int, isVisible: Boolean, isPinned: Boolean, isHovered: Boolean, color: WebColor, isShowRank: Boolean) = {
 
       val visibleStyle = if (isVisible) css.empty else css.textMuted
-      val pinnedStyle = if (isPinned) css.bgPrimary else css.empty
-      val cursor = if (isVisible) ^.cursor.pointer else EmptyTag
-      val togglePinOnClick =
-        if (isVisible)
-          ^.onClick ==> toggleEntityPinning(entity.id)
-        else EmptyTag
+      val bgStyle = if (isPinned) css.bgPrimary else if (isHovered) css.bgInfo else css.empty
 
-      <.tr(visibleStyle, pinnedStyle, cursor, togglePinOnClick,
+      <.tr(visibleStyle, bgStyle,
+        isVisible ?= ^.cursor.pointer,
+        isVisible ?= ^.onClick ==> toggleEntityPinning(entity.id),
+        isVisible ?= ^.onMouseOver --> setHoveredEntity(Some(entity.id)),
         <.td(checkbox(entity.id, isVisible)),
         isShowRank ?= <.th(^.scope := "row", index + 1 + "."),
         <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.width := "100%", ^.title := entity.displayName, entity.displayName),
@@ -101,11 +104,12 @@ object LegendComponent {
         case (e, i) =>
           val isVisible = p.entitySelectionModel.visible.contains(e.id)
           val isPinned = p.entitySelectionModel.pinned.contains(e.id)
+          val isHovered = p.entitySelectionModel.hovered.contains(e.id)
           val color = p.colorMap(e.id)
-          createRow(e, i, isVisible, isPinned, color, p.showRank)
+          createRow(e, i, isVisible, isPinned, isHovered, color, p.showRank)
       }
 
-      val legendTable = <.table(css.legendTable,
+      val legendTable = <.table(css.legendTable, ^.onMouseLeave --> setHoveredEntity(None),
         <.thead(header(p.entities, p.showRank)),
         <.tbody(rows))
 

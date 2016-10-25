@@ -67,7 +67,7 @@ object app {
   // Selection Models
   // --------------------------------------------------------------------------
 
-  final case class EntitySelectionModel(visible: Set[EntityId] = Set.empty, pinned: Option[EntityId] = None)
+  final case class EntitySelectionModel(visible: Set[EntityId] = Set.empty, pinned: Option[EntityId] = None, hovered: Option[EntityId] = None)
 
   final case class SubCriteriaSelectionModel(hovered: Option[SubCriteriaId] = None)
 

@@ -228,6 +228,7 @@ object GlobalStyles extends StyleSheet.Inline {
   val nonActive = empty
 
   val bgPrimary = styleWrap("bg-primary")
+  val bgInfo = styleWrap("bg-info")
 
 
 }

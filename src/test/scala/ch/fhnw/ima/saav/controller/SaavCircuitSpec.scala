@@ -62,7 +62,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
       circuit.dispatch(UpdateEntityVisibilityAction(visibleEntities, visible = true))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
-        case EntitySelectionModel(actualVisibleEntities, actualPinned) =>
+        case EntitySelectionModel(actualVisibleEntities, actualPinned, _) =>
           actualVisibleEntities should contain theSameElementsAs visibleEntities
           actualPinned shouldBe empty
         case _ => failOnUnexpectedAction
@@ -76,7 +76,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
       circuit.dispatch(UpdateEntityVisibilityAction(allEntityIds, visible = false))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
-        case EntitySelectionModel(actualVisibleEntities, actualPinned) =>
+        case EntitySelectionModel(actualVisibleEntities, actualPinned, _) =>
           actualVisibleEntities shouldBe empty
           actualPinned shouldBe empty
         case _ => failOnUnexpectedAction
@@ -91,28 +91,48 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
       circuit.dispatch(UpdateEntityVisibilityAction(Set(anEntity), visible = true))
       val model = circuit.zoom(EntitySelectionHandler.modelGet).value
       model match {
-        case EntitySelectionModel(actualVisibleEntities, actualPinned) =>
+        case EntitySelectionModel(actualVisibleEntities, actualPinned, _) =>
           actualVisibleEntities shouldBe Set(anEntity)
           actualPinned shouldBe Some(anEntity)
         case _ => failOnUnexpectedAction
       }
     }
 
-    it("should clear pinning") {
+    it("should control pinning") {
       val anEntity = EntityId("x")
       val circuit = circuitWithAnalysis()
 
       circuit.dispatch(UpdateEntityPinningAction(Some(anEntity)))
       circuit.zoom(EntitySelectionHandler.modelGet).value match {
-        case EntitySelectionModel(_, actualPinned) =>
+        case EntitySelectionModel(_, actualPinned, _) =>
           actualPinned shouldBe Some(anEntity)
         case _ => failOnUnexpectedAction
       }
 
       circuit.dispatch(UpdateEntityPinningAction(None))
       circuit.zoom(EntitySelectionHandler.modelGet).value match {
-        case EntitySelectionModel(_, actualPinned) =>
+        case EntitySelectionModel(_, actualPinned, _) =>
           actualPinned shouldBe empty
+        case _ => failOnUnexpectedAction
+      }
+
+    }
+
+    it("should control hovering") {
+      val anEntity = EntityId("x")
+      val circuit = circuitWithAnalysis()
+
+      circuit.dispatch(UpdateEntityHoveringAction(Some(anEntity)))
+      circuit.zoom(EntitySelectionHandler.modelGet).value match {
+        case EntitySelectionModel(_, _, actualHovered) =>
+          actualHovered shouldBe Some(anEntity)
+        case _ => failOnUnexpectedAction
+      }
+
+      circuit.dispatch(UpdateEntityHoveringAction(None))
+      circuit.zoom(EntitySelectionHandler.modelGet).value match {
+        case EntitySelectionModel(_, _, actualHovered) =>
+          actualHovered shouldBe empty
         case _ => failOnUnexpectedAction
       }
 

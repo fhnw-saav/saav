@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
+import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityHoveringAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{EntityId, SubCriteriaId}
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
@@ -15,12 +15,10 @@ object QualityChartComponent {
 
   case class Props(proxy: ModelProxy[AppModel])
 
-  case class State(hoveredEntity: Option[EntityId] = None)
-
   private val svgRootRef = Ref[SVGSVGElement]("svgRootRef")
   private val svgSubCriteriaLabelRef = Ref[SVGTextElement]("svgSubCriteriaLabelRef")
 
-  class Backend($: BackendScope[Props, State]) {
+  class Backend($: BackendScope[Props, Unit]) {
 
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteriaId]) =
       $.props >>= { p =>
@@ -30,9 +28,9 @@ object QualityChartComponent {
       }
 
     def setHoveredEntity(hoveredEntity: Option[EntityId]) =
-      $.state >>= { s =>
-        if (s.hoveredEntity != hoveredEntity) {
-          $.setState(s.copy(hoveredEntity = hoveredEntity))
+      $.props >>= { p =>
+        if (p.proxy.value.entitySelectionModel.hovered != hoveredEntity) {
+          p.proxy.dispatch(UpdateEntityHoveringAction(hoveredEntity))
         } else {
           Callback.empty
         }
@@ -194,10 +192,9 @@ object QualityChartComponent {
       * The render loop.
       *
       * @param p global properties
-      * @param s local state
       * @return the virtual DOM to be rendered.
       */
-    def render(p: Props, s: State) = {
+    def render(p: Props) = {
 
       dom.window.onresize = (_: dom.Event) => {
         onWindowResize(p.proxy).runNow()
@@ -213,7 +210,7 @@ object QualityChartComponent {
         ^.svg.width := p.proxy.value.qualityModel.layout.width - 2, ^.svg.height := "100%")
 
       val coordinateSystem = constructCoordinateSystem(model)
-      val entities = if (model.qualityModel.criteria.isEmpty) Seq.empty else constructEntities(model, s.hoveredEntity)
+      val entities = if (model.qualityModel.criteria.isEmpty) Seq.empty else constructEntities(model)
 
       // Assemble everything
 
@@ -339,16 +336,14 @@ object QualityChartComponent {
       * @param model the application model
       * @return a group of SVG elements containing the representation of the entities
       */
-    private def constructEntities(model: AppModel, hoveredEntity: Option[EntityId]) = {
+    private def constructEntities(model: AppModel) = {
 
       val layout = model.qualityModel.layout
       val hoveredSubCriteria = model.subCriteriaSelectionModel.hovered
 
       def isVisible(e: GroupedEntity) = model.entitySelectionModel.visible.contains(e.id)
-
       def isPinned(e: GroupedEntity) = model.entitySelectionModel.pinned.contains(e.id)
-
-      def isHovered(e: GroupedEntity) = hoveredEntity.contains(e.id)
+      def isHovered(e: GroupedEntity) = model.entitySelectionModel.hovered.contains(e.id)
 
       val entitiesInPaintingOrder = model.qualityModel.rankedEntities.sortBy { e =>
         (isPinned(e), isVisible(e), e.sortingPosition) // higher ranks should be painted last (i.e. in front)
@@ -507,7 +502,6 @@ object QualityChartComponent {
   }
 
   private val component = ReactComponentB[Props](QualityChartComponent.getClass.getSimpleName)
-    .initialState(State())
     .renderBackend[Backend]
     .componentDidMount { $ =>
       $.backend.onWindowResize($.props.proxy)

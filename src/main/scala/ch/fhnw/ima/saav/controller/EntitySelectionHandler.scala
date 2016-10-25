@@ -8,6 +8,8 @@ final case class UpdateEntityVisibilityAction(entities: Set[EntityId], visible: 
 
 final case class UpdateEntityPinningAction(pinnedEntity: Option[EntityId]) extends Action
 
+final case class UpdateEntityHoveringAction(hoveredEntity: Option[EntityId]) extends Action
+
 class EntitySelectionHandler[M](modelRW: ModelRW[M, EntitySelectionModel]) extends ActionHandler(modelRW) {
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
@@ -27,6 +29,7 @@ class EntitySelectionHandler[M](modelRW: ModelRW[M, EntitySelectionModel]) exten
       }
       updated(EntitySelectionModel(newVisible, newPinned))
     case UpdateEntityPinningAction(newPinned) => updated(value.copy(pinned = newPinned))
+    case UpdateEntityHoveringAction(newHovered) => updated(value.copy(hovered = newHovered))
   }
 
 }
