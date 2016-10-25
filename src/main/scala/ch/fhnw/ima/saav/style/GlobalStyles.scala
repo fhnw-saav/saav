@@ -129,8 +129,10 @@ object GlobalStyles extends StyleSheet.Inline {
     height(20 px),
     backgroundColor.transparent,
     verticalAlign.middle,
-    margin(`0`),
-    marginBottom(2 px),
+    marginTop(`0`),
+    marginRight(`0`),
+    marginBottom(1 px),
+    marginLeft(`0`),
     padding(`0`),
     border.none
   )
