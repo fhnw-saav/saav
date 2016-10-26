@@ -68,6 +68,7 @@ object LegendComponent {
         <.th(^.colSpan := (if (isShowRank) 4 else 3),
           "Select:",
           <.a(css.hSpaced, ^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(true), "All"),
+          <.span(css.hSpaced, "|"),
           <.a(css.hSpaced, ^.cursor.pointer, ^.onClick --> updateAllEntityVisibility(false), "None"))
       )
     }
