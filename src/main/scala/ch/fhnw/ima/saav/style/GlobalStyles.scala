@@ -105,7 +105,14 @@ object GlobalStyles extends StyleSheet.Inline {
     paddingRight(`0`),
     marginTop(10 px),
     unsafeChild("thead tr th")( // `All` / `None` actions
-      padding(`0`),
+
+      // align with chart labels/boxes
+      height(30 px),
+      paddingTop(`0`),
+      paddingRight(`0`),
+      paddingBottom(10 px),
+      paddingLeft(`0`),
+
       fontWeight.normal
     ),
     unsafeChild("tbody tr td")( // checkbox and color
