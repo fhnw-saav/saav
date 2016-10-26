@@ -120,7 +120,8 @@ object pages {
           <.div(
             s.activeTab match {
               case QualityTab => <.div(css.row, css.vSpaced,
-                <.div(css.colXs3, LegendComponent(p.proxy, _.qualityModel.rankedEntities)),
+                <.div(css.colXs2, LegendComponent(p.proxy, _.qualityModel.rankedEntities)),
+                <.div(css.colXs1, VisualRankingComponent(p.proxy)),
                 <.div(css.colXs9, QualityChartComponent(p.proxy))
               )
               case ProfileTab => <.div(css.row, css.vSpaced,

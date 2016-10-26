@@ -110,18 +110,9 @@ object LegendComponent {
           createRow(e, i, isVisible, isPinned, isHovered, color, p.showRank)
       }
 
-      val legendTable = <.table(css.legendTable, ^.onMouseLeave --> setHoveredEntity(None),
+      <.table(css.legendTable, ^.onMouseLeave --> setHoveredEntity(None),
         <.thead(header(p.entities, p.showRank)),
         <.tbody(rows))
-
-      if (p.showRank) {
-        <.div(css.row,
-          <.div(css.colXs2, VisualRankingComponent(p.entities, p.entitySelectionModel, p.colorMap)),
-          <.div(css.colXs10, legendTable)
-        )
-      } else {
-        legendTable
-      }
 
     }
 

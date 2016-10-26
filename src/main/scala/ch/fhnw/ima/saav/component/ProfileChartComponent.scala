@@ -3,7 +3,7 @@ package ch.fhnw.ima.saav.component
 import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityHoveringAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity, ProfileModel}
 import ch.fhnw.ima.saav.model.domain.{EntityId, SubCriteriaId}
-import ch.fhnw.ima.saav.model.layout.{ProfileChartLayout, QualityChartLayout}
+import ch.fhnw.ima.saav.model.layout.ProfileChartLayout
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -183,9 +183,10 @@ object ProfileChartComponent {
 
       <.svg.svg(
         ^.ref := svgRootRef,
-        ^.svg.viewBox := s"0 0 ${layout.width} ${QualityChartLayout.height}",
+        ^.svg.viewBox := s"0 0 ${layout.width} ${ProfileChartLayout.height}",
         ^.svg.width := "100%",
-        ^.svg.height := s"${QualityChartLayout.height}px",
+        ^.svg.height := s"${ProfileChartLayout.height}px",
+        ^.svg.preserveAspectRatio := "none",
         ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
         ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
         ^.onMouseLeave --> clearHovering,
