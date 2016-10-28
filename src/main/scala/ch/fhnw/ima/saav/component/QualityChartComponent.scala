@@ -205,9 +205,9 @@ object QualityChartComponent {
       val background = <.svg.rect(
         ^.svg.fill := "white",
         ^.svg.stroke := "#eeeeee",
-        ^.svg.strokeWidth := 2,
-        ^.svg.x := "1", ^.svg.y := "0",
-        ^.svg.width := p.proxy.value.qualityModel.layout.width - 2, ^.svg.height := "100%")
+        ^.svg.strokeWidth := 4,
+        ^.svg.x := "0", ^.svg.y := "0",
+        ^.svg.width := p.proxy.value.qualityModel.layout.width, ^.svg.height := "100%")
 
       val coordinateSystem = constructCoordinateSystem(model)
       val entities = if (model.qualityModel.criteria.isEmpty) Seq.empty else constructEntities(model)

@@ -39,9 +39,9 @@ object VisualRankingComponent {
       val background = <.svg.rect(
         ^.svg.fill := "white",
         ^.svg.stroke := "#eeeeee",
-        ^.svg.strokeWidth := 2,
-        ^.svg.x := "1", ^.svg.y := "0",
-        ^.svg.width := width - 2, ^.svg.height := "100%")
+        ^.svg.strokeWidth := 4,
+        ^.svg.x := "0", ^.svg.y := "0",
+        ^.svg.width := width, ^.svg.height := "100%")
 
       val axis = <.svg.line(
         ^.svg.x1 := xMiddle, ^.svg.y1 := axisTop,
