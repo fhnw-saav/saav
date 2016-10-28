@@ -122,7 +122,10 @@ object pages {
             val style = if (s.activeTab == tab) css.activeTab else css.inactiveTab
             <.div(style, ^.cursor.pointer, ^.onClick --> $.modState(s => s.copy(activeTab = tab)), tab.name)
           },
-          <.div(css.defaultButton, css.pullRight, "Export PDF...", ^.onClick --> alertComingSoon),
+          <.div(css.pullRight,
+            ExpertConfigResetComponent(p.proxy.zoom(_.expertConfig)),
+            <.div(css.defaultButton, css.hSpaced, "Export PDF...", ^.onClick --> alertComingSoon)
+          ),
           <.div(
             s.activeTab match {
               case QualityTab => <.div(css.row, css.vSpaced,

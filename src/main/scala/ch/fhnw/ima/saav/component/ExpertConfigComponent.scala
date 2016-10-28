@@ -71,15 +71,12 @@ object ExpertConfigComponent {
     private def updateSubCriteriaQualityWeightValue(subCriteriaId: SubCriteriaId)(e: ReactEventI) =
       updateSubCriteria(subCriteriaId, Quality(e.target.value.toDouble))
 
-    private def reset =
-      $.props >>= (p => p.dispatch(UpdateWeightsAction(p.expertConfig.defaultWeights)))
-
     def render(p: Props, s: State): ReactTagOf[Div] = {
 
       <.div(css.boxed,
         <.h3(^.display.`inline-block`, Title),
         <.div(css.expertConfigToolbar,
-          p.expertConfig.isModified ?= <.div(css.expertConfigReset, "Configuration Modified (", <.a(^.cursor.pointer, ^.onClick --> reset, "Reset to Defaults"), ")"),
+          ExpertConfigResetComponent(p.expertConfig.isModified, p.expertConfig.defaultWeights, p.dispatch),
           <.div(css.defaultButton, css.hSpaced, "Import...", ^.onClick --> alertComingSoon),
           <.div(css.defaultButton, css.hSpaced, "Export...", ^.onClick --> alertComingSoon)
         ),
