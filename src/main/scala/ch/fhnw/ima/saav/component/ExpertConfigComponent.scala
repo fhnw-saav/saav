@@ -22,7 +22,6 @@ object ExpertConfigComponent {
 
   private val rightGlyph = <.i(css.glyph.right, ^.cursor.pointer)
   private val downGlyph = <.i(css.glyph.down, ^.cursor.pointer)
-  private val resetGlyph = <.i(css.glyph.reset, ^.cursor.pointer)
 
   case class Props(analysis: Analysis, expertConfig: ExpertConfig, dispatch: Action => Callback)
 
@@ -77,20 +76,15 @@ object ExpertConfigComponent {
 
     def render(p: Props, s: State): ReactTagOf[Div] = {
 
-      val resetWidget = <.span(
-        css.expertConfigChangedWarning,
-        ^.onClick --> reset,
-        ^.cursor.pointer,
-        ^.title := "Reset",
-        <.span(css.expertConfigChangedWarningLabel, "Changed"),
-        resetGlyph
-      )
-
-      <.div(
-        <.h3(Title, p.expertConfig.isModified ?= resetWidget),
+      <.div(css.boxed,
+        <.h3(^.display.`inline-block`, Title),
+        <.div(css.expertConfigToolbar,
+          p.expertConfig.isModified ?= <.div(css.expertConfigReset, "Configuration Modified (", <.a(^.cursor.pointer, ^.onClick --> reset, "Reset to Defaults"), ")"),
+          <.div(css.defaultButton, css.hSpaced, "Import...", ^.onClick --> alertComingSoon),
+          <.div(css.defaultButton, css.hSpaced, "Export...", ^.onClick --> alertComingSoon)
+        ),
         CriteriaTable(CriteriaTableProps(p.analysis.criteria, s.criteriaToggleStates, s.subCriteriaToggleStates, p.expertConfig.actualWeights))
       )
-
     }
 
     private final case class CriteriaTableProps(

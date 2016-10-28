@@ -27,7 +27,7 @@ object IndicatorComponent {
         )
       }
 
-      <.div(
+      <.div(css.boxed,
         <.h3("Indicators"),
         <.table(css.table,
           <.thead(<.tr(<.th(css.colXs1, "Median"), <.th(css.colXs11, "Indicator"))),

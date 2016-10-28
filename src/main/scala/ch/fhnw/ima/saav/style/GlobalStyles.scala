@@ -78,6 +78,11 @@ object GlobalStyles extends StyleSheet.Inline {
     left(0 px)
   )
 
+  val boxed = style(
+    border(2 px, c"#eee", solid),
+    padding(10 px)
+  )
+
   val barChartAxis = style {
     unsafeChild("path.domain")(
       svgFill := none,
@@ -152,6 +157,17 @@ object GlobalStyles extends StyleSheet.Inline {
     marginTop(10 px)
   )
 
+  val expertConfigToolbar = style(
+    addClassName("pull-right"),
+    paddingTop(10 px),
+    paddingBottom(10 px)
+  )
+
+  val expertConfigReset = style(
+    display.inlineBlock,
+    color(c"#d9534f")
+  )
+
   val expertIndicatorList = style(
     addClassName("list-unstyled"),
     marginLeft(18 px) // align with font awesome fixed-width glyph
@@ -168,17 +184,6 @@ object GlobalStyles extends StyleSheet.Inline {
     addClassName("input-group-addon"),
     backgroundColor.transparent,
     border.none
-  )
-
-  val expertConfigChangedWarning = style(
-    addClassNames("alert", "alert-warning"),
-    float.right,
-    padding.`0`,
-    marginBottom.`0`
-  )
-
-  val expertConfigChangedWarningLabel = style(
-    marginRight(10 px)
   )
 
   val hidden = style(
@@ -213,7 +218,6 @@ object GlobalStyles extends StyleSheet.Inline {
   object glyph {
     val right = styleWrap("fa fa-fw fa-chevron-right")
     val down = styleWrap("fa fa-fw fa-chevron-down")
-    val reset = styleWrap("fa fa-fw fa-rotate-left")
   }
 
   val _glyph = glyph // prevent lazy initialization

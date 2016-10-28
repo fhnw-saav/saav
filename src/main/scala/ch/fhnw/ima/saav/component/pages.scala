@@ -121,8 +121,8 @@ object pages {
           for (tab <- Seq(QualityTab, ProfileTab)) yield {
             val style = if (s.activeTab == tab) css.activeTab else css.inactiveTab
             <.div(style, ^.cursor.pointer, ^.onClick --> $.modState(s => s.copy(activeTab = tab)), tab.name)
-          }
-          ,
+          },
+          <.div(css.defaultButton, css.pullRight, "Export PDF...", ^.onClick --> alertComingSoon),
           <.div(
             s.activeTab match {
               case QualityTab => <.div(css.row, css.vSpaced,
