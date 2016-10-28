@@ -20,8 +20,8 @@ class SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
   private val subCriteriaSelectionHandler =
     new SubCriteriaSelectionHandler(zoomRW(SubCriteriaSelectionHandler.modelGet)(SubCriteriaSelectionHandler.modelSet))
 
-  private val weightsHandler =
-    new WeightsHandler(zoomRW(WeightsHandler.modelGet)(WeightsHandler.modelSet))
+  private val expertConfigHandler =
+    new ExpertConfigHandler(zoomRW(ExpertConfigHandler.modelGet)(ExpertConfigHandler.modelSet))
 
   private val chartLayoutHandler =
     new ChartLayoutHandler(zoomRW(ChartLayoutHandler.modelGet)(ChartLayoutHandler.modelSet))
@@ -32,7 +32,7 @@ class SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
       colorHandler,
       entitySelectionHandler,
       subCriteriaSelectionHandler,
-      weightsHandler,
+      expertConfigHandler,
       chartLayoutHandler
     )
 

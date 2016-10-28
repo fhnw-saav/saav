@@ -3,7 +3,7 @@ package ch.fhnw.ima.saav.component
 import java.util.UUID
 
 import ch.fhnw.ima.saav.controller._
-import ch.fhnw.ima.saav.model.config.Config
+import ch.fhnw.ima.saav.model.app.ExpertConfig
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weight, Weights}
 import diode.Action
@@ -18,11 +18,13 @@ import scalacss.ScalaCssReact._
 // TODO: Move all CSS to GlobalStyles
 object ExpertConfigComponent {
 
+  val Title = "Expert Configuration"
+
   private val rightGlyph = <.i(css.glyph.right, ^.cursor.pointer)
   private val downGlyph = <.i(css.glyph.down, ^.cursor.pointer)
   private val resetGlyph = <.i(css.glyph.reset, ^.cursor.pointer)
 
-  case class Props(analysis: Analysis, defaultWeights: Weights, weights: Weights, dispatch: Action => Callback)
+  case class Props(analysis: Analysis, expertConfig: ExpertConfig, dispatch: Action => Callback)
 
   case class State(
     criteriaToggleStates: Map[Criteria, ToggleState] = Map.empty[Criteria, ToggleState].withDefaultValue(Collapsed),
@@ -59,7 +61,7 @@ object ExpertConfigComponent {
 
     private def toggleIndicatorWeight(indicatorId: IndicatorId) =
       $.props >>= { p =>
-        val isCurrentlyEnabled = p.weights.enabledIndicators.contains(indicatorId)
+        val isCurrentlyEnabled = p.expertConfig.actualWeights.enabledIndicators.contains(indicatorId)
         val toggled = !isCurrentlyEnabled
         p.dispatch(UpdateIndicatorWeightAction(indicatorId, toggled))
       }
@@ -71,7 +73,7 @@ object ExpertConfigComponent {
       updateSubCriteria(subCriteriaId, Quality(e.target.value.toDouble))
 
     private def reset =
-      $.props >>= (p => p.dispatch(UpdateWeightsAction(p.defaultWeights)))
+      $.props >>= (p => p.dispatch(UpdateWeightsAction(p.expertConfig.defaultWeights)))
 
     def render(p: Props, s: State): ReactTagOf[Div] = {
 
@@ -85,8 +87,8 @@ object ExpertConfigComponent {
       )
 
       <.div(
-        <.h3("Expert Configuration", (p.defaultWeights != p.weights) ?= resetWidget),
-        CriteriaTable(CriteriaTableProps(p.analysis.criteria, s.criteriaToggleStates, s.subCriteriaToggleStates, p.weights))
+        <.h3(Title, p.expertConfig.isModified ?= resetWidget),
+        CriteriaTable(CriteriaTableProps(p.analysis.criteria, s.criteriaToggleStates, s.subCriteriaToggleStates, p.expertConfig.actualWeights))
       )
 
     }
@@ -259,16 +261,16 @@ object ExpertConfigComponent {
     .renderBackend[Backend]
     .shouldComponentUpdate { $ =>
       // compare all fields of props except for `dispatch` (a function which would never be ==)
-      val propsChanged = $.currentProps.analysis != $.nextProps.analysis || $.currentProps.weights != $.nextProps.weights
+      val propsChanged = $.currentProps.analysis != $.nextProps.analysis || $.currentProps.expertConfig != $.nextProps.expertConfig
       val stateChanged = $.currentState != $.nextState
       propsChanged || stateChanged
     }
     .build
 
-  def apply(proxy: ModelProxy[(Analysis, Config, Weights)]): ReactComponentU[Props, State, Backend, TopNode] = {
-    val (analysis, config, weights) = proxy.value
+  def apply(proxy: ModelProxy[(Analysis, ExpertConfig)]): ReactComponentU[Props, State, Backend, TopNode] = {
+    val (analysis, expertConfig) = proxy.value
     val dispatch = proxy.theDispatch
-    component(Props(analysis, config.defaultWeights, weights, dispatch))
+    component(Props(analysis, expertConfig, dispatch))
   }
 
 }

@@ -35,12 +35,12 @@ object app {
   final case class AppModel(
     config: Config,
     analysis: Analysis,
-    weights: Weights,
+    qualityModel: QualityModel,
+    profileModel: ProfileModel,
+    expertConfig: ExpertConfig,
     entitySelectionModel: EntitySelectionModel,
     subCriteriaSelectionModel: SubCriteriaSelectionModel,
-    colorMap: Map[EntityId, WebColor],
-    qualityModel: QualityModel,
-    profileModel: ProfileModel
+    colorMap: Map[EntityId, WebColor]
   )
 
   object AppModel {
@@ -50,6 +50,8 @@ object app {
       val defaultLayoutWidth = 1000
       val qualityModel = QualityModel(analysis, config.defaultWeights, defaultLayoutWidth)
       val profileModel = ProfileModel(analysis, config.defaultWeights, defaultLayoutWidth)
+      val expertConfig = ExpertConfig(visibility = ExpertConfigHidden, config.defaultWeights, config.defaultWeights)
+
       val entitySelectionModel = EntitySelectionModel(analysis.entities.map(_.id).toSet, None)
       val subCriteriaSelectionModel = SubCriteriaSelectionModel()
 
@@ -58,7 +60,7 @@ object app {
         case (e, i) => e.id -> ColorPalette(i % ColorPalette.size)
       }.toMap
 
-      AppModel(config, analysis, config.defaultWeights, entitySelectionModel, subCriteriaSelectionModel, colorMap, qualityModel, profileModel)
+      AppModel(config, analysis, qualityModel, profileModel, expertConfig, entitySelectionModel, subCriteriaSelectionModel, colorMap)
     }
 
   }
@@ -261,6 +263,18 @@ object app {
       GroupedIndicator(indicator.id, indicator.displayName, groupedValues)
     }
 
+  }
+
+  // --------------------------------------------------------------------------
+  // Expert Config
+  // --------------------------------------------------------------------------
+
+  sealed trait ExpertConfigVisibility
+  case object ExpertConfigHidden extends ExpertConfigVisibility
+  case object ExpertConfigVisible extends ExpertConfigVisibility
+
+  final case class ExpertConfig(visibility: ExpertConfigVisibility, defaultWeights: Weights, actualWeights: Weights) {
+    def isModified: Boolean = defaultWeights != actualWeights
   }
 
   // --------------------------------------------------------------------------

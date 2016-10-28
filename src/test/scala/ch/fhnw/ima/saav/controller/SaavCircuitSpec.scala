@@ -178,14 +178,16 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
   }
 
-  describe(s"${WeightsHandler.getClass.getSimpleName}") {
+  describe(s"${ExpertConfigHandler.getClass.getSimpleName}") {
 
     it("should update weights") {
       val circuit = circuitWithAnalysis()
+      val defaultWeights = circuit.zoom(ExpertConfigHandler.modelGet).value.defaultWeights
       val newWeights = Weights(Map.empty, Set.empty)
       circuit.dispatch(UpdateWeightsAction(newWeights))
-      val weights = circuit.zoom(WeightsHandler.modelGet).value
-      weights shouldBe newWeights
+      val expertConfig = circuit.zoom(ExpertConfigHandler.modelGet).value
+      expertConfig.actualWeights shouldBe newWeights
+      expertConfig.defaultWeights shouldBe defaultWeights
     }
 
     it("should control enabled indicators") {
@@ -194,16 +196,34 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
         circuit.dispatch(UpdateIndicatorWeightAction(i, isEnabled = false))
       }
       circuit.dispatch(UpdateIndicatorWeightAction(indicatorId, isEnabled = true))
-      val weights = circuit.zoom(WeightsHandler.modelGet).value
-      weights.enabledIndicators.size shouldBe 1
+      val expertConfig = circuit.zoom(ExpertConfigHandler.modelGet).value
+      expertConfig.actualWeights.enabledIndicators.size shouldBe 1
     }
 
     it("should control sub-criteria weights") {
       val circuit = circuitWithAnalysis()
       circuit.dispatch(UpdateSubCriteriaWeightAction(subCriteriaId, Profile))
-      val weights = circuit.zoom(WeightsHandler.modelGet).value
-      weights.subCriteriaWeights(subCriteriaId) shouldBe Profile
+      val expertConfig = circuit.zoom(ExpertConfigHandler.modelGet).value
+      expertConfig.actualWeights.subCriteriaWeights(subCriteriaId) shouldBe Profile
     }
+
+    it("should control visibility") {
+      val circuit = circuitWithAnalysis()
+
+      {
+        circuit.dispatch(UpdateVisibility(ExpertConfigVisible))
+        val expertConfig = circuit.zoom(ExpertConfigHandler.modelGet).value
+        expertConfig.visibility shouldBe ExpertConfigVisible
+      }
+
+      {
+        circuit.dispatch(UpdateVisibility(ExpertConfigHidden))
+        val expertConfig = circuit.zoom(ExpertConfigHandler.modelGet).value
+        expertConfig.visibility shouldBe ExpertConfigHidden
+      }
+
+    }
+
 
   }
 

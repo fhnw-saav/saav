@@ -1,11 +1,13 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.component.pages.Page.ProjectAnalysisPage
-import ch.fhnw.ima.saav.model.app.{AppModel, SaavModel}
+import ch.fhnw.ima.saav.controller.UpdateVisibility
+import ch.fhnw.ima.saav.model.app._
 import diode.react.ModelProxy
+import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, ReactComponentB}
+import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactComponentU, TopNode}
+import org.scalajs.dom.html.Div
 
 import scalacss.ScalaCssReact._
 
@@ -51,7 +53,7 @@ object pages {
 
     }
 
-    def subPages = List[SubPage](ProjectAnalysisPage, PersonAnalysisPage, OrganisationAnalysisPage)
+    def subPages: List[SubPage] = List[SubPage](ProjectAnalysisPage, PersonAnalysisPage, OrganisationAnalysisPage)
   }
 
   object HomePageComponent {
@@ -66,7 +68,7 @@ object pages {
       })
       .build
 
-    def apply() = component()
+    def apply(): ReactComponentU[Unit, Unit, Unit, TopNode] = component()
 
   }
 
@@ -87,7 +89,7 @@ object pages {
       })
       .build
 
-    def apply(title: String, proxy: ModelProxy[SaavModel]) = component(Props(title, proxy))
+    def apply(title: String, proxy: ModelProxy[SaavModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(title, proxy))
 
   }
 
@@ -110,7 +112,11 @@ object pages {
     }
 
     class Backend($: BackendScope[Props, State]) {
-      def render(p: Props, s: State) = {
+
+      private def updateExpertConfigVisibility(visibility: ExpertConfigVisibility) =
+        $.props.flatMap(_.proxy.dispatch(UpdateVisibility(visibility)))
+
+      def render(p: Props, s: State): ReactTagOf[Div] = {
         <.div(
           for (tab <- Seq(QualityTab, ProfileTab)) yield {
             val style = if (s.activeTab == tab) css.activeTab else css.inactiveTab
@@ -132,8 +138,25 @@ object pages {
             <.div(css.row,
               <.div(css.colXs12, IndicatorComponent(p.proxy))
             ),
-            <.div(css.row,
-              <.div(css.colXs12, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.config, m.weights))))
+            <.div(css.row, {
+              val expertConfigVisibility = p.proxy.value.expertConfig.visibility
+
+              def switchButton(newVisibility: ExpertConfigVisibility, prefix: String) = {
+                val displayName = s"$prefix ${ExpertConfigComponent.Title}"
+                <.div(css.colXs12, css.vSpaced,
+                  <.div(css.defaultButton, ^.onClick --> updateExpertConfigVisibility(newVisibility), displayName)
+                )
+              }
+
+              expertConfigVisibility match {
+                case ExpertConfigHidden => switchButton(ExpertConfigVisible, "Show")
+                case ExpertConfigVisible => Seq(
+                  switchButton(ExpertConfigHidden, "Hide"),
+                  <.div(css.colXs12, ExpertConfigComponent(p.proxy.zoom(m => (m.analysis, m.expertConfig))))
+                )
+              }
+
+            }
             )
           )
         )
@@ -145,7 +168,7 @@ object pages {
       .renderBackend[Backend]
       .build
 
-    def apply(proxy: ModelProxy[AppModel]) = component(Props(proxy))
+    def apply(proxy: ModelProxy[AppModel]): ReactComponentU[Props, State, Backend, TopNode] = component(Props(proxy))
 
   }
 
