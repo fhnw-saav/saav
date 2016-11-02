@@ -87,12 +87,12 @@ object VisualRankingComponent {
       val valueSpan = max - min
 
       def isVisible(e: GroupedEntity) = p.selectionModel.visible.contains(e.id)
-
       def isPinned(e: GroupedEntity) = p.selectionModel.pinned.contains(e.id)
+      def isHovered(e: GroupedEntity) = p.selectionModel.hovered.contains(e.id)
 
-      val entitiesInPaintingOrder = p.model.rankedEntities.sortBy { e =>
-        (isPinned(e), isVisible(e), e.sortingPosition) // higher ranks should be painted last (i.e. in front)
-      }
+      val entitiesInPaintingOrder = p.model.rankedEntities.zipWithIndex.sortBy { case (e, index) =>
+        (isPinned(e), isHovered(e), isVisible(e), -index) // `-index` assures that elements first in legend are painted last (i.e. in front)
+      }.unzip._1
 
       val dots = for {
         entity <- entitiesInPaintingOrder

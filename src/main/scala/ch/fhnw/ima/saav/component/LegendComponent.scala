@@ -73,7 +73,7 @@ object LegendComponent {
       )
     }
 
-    private def createRow(entity: GroupedEntity, index: Int, isVisible: Boolean, isPinned: Boolean, isHovered: Boolean, color: WebColor, isShowRank: Boolean) = {
+    private def createRow(entity: GroupedEntity, isVisible: Boolean, isPinned: Boolean, isHovered: Boolean, color: WebColor, isShowRank: Boolean) = {
 
       val visibleStyle = if (isVisible) css.empty else css.textMuted
       val bgStyle = if (isPinned) css.bgPrimary else if (isHovered) css.bgInfo else css.empty
@@ -83,7 +83,7 @@ object LegendComponent {
         isVisible ?= ^.onClick ==> toggleEntityPinning(entity.id),
         isVisible ?= ^.onMouseOver --> setHoveredEntity(Some(entity.id)),
         <.td(checkbox(entity.id, isVisible)),
-        isShowRank ?= <.th(^.scope := "row", index + 1 + "."),
+        isShowRank ?= <.th(^.scope := "row", entity.position + 1 + "."),
         <.td(css.overflowHidden, ^.textOverflow.ellipsis, ^.width := "100%", ^.title := entity.displayName, entity.displayName),
         <.td(^.textAlign.center, colorPicker(entity.id, isVisible, color))
       )
@@ -102,13 +102,12 @@ object LegendComponent {
 
     def render(p: Props): ReactTagOf[HTMLElement] = {
 
-      val rows = p.entities.zipWithIndex.map {
-        case (e, i) =>
-          val isVisible = p.entitySelectionModel.visible.contains(e.id)
-          val isPinned = p.entitySelectionModel.pinned.contains(e.id)
-          val isHovered = p.entitySelectionModel.hovered.contains(e.id)
-          val color = p.colorMap(e.id)
-          createRow(e, i, isVisible, isPinned, isHovered, color, p.showRank)
+      val rows = for (entity <- p.entities) yield {
+        val isVisible = p.entitySelectionModel.visible.contains(entity.id)
+        val isPinned = p.entitySelectionModel.pinned.contains(entity.id)
+        val isHovered = p.entitySelectionModel.hovered.contains(entity.id)
+        val color = p.colorMap(entity.id)
+        createRow(entity, isVisible, isPinned, isHovered, color, p.showRank)
       }
 
       <.table(css.legendTable, ^.onMouseLeave --> setHoveredEntity(None),

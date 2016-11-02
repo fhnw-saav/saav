@@ -88,10 +88,19 @@ object app {
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
-      val rankedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
-        val value = median(criteria.flatMap(_.groupedValues.get(e.id)))
-        GroupedEntity(e.id, e.displayName, value = value, sortingPosition = i)
-      }.sortBy(_.value).reverse
+      // calculate median values and sort entity/value pairs in descending value order
+      val sortedEntityValuePairs = analysis.entities.map { entity =>
+        val value = median(criteria.flatMap(_.groupedValues.get(entity.id)))
+        (entity, value)
+      }.reverse.sortBy(_._2).reverse // first `reverse` assures that ties appear in import order, second `reverse` for descending values
+
+      // calculate rank (identical ranks for ties)
+      val distinctValues = sortedEntityValuePairs.unzip._2.distinct
+      val ranks = distinctValues.zipWithIndex.toMap
+      val rankedEntities = for ((entity, value) <- sortedEntityValuePairs) yield {
+        val rank = ranks(value)
+        GroupedEntity(entity.id, entity.displayName, value = value, position = rank)
+      }
 
       val (minValue, maxValue) = safeMinMax(criteria)
 
@@ -120,7 +129,7 @@ object app {
       // TODO: Support different sorting strategies
       val sortedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
         val value = median(criteria.flatMap(_.groupedValues.get(e.id)))
-        GroupedEntity(e.id, e.displayName, value = value, sortingPosition = i)
+        GroupedEntity(e.id, e.displayName, value = value, position = i)
       }.sortBy(_.displayName)
 
       val (minValue, maxValue) = safeMinMax(criteria)
@@ -138,7 +147,12 @@ object app {
 
   final case class ByCriteriaEntitySortingStrategy(criteria: Criteria)
 
-  final case class GroupedEntity(id: EntityId, displayName: String, value: Option[Double], sortingPosition: Int)
+  /**
+    * Combines an entity with its fully aggregated value.
+    *
+    * @param position rank (quality) or sorting position (profile)
+    */
+  final case class GroupedEntity(id: EntityId, displayName: String, value: Option[Double], position: Int)
 
   // --------------------------------------------------------------------------
   // GroupedXXX classes enrich the plain domain classes with grouped values
