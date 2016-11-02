@@ -1,14 +1,16 @@
 package ch.fhnw.ima.saav
 package component
 
+import ch.fhnw.ima.saav.controller.UpdateEntityHoveringAction
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity, QualityModel}
 import ch.fhnw.ima.saav.model.color.WebColor
 import ch.fhnw.ima.saav.model.domain.EntityId
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
+import diode.Action
 import diode.react.ModelProxy
+import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactComponentU, TopNode}
 import org.scalajs.dom.raw.SVGElement
 
 import scalacss.ScalaCssReact._
@@ -28,10 +30,17 @@ object VisualRankingComponent {
   private val titleY = QualityChartLayout.Padding / 2
   private val titleHeight = QualityChartLayout.Padding
 
-  private val radius = 5
+  private val defaultRadius = 5
+  private val boldRadius = 7
+
   private val xJitterGap = 3
 
-  final case class Props(model: QualityModel, selectionModel: EntitySelectionModel, colorMap: Map[EntityId, WebColor])
+  final case class Props(
+    model: QualityModel,
+    selectionModel: EntitySelectionModel,
+    colorMap: Map[EntityId, WebColor],
+    dispatch: Action => Callback
+  )
 
   class Backend($: BackendScope[Props, Unit]) {
 
@@ -79,9 +88,14 @@ object VisualRankingComponent {
 
   }
 
-  private val EntityDots = ReactComponentB[VisualRankingComponent.Props]("EntityDots")
-    .render_P { p =>
+  class EntityDotsBackend($: BackendScope[Props, Unit]) {
 
+    private def setHoveredEntity(hoveredEntity: Option[EntityId]) =
+      $.props >>= { p =>
+        p.dispatch(UpdateEntityHoveringAction(hoveredEntity))
+      }
+
+    def render(p: Props): ReactTagOf[SVGElement] = {
       val values = p.model.rankedEntities.map(_.value)
       val min = values.min.getOrElse(Double.NaN)
       val max = values.max.getOrElse(Double.NaN)
@@ -92,7 +106,7 @@ object VisualRankingComponent {
       def isHovered(e: GroupedEntity) = p.selectionModel.hovered.contains(e.id)
 
       val entitiesInPaintingOrder = p.model.rankedEntities.zipWithIndex.sortBy { case (e, index) =>
-        (isPinned(e), isHovered(e), isVisible(e), -index) // `-index` assures that elements first in legend are painted last (i.e. in front)
+        (isVisible(e), -index) // `-index` assures that elements first in legend are painted last (i.e. in front)
       }.unzip._1
 
       val entitiesInPaintingOrderGroupedByRank = entitiesInPaintingOrder.groupBy(_.position)
@@ -112,11 +126,13 @@ object VisualRankingComponent {
         }
 
 
-        val color =
-          if (isVisible(entity)) {
-            if (isPinned(entity)) "black"
-            else p.colorMap(entity.id).hexValue
-          } else "#cccccc"
+        val (color, radius) =
+          if (!isVisible(entity)) ("#cccccc", defaultRadius)
+          else if (isPinned(entity)) ("black", boldRadius)
+          else {
+            val r = if (isHovered(entity)) boldRadius else defaultRadius
+            (p.colorMap(entity.id).hexValue, r)
+          }
 
         val formattedValue = entity.value.map(_.toString).getOrElse("-")
 
@@ -125,12 +141,18 @@ object VisualRankingComponent {
           ^.svg.cy := y,
           ^.svg.r := radius,
           ^.svg.fill := color,
+          ^.onMouseOver --> setHoveredEntity(Some(entity.id)),
+          ^.onMouseLeave --> setHoveredEntity(None),
           <.svg.title(s"${entity.displayName}: $formattedValue")
         )
 
       }
       <.svg.g(dots)
     }
+  }
+
+  private val EntityDots = ReactComponentB[VisualRankingComponent.Props]("EntityDots")
+    .renderBackend[EntityDotsBackend]
     .build
 
   private final val component = ReactComponentB[Props](VisualRankingComponent.getClass.getSimpleName)
@@ -138,6 +160,6 @@ object VisualRankingComponent {
     .build
 
   def apply(proxy: ModelProxy[AppModel]): ReactComponentU[Props, Unit, Backend, TopNode] =
-    component(Props(proxy.value.qualityModel, proxy.value.entitySelectionModel, proxy.value.colorMap))
+    component(Props(proxy.value.qualityModel, proxy.value.entitySelectionModel, proxy.value.colorMap, proxy.theDispatch))
 
 }
