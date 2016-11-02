@@ -29,6 +29,7 @@ object VisualRankingComponent {
   private val titleHeight = QualityChartLayout.Padding
 
   private val radius = 5
+  private val xJitterGap = 3
 
   final case class Props(model: QualityModel, selectionModel: EntitySelectionModel, colorMap: Map[EntityId, WebColor])
 
@@ -94,15 +95,22 @@ object VisualRankingComponent {
         (isPinned(e), isHovered(e), isVisible(e), -index) // `-index` assures that elements first in legend are painted last (i.e. in front)
       }.unzip._1
 
+      val entitiesInPaintingOrderGroupedByRank = entitiesInPaintingOrder.groupBy(_.position)
+
       val dots = for {
-        entity <- entitiesInPaintingOrder
+        (_, entities) <- entitiesInPaintingOrderGroupedByRank
+        (entity, entityIndexWithinRank) <- entities.zipWithIndex
         value <- entity.value
       } yield {
+
+        val xJitterSpan = (entities.length - 1) * xJitterGap
+        val x = xMiddle + (entityIndexWithinRank * xJitterGap) - xJitterSpan / 2
 
         val y = valueSpan match {
           case 0 => axisTop // display circle at very top if all entity values are identical
           case _ => axisBottom - ((value - min) / valueSpan * axisHeight)
         }
+
 
         val color =
           if (isVisible(entity)) {
@@ -113,7 +121,7 @@ object VisualRankingComponent {
         val formattedValue = entity.value.map(_.toString).getOrElse("-")
 
         <.svg.circle(
-          ^.svg.cx := xMiddle,
+          ^.svg.cx := x,
           ^.svg.cy := y,
           ^.svg.r := radius,
           ^.svg.fill := color,
