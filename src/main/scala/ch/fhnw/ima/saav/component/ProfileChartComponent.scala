@@ -26,27 +26,29 @@ object ProfileChartComponent {
     /**
       * Handle mouse events.
       */
-    private def onSvgMouseEvent(proxy: ModelProxy[AppModel], isClicked: Boolean)(e: ReactMouseEvent) =
-      svgRootRef($).map { svg =>
+    private def onSvgMouseEvent(isClicked: Boolean)(e: ReactMouseEvent) =
+      $.props >>= { p =>
+        svgRootRef($).map { svg => {
 
-        val pt = svg.createSVGPoint()
-        pt.x = e.clientX
-        pt.y = e.clientY
+          val pt = svg.createSVGPoint()
+          pt.x = e.clientX
+          pt.y = e.clientY
 
-        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+          val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
 
-        val model = proxy.value
-        val hoveredSubCriteria = findClosestSubCriteria(model.profileModel, cursorPt)
-        val hoveredEntity = findClosestEntity(model.profileModel, model.entitySelectionModel, cursorPt)
+          val model = p.proxy.value
+          val hoveredSubCriteria = findClosestSubCriteria(model.profileModel, cursorPt)
+          val hoveredEntity = findClosestEntity(model.profileModel, model.entitySelectionModel, cursorPt)
 
-        val togglePinningIfClicked = hoveredEntity match {
-          case Some(entity) if isClicked => toggleEntityPinning(entity)
-          case _ => Callback.empty
+          val togglePinningIfClicked = hoveredEntity match {
+            case Some(entity) if isClicked => toggleEntityPinning(entity)
+            case _ => Callback.empty
+          }
+
+          setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
         }
-
-        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
-
-      }.getOrElse(Callback.empty)
+        }.toOption.getOrElse(Callback.empty)
+      }
 
     private def findClosestSubCriteria(model: ProfileModel, cursorPt: SVGPoint): Option[SubCriteriaId] = {
       val layout = model.layout
@@ -142,16 +144,15 @@ object ProfileChartComponent {
     // TODO: unify duplicate functionality with quality chart
     private def clearHovering = setHoveredEntity(None) >> setHoveredSubCriteria(None)
 
-    /**
-      * Handle window resize.
-      */
-    def onWindowResize(proxy: ModelProxy[AppModel]): Callback = {
-      svgRootRef($).map { svg =>
-        val parent = svg.parentNode.asInstanceOf[HTMLElement]
-        val width = parent.clientWidth
-        proxy.dispatch(UpdateChartWidthAction(width))
-      }.getOrElse(Callback.empty)
-    }
+    // TODO: unify duplicate functionality with quality chart
+    def onWindowResize(): Callback =
+      $.props >>= { p =>
+        svgRootRef($).map { svg =>
+          val parent = svg.parentNode.asInstanceOf[HTMLElement]
+          val width = parent.clientWidth
+          p.proxy.dispatch(UpdateChartWidthAction(width))
+        }.toOption.getOrElse(Callback.empty)
+      }
 
     /**
       * The render loop.
@@ -162,7 +163,7 @@ object ProfileChartComponent {
     def render(p: Props): ReactTagOf[SVG] = {
 
       dom.window.onresize = (_: dom.Event) => {
-        onWindowResize(p.proxy).runNow()
+        onWindowResize().runNow()
       }
 
       val model = p.proxy.value
@@ -187,8 +188,8 @@ object ProfileChartComponent {
         ^.svg.width := "100%",
         ^.svg.height := s"${ProfileChartLayout.height}px",
         ^.svg.preserveAspectRatio := "none",
-        ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
-        ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
+        ^.onClick ==> onSvgMouseEvent(isClicked = true),
+        ^.onMouseMove ==> onSvgMouseEvent(isClicked = false),
         ^.onMouseLeave --> clearHovering,
         background,
         coordinateSystem,
@@ -376,7 +377,7 @@ object ProfileChartComponent {
   private val component = ReactComponentB[Props](ProfileChartComponent.getClass.getSimpleName)
     .renderBackend[Backend]
     .componentDidMount { $ =>
-      $.backend.onWindowResize($.props.proxy)
+      $.backend.onWindowResize()
     }
     .build
 

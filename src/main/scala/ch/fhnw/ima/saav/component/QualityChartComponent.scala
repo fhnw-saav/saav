@@ -46,33 +46,35 @@ object QualityChartComponent {
     /**
       * The global mouse handler.
       */
-    def onSvgMouseEvent(proxy: ModelProxy[AppModel], isClicked: Boolean)(e: ReactMouseEvent) =
-      svgRootRef($).map { svg =>
+    def onSvgMouseEvent(isClicked: Boolean)(e: ReactMouseEvent) =
+      $.props >>= { p =>
+        svgRootRef($).map { svg => {
+          val pt = svg.createSVGPoint()
+          pt.x = e.clientX
+          pt.y = e.clientY
 
-        val pt = svg.createSVGPoint()
-        pt.x = e.clientX
-        pt.y = e.clientY
+          val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+          val model = p.proxy.value
+          val hoveredSubCriteria = findClosestSubCriteria(model.qualityModel, cursorPt)
+          val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
+          val togglePinningIfClicked = hoveredEntity match {
+            case Some(entity) if isClicked => toggleEntityPinning(entity)
+            case _ => Callback.empty
+          }
 
-        val cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse())
-        val model = proxy.value
-        val hoveredSubCriteria = findClosestSubCriteria(model.qualityModel, cursorPt)
-        val hoveredEntity = findClosestEntity(model.qualityModel, model.entitySelectionModel, cursorPt)
-        val togglePinningIfClicked = hoveredEntity match {
-          case Some(entity) if isClicked => toggleEntityPinning(entity)
-          case _ => Callback.empty
+          setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
         }
+        }.toOption.getOrElse(Callback.empty)
+      }
 
-        setHoveredSubCriteria(hoveredSubCriteria) >> setHoveredEntity(hoveredEntity) >> togglePinningIfClicked
-
-      }.getOrElse(Callback.empty)
-
-    def onWindowResize(proxy: ModelProxy[AppModel]) = {
-      svgRootRef($).map { svg =>
-        val parent = svg.parentNode.asInstanceOf[HTMLElement]
-        val width = parent.clientWidth
-        proxy.dispatch(UpdateChartWidthAction(width))
-      }.getOrElse(Callback.empty)
-    }
+    def onWindowResize(): Callback =
+      $.props >>= { p =>
+        svgRootRef($).map { svg =>
+          val parent = svg.parentNode.asInstanceOf[HTMLElement]
+          val width = parent.clientWidth
+          p.proxy.dispatch(UpdateChartWidthAction(width))
+        }.toOption.getOrElse(Callback.empty)
+      }
 
     private def alignSubCriteriaLabel(svgWidth: Int) =
       svgSubCriteriaLabelRef($).map { svgText =>
@@ -197,7 +199,7 @@ object QualityChartComponent {
     def render(p: Props) = {
 
       dom.window.onresize = (_: dom.Event) => {
-        onWindowResize(p.proxy).runNow()
+        onWindowResize().runNow()
       }
 
       val model = p.proxy.value
@@ -222,8 +224,8 @@ object QualityChartComponent {
         ^.svg.width := "100%",
         ^.svg.height := s"${QualityChartLayout.Height}px",
         ^.svg.preserveAspectRatio := "none",
-        ^.onClick ==> onSvgMouseEvent(p.proxy, isClicked = true),
-        ^.onMouseMove ==> onSvgMouseEvent(p.proxy, isClicked = false),
+        ^.onClick ==> onSvgMouseEvent(isClicked = true),
+        ^.onMouseMove ==> onSvgMouseEvent(isClicked = false),
         ^.onMouseLeave --> clearHovering,
         background,
         coordinateSystem,
@@ -506,7 +508,7 @@ object QualityChartComponent {
   private val component = ReactComponentB[Props](QualityChartComponent.getClass.getSimpleName)
     .renderBackend[Backend]
     .componentDidMount { $ =>
-      $.backend.onWindowResize($.props.proxy)
+      $.backend.onWindowResize()
     }
     .build
 
