@@ -135,15 +135,17 @@ object VisualRankingComponent {
           }
 
         val formattedValue = entity.value.map(_.toString).getOrElse("-")
+        val tooltip = s"${entity.displayName}: $formattedValue"
 
         <.svg.circle(
+          ^.key := String.valueOf(entity.id),
           ^.svg.cx := x,
           ^.svg.cy := y,
           ^.svg.r := radius,
           ^.svg.fill := color,
           ^.onMouseOver --> setHoveredEntity(Some(entity.id)),
           ^.onMouseLeave --> setHoveredEntity(None),
-          <.svg.title(s"${entity.displayName}: $formattedValue")
+          <.svg.title(tooltip)
         )
 
       }
