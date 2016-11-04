@@ -1,52 +1,24 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityHoveringAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{EntityId, SubCriteriaId}
 import ch.fhnw.ima.saav.model.layout.QualityChartLayout
 import diode.react.ModelProxy
+import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactMouseEvent, Ref}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactComponentU, ReactMouseEvent, TopNode}
 import org.scalajs.dom
 import org.scalajs.dom.raw._
+import org.scalajs.dom.svg.SVG
 
-// noinspection TypeAnnotation
-object QualityChartComponent {
+object QualityChartComponent extends ChartComponent {
 
-  case class Props(proxy: ModelProxy[AppModel])
-
-  private val svgRootRef = Ref[SVGSVGElement]("svgRootRef")
-  private val svgSubCriteriaLabelRef = Ref[SVGTextElement]("svgSubCriteriaLabelRef")
-
-  class Backend($: BackendScope[Props, Unit]) {
-
-    def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteriaId]) =
-      $.props >>= { p =>
-        val dispatchAction = p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
-        val width = p.proxy.value.qualityModel.layout.width
-        dispatchAction >> alignSubCriteriaLabel(width)
-      }
-
-    def setHoveredEntity(hoveredEntity: Option[EntityId]) =
-      $.props >>= { p =>
-        if (p.proxy.value.entitySelectionModel.hovered != hoveredEntity) {
-          p.proxy.dispatch(UpdateEntityHoveringAction(hoveredEntity))
-        } else {
-          Callback.empty
-        }
-      }
-
-    def toggleEntityPinning(entity: EntityId) =
-      $.props >>= { p =>
-        val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
-        val pinnedOrNone = if (isPinned) None else Some(entity)
-        p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
-      }
+  class Backend($: BackendScope[Props, Unit]) extends ChartBackend($) {
 
     /**
       * The global mouse handler.
       */
-    def onSvgMouseEvent(isClicked: Boolean)(e: ReactMouseEvent) =
+    def onSvgMouseEvent(isClicked: Boolean)(e: ReactMouseEvent): Callback =
       $.props >>= { p =>
         svgRootRef($).map { svg => {
           val pt = svg.createSVGPoint()
@@ -66,35 +38,6 @@ object QualityChartComponent {
         }
         }.toOption.getOrElse(Callback.empty)
       }
-
-    def onWindowResize(): Callback =
-      $.props >>= { p =>
-        svgRootRef($).map { svg =>
-          val parent = svg.parentNode.asInstanceOf[HTMLElement]
-          val width = parent.clientWidth
-          p.proxy.dispatch(UpdateChartWidthAction(width))
-        }.toOption.getOrElse(Callback.empty)
-      }
-
-    private def alignSubCriteriaLabel(svgWidth: Int) =
-      svgSubCriteriaLabelRef($).map { svgText =>
-        Callback {
-          val padding = QualityChartLayout.SubCriteriaLabelPadding
-          val textWidth = svgText.getBBox().width
-          val halfTextWidth = textWidth / 2d
-          val currentMiddleX = svgText.getAttribute("x").toDouble
-
-          val leftCutoff = halfTextWidth + padding
-          if (currentMiddleX < leftCutoff) {
-            svgText.setAttribute("x", s"$leftCutoff")
-          }
-
-          val rightCutoff = svgWidth - padding - halfTextWidth
-          if (currentMiddleX > rightCutoff) {
-            svgText.setAttribute("x", s"$rightCutoff")
-          }
-        }
-      }.getOrElse(Callback.empty)
 
     private def findClosestSubCriteria(model: QualityModel, cursorPt: SVGPoint): Option[SubCriteriaId] = {
       val layout = model.layout
@@ -117,8 +60,6 @@ object QualityChartComponent {
       }
 
     }
-
-    def clearHovering = setHoveredEntity(None) >> setHoveredSubCriteria(None)
 
     private def findClosestEntity(model: QualityModel, selectionModel: EntitySelectionModel, cursorPt: SVGPoint): Option[EntityId] = {
       val layout = model.layout
@@ -196,7 +137,7 @@ object QualityChartComponent {
       * @param p global properties
       * @return the virtual DOM to be rendered.
       */
-    def render(p: Props) = {
+    def render(p: Props): ReactTagOf[SVG] = {
 
       dom.window.onresize = (_: dom.Event) => {
         onWindowResize().runNow()
@@ -345,7 +286,9 @@ object QualityChartComponent {
       val hoveredSubCriteria = model.subCriteriaSelectionModel.hovered
 
       def isVisible(e: GroupedEntity) = model.entitySelectionModel.visible.contains(e.id)
+
       def isPinned(e: GroupedEntity) = model.entitySelectionModel.pinned.contains(e.id)
+
       def isHovered(e: GroupedEntity) = model.entitySelectionModel.hovered.contains(e.id)
 
       val entitiesInPaintingOrder = model.qualityModel.rankedEntities.zipWithIndex.sortBy { case (e, index) =>
@@ -512,6 +455,6 @@ object QualityChartComponent {
     }
     .build
 
-  def apply(proxy: ModelProxy[AppModel]) = component(Props(proxy))
+  def apply(proxy: ModelProxy[AppModel]): ReactComponentU[_root_.ch.fhnw.ima.saav.component.QualityChartComponent.Props, Unit, Backend, TopNode] = component(Props(proxy))
 
 }

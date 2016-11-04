@@ -1,27 +1,21 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.{UpdateChartWidthAction, UpdateEntityHoveringAction, UpdateEntityPinningAction, UpdateSubCriteriaHoveringAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity, ProfileModel}
 import ch.fhnw.ima.saav.model.domain.{EntityId, SubCriteriaId}
-import ch.fhnw.ima.saav.model.layout.ProfileChartLayout
+import ch.fhnw.ima.saav.model.layout.{ChartLayout, ProfileChartLayout}
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactComponentU, ReactMouseEvent, Ref, TopNode}
+import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactComponentU, ReactMouseEvent, TopNode}
 import org.scalajs.dom
-import org.scalajs.dom.raw.{HTMLElement, SVGPoint, SVGSVGElement, SVGTextElement}
+import org.scalajs.dom.raw.SVGPoint
 import org.scalajs.dom.svg.SVG
 
 import scala.collection.mutable.ArrayBuffer
 
-object ProfileChartComponent {
+object ProfileChartComponent extends ChartComponent {
 
-  case class Props(proxy: ModelProxy[AppModel])
-
-  private val svgRootRef = Ref[SVGSVGElement]("svgRootRef")
-  private val svgSubCriteriaLabelRef = Ref[SVGTextElement]("svgSubCriteriaLabelRef")
-
-  class Backend($: BackendScope[Props, Unit]) {
+  class Backend($: BackendScope[Props, Unit]) extends ChartBackend($) {
 
     /**
       * Handle mouse events.
@@ -93,67 +87,6 @@ object ProfileChartComponent {
         None
     }
 
-
-    // TODO: unify duplicate functionality with quality chart
-    private def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteriaId]) =
-      $.props >>= { p =>
-        val dispatchAction = p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
-        val width = p.proxy.value.qualityModel.layout.width
-        dispatchAction >> alignSubCriteriaLabel(width)
-      }
-
-    // TODO: unify duplicate functionality with quality chart
-    private def alignSubCriteriaLabel(svgWidth: Int) =
-      svgSubCriteriaLabelRef($).map { svgText =>
-        Callback {
-          val padding = ProfileChartLayout.subCriteriaLabelPadding
-          val textWidth = svgText.getBBox().width
-          val halfTextWidth = textWidth / 2d
-          val currentMiddleX = svgText.getAttribute("x").toDouble
-
-          val leftCutoff = halfTextWidth + padding
-          if (currentMiddleX < leftCutoff) {
-            svgText.setAttribute("x", s"$leftCutoff")
-          }
-
-          val rightCutoff = svgWidth - padding - halfTextWidth
-          if (currentMiddleX > rightCutoff) {
-            svgText.setAttribute("x", s"$rightCutoff")
-          }
-        }
-      }.getOrElse(Callback.empty)
-
-    // TODO: unify duplicate functionality with quality chart
-    private def toggleEntityPinning(entity: EntityId) =
-      $.props >>= { p =>
-        val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
-        val pinnedOrNone = if (isPinned) None else Some(entity)
-        p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
-      }
-
-    // TODO: unify duplicate functionality with quality chart
-    private def setHoveredEntity(hoveredEntity: Option[EntityId]) =
-      $.props >>= { p =>
-        if (p.proxy.value.entitySelectionModel.hovered != hoveredEntity) {
-          p.proxy.dispatch(UpdateEntityHoveringAction(hoveredEntity))
-        } else {
-          Callback.empty
-        }
-      }
-
-    // TODO: unify duplicate functionality with quality chart
-    private def clearHovering = setHoveredEntity(None) >> setHoveredSubCriteria(None)
-
-    // TODO: unify duplicate functionality with quality chart
-    def onWindowResize(): Callback =
-      $.props >>= { p =>
-        svgRootRef($).map { svg =>
-          val parent = svg.parentNode.asInstanceOf[HTMLElement]
-          val width = parent.clientWidth
-          p.proxy.dispatch(UpdateChartWidthAction(width))
-        }.toOption.getOrElse(Callback.empty)
-      }
-
     /**
       * The render loop.
       *
@@ -184,9 +117,9 @@ object ProfileChartComponent {
 
       <.svg.svg(
         ^.ref := svgRootRef,
-        ^.svg.viewBox := s"0 0 ${layout.width} ${ProfileChartLayout.height}",
+        ^.svg.viewBox := s"0 0 ${layout.width} ${ChartLayout.Height}",
         ^.svg.width := "100%",
-        ^.svg.height := s"${ProfileChartLayout.height}px",
+        ^.svg.height := s"${ChartLayout.Height}px",
         ^.svg.preserveAspectRatio := "none",
         ^.onClick ==> onSvgMouseEvent(isClicked = true),
         ^.onMouseMove ==> onSvgMouseEvent(isClicked = false),
@@ -196,7 +129,6 @@ object ProfileChartComponent {
         entities
       )
     }
-
 
 
     /**
@@ -253,7 +185,7 @@ object ProfileChartComponent {
             val hoveredBox = <.svg.rect(
               ^.svg.fill := "#dddddd",
               ^.svg.stroke := boxStroke,
-              ^.svg.x := (x - (columnWidth/2)), ^.svg.y := layout.boxTopY,
+              ^.svg.x := (x - (columnWidth / 2)), ^.svg.y := layout.boxTopY,
               ^.svg.width := columnWidth, ^.svg.height := (layout.boxBotY - layout.boxTopY))
             elements += hoveredBox
 
@@ -262,7 +194,7 @@ object ProfileChartComponent {
                 ^.ref := svgSubCriteriaLabelRef,
                 ^.svg.textAnchor := "middle",
                 ^.svg.x := x,
-                ^.svg.y := layout.boxTopY - ProfileChartLayout.subCriteriaLabelPadding, hovc.displayName
+                ^.svg.y := layout.boxTopY - ChartLayout.SubCriteriaLabelPadding, hovc.displayName
               )
             elements += hoveredLabel
 
@@ -273,7 +205,7 @@ object ProfileChartComponent {
         val label =
           <.svg.foreignObject(
             ^.svg.x := boxX,
-            ^.svg.y := ProfileChartLayout.subCriteriaLabelPadding,
+            ^.svg.y := ChartLayout.SubCriteriaLabelPadding,
             ^.svg.width := boxWidth, ^.svg.height := layout.padding,
             <.div(
               ^.textAlign.center,
@@ -304,7 +236,9 @@ object ProfileChartComponent {
       val layout = model.layout
 
       def isVisible(e: GroupedEntity) = appModel.entitySelectionModel.visible.contains(e.id)
+
       def isPinned(e: GroupedEntity) = appModel.entitySelectionModel.pinned.contains(e.id)
+
       def isHovered(e: GroupedEntity) = appModel.entitySelectionModel.hovered.contains(e.id)
 
       val maxRadius = layout.getMaxRadius(model.sortedEntities.size)

@@ -6,11 +6,18 @@ import ch.fhnw.ima.saav.model.domain.{CriteriaId, SubCriteriaId}
 
 object layout {
 
-  object QualityChartLayout {
-
+  // Constants common to both charts
+  trait ChartLayout {
     val Height: Int = 500
-    val Padding: Int = 20
     val SubCriteriaLabelPadding: Int = 5
+  }
+
+  object ChartLayout extends ChartLayout
+
+  // Constants specific to QualityChart (inherit common constants for convenience)
+  object QualityChartLayout extends ChartLayout {
+
+    val Padding: Int = 20
     val Margin: Int = 20
     val VerticalAxisGap: Int = 70
     val HeaderTextGap: Int = 40
@@ -97,12 +104,8 @@ object layout {
 
   }
 
-
-  // Why do we do this? And why not like the other constants in the class below?
-  object ProfileChartLayout {
-    val height = 500
-    val subCriteriaLabelPadding = 5
-  }
+  // Constants specific to ProfileChart (inherit common constants for convenience)
+  object ProfileChartLayout extends ChartLayout
 
   /**
     * Computes layout parameters for presenting profile aspects of given criteria.
@@ -128,7 +131,7 @@ object layout {
     private val aggregatedCriteriaCount = getAggregatedCriteriaCount(criteria)
 
     val boxTopY: Int = headerTextGap
-    val boxBotY: Int = height - margin
+    val boxBotY: Int = Height - margin
 
     private val circleCount = aggregatedCriteriaCount + subCriteriaCount
     private val columnWidth = (width - margin - (criteria.size * margin)) / circleCount
@@ -174,7 +177,7 @@ object layout {
     def getSubCriteriaCenterX(subCriteria: GroupedSubCriteria): Option[Int] = subCriteriaCenterMap.get(subCriteria.id)
 
     def getRowHeight(entityCount: Int): Int = {
-      val availableHeight = height - headerTextGap - margin
+      val availableHeight = Height - headerTextGap - margin
       availableHeight / entityCount
     }
 
