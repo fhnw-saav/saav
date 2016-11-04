@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package component
 
-import ch.fhnw.ima.saav.controller.UpdateEntityHoveringAction
+import ch.fhnw.ima.saav.controller.{UpdateEntityHoveringAction, UpdateEntityPinningAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity, QualityModel}
 import ch.fhnw.ima.saav.model.color.WebColor
 import ch.fhnw.ima.saav.model.domain.EntityId
@@ -95,6 +95,13 @@ object VisualRankingComponent {
         p.dispatch(UpdateEntityHoveringAction(hoveredEntity))
       }
 
+    private def toggleEntityPinning(entity: EntityId): Callback =
+      $.props >>= { p =>
+        val isPinned = p.selectionModel.pinned.contains(entity)
+        val pinnedOrNone = if (isPinned) None else Some(entity)
+        p.dispatch(UpdateEntityPinningAction(pinnedOrNone))
+      }
+
     def render(p: Props): ReactTagOf[SVGElement] = {
       val values = p.model.rankedEntities.map(_.value)
       val min = values.min.getOrElse(Double.NaN)
@@ -125,7 +132,6 @@ object VisualRankingComponent {
           case _ => axisBottom - ((value - min) / valueSpan * axisHeight)
         }
 
-
         val (color, radius) =
           if (!isVisible(entity)) ("#cccccc", defaultRadius)
           else if (isPinned(entity)) ("black", boldRadius)
@@ -143,6 +149,7 @@ object VisualRankingComponent {
           ^.svg.cy := y,
           ^.svg.r := radius,
           ^.svg.fill := color,
+          ^.onClick --> toggleEntityPinning(entity.id),
           ^.onMouseOver --> setHoveredEntity(Some(entity.id)),
           ^.onMouseLeave --> setHoveredEntity(None),
           <.svg.title(tooltip)
