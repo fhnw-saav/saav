@@ -61,23 +61,6 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val centerBlock = styleWrap("center-block")
 
-  // SVG responsiveness (http://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js)
-  val svgContainer = style(
-    display.inlineBlock,
-    position.relative,
-    width(100 %%),
-    paddingBottom(100 %%),
-    verticalAlign.top,
-    overflow.hidden
-  )
-
-  val svgContentResponsive = style(
-    display.inlineBlock,
-    position.absolute,
-    top(10 px),
-    left(0 px)
-  )
-
   val boxed = style(
     border(2 px, c"#eee", solid),
     padding(10 px)

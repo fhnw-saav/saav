@@ -117,6 +117,7 @@ object ProfileChartComponent extends ChartComponent {
 
       <.svg.svg(
         ^.ref := svgRootRef,
+        ^.id := ChartComponent.ElementId,
         ^.svg.viewBox := s"0 0 ${layout.width} ${ChartLayout.Height}",
         ^.svg.width := "100%",
         ^.svg.height := s"${ChartLayout.Height}px",

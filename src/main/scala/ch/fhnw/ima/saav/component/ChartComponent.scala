@@ -8,6 +8,10 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.{Callback, _}
 import org.scalajs.dom.raw.{HTMLElement, SVGSVGElement, SVGTextElement}
 
+object ChartComponent {
+  val ElementId: String = "saav-chart"
+}
+
 trait ChartComponent {
 
   case class Props(proxy: ModelProxy[AppModel])

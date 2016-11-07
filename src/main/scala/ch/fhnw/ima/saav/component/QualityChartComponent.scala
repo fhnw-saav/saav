@@ -161,6 +161,7 @@ object QualityChartComponent extends ChartComponent {
 
       <.svg.svg(
         ^.ref := svgRootRef,
+        ^.id := ChartComponent.ElementId,
         ^.svg.viewBox := s"0 0 ${layout.width} ${QualityChartLayout.Height}",
         ^.svg.width := "100%",
         ^.svg.height := s"${QualityChartLayout.Height}px",

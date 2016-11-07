@@ -2,11 +2,13 @@ package ch.fhnw.ima.saav
 package component
 
 import ch.fhnw.ima.saav.component.bootstrap.{Button, Modal}
+import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
+import org.scalajs.dom
 import org.scalajs.dom._
-import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.XMLSerializer
+import org.scalajs.dom.html.{Canvas, Div}
+import org.scalajs.dom.raw.{HTMLImageElement, SVGSVGElement, XMLSerializer}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
@@ -14,9 +16,11 @@ import scalacss.ScalaCssReact._
 
 object PdfExportComponent {
 
+  case class Props(chartSvgRootElementId: String)
+
   case class State(showReportForm: Boolean = false, title: String = "Title")
 
-  class Backend($: BackendScope[Unit, State]) {
+  class Backend($: BackendScope[Props, State]) {
 
     private def showReportForm = $.modState(_.copy(showReportForm = true))
 
@@ -24,13 +28,13 @@ object PdfExportComponent {
 
     // Exporting an SVG tree to a PNG is pretty cumbersome:
     // 1. build an SVG/XML string representation (including CSS)
-    // 2. render SVG string onto an HTML canvas (via canvg lib)
+    // 2. render SVG string onto an HTML canvas
     // 3. export the HTML canvas to PNG
     // 4. add PNG to PDF
     private def generatePdf(title: String) = Callback {
-      val svgChart = document.querySelector("." + css.svgContentResponsive.htmlClass)
-      val width = svgChart.getBoundingClientRect().width
-      val height = svgChart.getBoundingClientRect().height
+      val svgChart = document.getElementById(ChartComponent.ElementId).asInstanceOf[SVGSVGElement]
+      val width = svgChart.width.baseVal.value
+      val height = svgChart.height.baseVal.value
 
       // 1. build an SVG/XML string representation (including CSS)
       val svg = svgChart.cloneNode(true)
@@ -44,22 +48,33 @@ object PdfExportComponent {
       canvas.height = (height * pixelRatio).toInt
 
       // 2. render SVG string onto an HTML canvas
-      canvg(canvas, svgString)
+      val image = document.createElement("img").asInstanceOf[HTMLImageElement]
+      image.src = "data:image/svg+xml," + svgString
+      val ctx = canvas.getContext("2d")
+      image.onload = (_: dom.Event) => {
+        ctx.drawImage(image, 0, 0)
 
-      // 3. export the HTML canvas to PNG
-      val dataURL = canvas.toDataURL("image/png", 1.0)
+        // 3. export the HTML canvas to PNG
+        val dataURL = canvas.toDataURL("image/png", 1.0)
 
-      val doc = new jsPDF("p", "px", "a4")
-      val x = 50
-      doc.text(x, 50, title)
+        // 4. add PNG to PDF
+        val landscape = "l"
+        val doc = new jsPDF(landscape, "mm", "a4")
 
-      // 4. add PNG to PDF
-      val scaling = 0.3
-      val imgWidth = (scaling * width).toInt
-      val imgHeight = (scaling * height).toInt
-      doc.addImage(dataURL, "png", x, 80, imgWidth, imgHeight)
+        // title
+        val mmPageMarginX = 10
+        val mmPageMarginY = 20
+        doc.text(mmPageMarginX, mmPageMarginY, title)
 
-      doc.save("Report.pdf")
+        // chart image
+        val mmPageWidth = 297 // A4 landscape
+        val mmImageY = 30
+        val mmImageWidth = mmPageWidth - (2 * mmPageMarginX)
+        val mmImageHeight = (canvas.height / canvas.width) * mmImageWidth
+        doc.addImage(dataURL, "png", mmPageMarginX, mmImageY, mmImageWidth, mmImageHeight)
+
+        doc.save("Report.pdf")
+      }
     }
 
     private def createDefsWithInlinedCss(): Element = {
@@ -73,12 +88,12 @@ object PdfExportComponent {
       defsElement
     }
 
-    def onTitleChange(e: ReactEventI) = {
+    private def onTitleChange(e: ReactEventI) = {
       val newValue = e.target.value
       $.modState(_.copy(title = newValue))
     }
 
-    def render(s: State) = {
+    def render(s: State): ReactTagOf[Div] = {
       val exportPdfLabel = "Export PDF"
       val button = Button(showReportForm, exportPdfLabel + "...")
       if (s.showReportForm) {
@@ -89,7 +104,7 @@ object PdfExportComponent {
         )
         val modal = Modal(
           Modal.Props(
-            header = hide => <.h2(exportPdfLabel),
+            header = _ => <.h2(exportPdfLabel),
             footer = hide => Button(generatePdf(s.title) >> hide >> hideReportForm, "OK")),
           labelledTitleInput
         )
@@ -101,14 +116,14 @@ object PdfExportComponent {
 
   }
 
-  private val component = ReactComponentB[Unit](PdfExportComponent.getClass.getSimpleName)
+  private val component = ReactComponentB[Props](PdfExportComponent.getClass.getSimpleName)
     .initialState(State())
     .renderBackend[Backend]
     .build
 
-  def apply() = component()
+  def apply(chartSvgRootElementId: String): ReactComponentU[Props, State, Backend, TopNode] = component(Props(chartSvgRootElementId))
 
-  // Scala facades to 3rd party JS libs --> need more type-safety once we settle on a usage...
+  // Scala facades to 3rd party JS libs
 
   @js.native
   @JSName("jsPDF")
@@ -120,12 +135,6 @@ object PdfExportComponent {
 
     def save(fileName: String): js.Any = js.native
 
-  }
-
-  @js.native
-  @JSName("canvg")
-  object canvg extends js.Object {
-    def apply(canvas: Canvas, svg: String): Unit = js.native
   }
 
 }

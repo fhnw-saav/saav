@@ -124,7 +124,7 @@ object pages {
           },
           <.div(css.pullRight,
             ExpertConfigResetComponent(p.proxy.zoom(_.expertConfig)),
-            <.div(css.defaultButton, css.hSpaced, "Export PDF...", ^.onClick --> alertComingSoon)
+            <.div(css.hSpaced, ^.display.`inline-block`, PdfExportComponent(ChartComponent.ElementId))
           ),
           <.div(
             s.activeTab match {
