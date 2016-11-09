@@ -16,9 +16,9 @@ import scalacss.ScalaCssReact._
 
 object PdfExportComponent {
 
-  case class Props(chartSvgRootElementId: String)
+  case class Props(chartSvgRootElementId: String, defaultTitle: String)
 
-  case class State(showReportForm: Boolean = false, title: String = "Title")
+  case class State(showReportForm: Boolean = false, title: String)
 
   class Backend($: BackendScope[Props, State]) {
 
@@ -93,11 +93,11 @@ object PdfExportComponent {
       $.modState(_.copy(title = newValue))
     }
 
-    def render(s: State): ReactTagOf[Div] = {
+    def render(p: Props, s: State): ReactTagOf[Div] = {
       val exportPdfLabel = "Export PDF"
       val button = Button(showReportForm, exportPdfLabel + "...")
       if (s.showReportForm) {
-        val titleInput = <.input(css.form.control, ^.`type` := "text", ^.id := "title", ^.onChange ==> onTitleChange)
+        val titleInput = <.input(css.form.control, ^.`type` := "text", ^.id := "title", ^.onChange ==> onTitleChange, ^.value := p.defaultTitle)
         val labelledTitleInput = <.div(
           <.label(css.form.group, ^.`for` := "title", "Title:"),
           titleInput
@@ -117,11 +117,13 @@ object PdfExportComponent {
   }
 
   private val component = ReactComponentB[Props](PdfExportComponent.getClass.getSimpleName)
-    .initialState(State())
+    .initialState_P { p =>
+      State(title = p.defaultTitle)
+    }
     .renderBackend[Backend]
     .build
 
-  def apply(chartSvgRootElementId: String): ReactComponentU[Props, State, Backend, TopNode] = component(Props(chartSvgRootElementId))
+  def apply(chartSvgRootElementId: String, defaultTitle: String): ReactComponentU[Props, State, Backend, TopNode] = component(Props(chartSvgRootElementId, defaultTitle))
 
   // Scala facades to 3rd party JS libs
 

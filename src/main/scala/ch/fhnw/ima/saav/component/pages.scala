@@ -81,7 +81,7 @@ object pages {
 
         val (title, content): (String, TagMod) = p.proxy.value.model match {
           case Left(noData) => (s"Import ${p.title}", FileImportComponent(p.proxy.zoom(_ => noData)))
-          case Right(data) => (p.title, PageWithDataComponent(p.proxy.zoom(_ => data)))
+          case Right(data) => (p.title, PageWithDataComponent(p.title, p.proxy.zoom(_ => data)))
         }
 
         <.div(<.h3(title), content)
@@ -95,7 +95,7 @@ object pages {
 
   object PageWithDataComponent {
 
-    case class Props(proxy: ModelProxy[AppModel])
+    case class Props(title: String, proxy: ModelProxy[AppModel])
 
     case class State(activeTab: Tab)
 
@@ -123,8 +123,10 @@ object pages {
             <.div(style, ^.cursor.pointer, ^.onClick --> $.modState(s => s.copy(activeTab = tab)), tab.name)
           },
           <.div(css.pullRight,
-            ExpertConfigResetComponent(p.proxy.zoom(_.expertConfig)),
-            <.div(css.hSpaced, ^.display.`inline-block`, PdfExportComponent(ChartComponent.ElementId))
+            ExpertConfigResetComponent(p.proxy.zoom(_.expertConfig)), {
+              val defaultTitle = p.title + " | " + s.activeTab.name
+              <.div(css.hSpaced, ^.display.`inline-block`, PdfExportComponent(ChartComponent.ElementId, defaultTitle))
+            }
           ),
           <.div(
             s.activeTab match {
@@ -171,7 +173,7 @@ object pages {
       .renderBackend[Backend]
       .build
 
-    def apply(proxy: ModelProxy[AppModel]): ReactComponentU[Props, State, Backend, TopNode] = component(Props(proxy))
+    def apply(title: String, proxy: ModelProxy[AppModel]): ReactComponentU[Props, State, Backend, TopNode] = component(Props(title, proxy))
 
   }
 
