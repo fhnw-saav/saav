@@ -5,7 +5,6 @@ import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder}
 import org.scalatest.FlatSpec
 
 import scala.scalajs.js
-import scala.scalajs.js.Dictionary
 
 class FileImportComponentSpec extends FlatSpec {
 
@@ -58,12 +57,7 @@ class FileImportComponentSpec extends FlatSpec {
   }
 
   private def createTestRow(project: String, criteria: String, subCriteria: String, indicator: String): Row = {
-    Dictionary(
-      ("Projekt", project),
-      ("Indikator", s"$criteria:::$subCriteria:::$indicator"),
-      ("Reviewer", "testReviewer"),
-      ("Value", "42")
-    )
+    Array(project, s"$criteria:::$subCriteria:::$indicator","testReviewer","42")
   }
 
 }

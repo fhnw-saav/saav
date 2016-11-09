@@ -8,9 +8,8 @@ import ch.fhnw.ima.saav.model.domain._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}
-import org.scalajs.dom.DragEvent
-import org.scalajs.dom.raw.URL
-import org.singlespaced.d3js.d3
+import org.scalajs.dom
+import org.scalajs.dom.{DragEvent, UIEvent}
 
 import scala.scalajs.js
 import scalacss.ScalaCssReact._
@@ -22,7 +21,7 @@ object FileImportComponent {
 
   case class Props(proxy: ModelProxy[NoDataAppModel])
 
-  type Row = js.Dictionary[String]
+  type Row = Array[String]
 
   private def handleDragOver(e: DragEvent) = Callback {
     e.stopPropagation()
@@ -51,10 +50,13 @@ object FileImportComponent {
     try {
       val files = e.dataTransfer.files
       if (files.length > 0) {
-        val file = files(0)
-        val url = URL.createObjectURL(file)
-
-        parseModel(url, handleProgress(proxy), handleReady(proxy), handleError(proxy))
+        val reader = new dom.FileReader()
+        reader.readAsText(files.item(0))
+        reader.onload = (e: UIEvent) => {
+          // Cast is OK since we are calling readAsText
+          val contents = reader.result.asInstanceOf[String]
+          parseModel(contents, handleProgress(proxy), handleReady(proxy), handleError(proxy))
+        }
 
       } else {
         Callback.log("No files to import")
@@ -65,16 +67,38 @@ object FileImportComponent {
     Callback.empty
   }
 
-  private def parseModel(url: String, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
-    d3.csv(url, (rows: js.Array[Row]) => {
-      val builder = AnalysisBuilder()
+  private def parseModel(contents: String, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
 
-      // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
-      // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
-      parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, handleError)
-    })
+    // to be used as a basis to fill analysis model
+    val rows: Seq[Row] = splitContentsIntoRows(contents)
+
+    val builder = AnalysisBuilder()
+
+    // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
+    // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
+    parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, handleError)
   }
 
+  private def splitContentsIntoRows(contents: String) = {
+    (for {
+      line <- contents.lines
+    } yield {
+
+      def unquote(str: String) = {
+        if (str != null && str.length >= 2 && str.charAt(0) == '\"' && str.charAt(str.length - 1) == '\"')
+          str.substring(1, str.length - 1)
+        else
+          str
+      }
+
+      // split at comma (but handle quotes > http://stackoverflow.com/questions/15738918/splitting-a-csv-file-with-quotes-as-text-delimiter-using-string-split)
+      line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")
+        .map(_.trim)
+        .map(unquote)
+
+    }).toStream
+      .drop(1) // skip header
+  }
 
   def parseRowBatchAsync(builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
 
@@ -117,15 +141,15 @@ object FileImportComponent {
 
   def parseRow(builder: AnalysisBuilder, row: Row): AnalysisBuilder = {
 
-    val keyIt = row.keys.iterator
+    val columnIt = row.iterator
 
-    val project = Entity(EntityId(row(keyIt.next())))
-    val hierarchyLevels = row(keyIt.next()).split(":::")
+    val project = Entity(EntityId(columnIt.next()))
+    val hierarchyLevels = columnIt.next().split(":::")
     val criteria = hierarchyLevels(0)
     val subCriteria = hierarchyLevels(1)
     val indicator = hierarchyLevels(2)
-    val review = ReviewId(row(keyIt.next()))
-    val value = row(keyIt.next()).toDouble
+    val review = ReviewId(columnIt.next())
+    val value = columnIt.next().toDouble
 
     builder
       .criteria(criteria)
@@ -160,7 +184,7 @@ object FileImportComponent {
           )
         case ImportInProgress(progress) =>
           <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
-        case ImportFailed(t) =>
+        case ImportFailed(_) =>
           <.div(css.fileDropZone, <.h1("Import failed"), <.p("See console log for details"))
         case _ => <.div()
       }
