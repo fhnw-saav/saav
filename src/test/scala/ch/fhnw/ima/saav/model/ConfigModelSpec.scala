@@ -1,6 +1,5 @@
 package ch.fhnw.ima.saav.model
 
-import cats.data.Xor
 import ch.fhnw.ima.saav.model.config.{AnalysisConfig, CriteriaConfig, IndicatorConfig, SubCriteriaConfig}
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality}
 import io.circe.generic.auto._
@@ -80,7 +79,7 @@ class ConfigModelSpec extends FunSpec with Matchers {
     )
 
     val actualAnalysisConfig = decode[AnalysisConfig](json)
-    actualAnalysisConfig shouldBe Xor.right(expectedAnalysisConfig)
+    actualAnalysisConfig shouldBe Right(expectedAnalysisConfig)
   }
 
 }

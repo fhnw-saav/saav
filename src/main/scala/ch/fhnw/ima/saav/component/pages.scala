@@ -114,7 +114,9 @@ object pages {
     class Backend($: BackendScope[Props, State]) {
 
       private def updateExpertConfigVisibility(visibility: ExpertConfigVisibility) =
-        $.props.flatMap(_.proxy.dispatch(UpdateVisibility(visibility)))
+        $.props >>= { p =>
+          p.proxy.dispatchCB(UpdateVisibility(visibility))
+        }
 
       def render(p: Props, s: State): ReactTagOf[Div] = {
         <.div(

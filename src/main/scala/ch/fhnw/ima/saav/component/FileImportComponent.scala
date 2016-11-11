@@ -30,16 +30,16 @@ object FileImportComponent {
   }
 
   // callbacks which are invoked during file parsing
-  // 'runNow' is needed because all parsing happens asynchronously
+  // 'dispatchNow' is needed because all parsing happens asynchronously
 
   private def handleProgress(proxy: ModelProxy[NoDataAppModel])(progress: Float): Unit =
-    proxy.dispatch(AnalysisImportInProgressAction(progress)).runNow()
+    proxy.dispatchNow(AnalysisImportInProgressAction(progress))
 
   private def handleReady(proxy: ModelProxy[NoDataAppModel])(analysis: Analysis): Unit =
-    proxy.dispatch(AnalysisReadyAction(analysis)).runNow()
+    proxy.dispatchNow(AnalysisReadyAction(analysis))
 
   private def handleError(proxy: ModelProxy[NoDataAppModel])(t: Throwable): Unit =
-    proxy.dispatch(AnalysisImportFailedAction(t)).runNow()
+    proxy.dispatchNow(AnalysisImportFailedAction(t))
 
   private def handleFileDropped(proxy: ModelProxy[NoDataAppModel])(e: DragEvent): Callback = {
     e.stopPropagation()
@@ -52,7 +52,7 @@ object FileImportComponent {
       if (files.length > 0) {
         val reader = new dom.FileReader()
         reader.readAsText(files.item(0))
-        reader.onload = (e: UIEvent) => {
+        reader.onload = (_: UIEvent) => {
           // Cast is OK since we are calling readAsText
           val contents = reader.result.asInstanceOf[String]
           parseModel(contents, handleProgress(proxy), handleReady(proxy), handleError(proxy))
@@ -162,10 +162,10 @@ object FileImportComponent {
   }
 
   private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatch(AnalysisReadyAction(mockAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(mockAnalysis))
 
   private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatch(AnalysisReadyAction(alphabetSoupAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(alphabetSoupAnalysis))
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {

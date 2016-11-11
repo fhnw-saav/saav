@@ -11,11 +11,11 @@ import scalacss.ScalaCssReact._
 
 object ExpertConfigResetComponent {
 
-  case class Props(isExpertConfigModified: Boolean, defaultWeights: Weights, dispatch: Action => Callback)
+  case class Props(isExpertConfigModified: Boolean, defaultWeights: Weights, dispatchCB: Action => Callback)
 
   private val component = ReactComponentB[Props](ExpertConfigResetComponent.getClass.getSimpleName)
     .render_P { p =>
-      def reset = p.dispatch(UpdateWeightsAction(p.defaultWeights))
+      def reset = p.dispatchCB(UpdateWeightsAction(p.defaultWeights))
       if (p.isExpertConfigModified)
         <.div(css.expertConfigReset, "Configuration Modified (", <.a(^.cursor.pointer, ^.onClick --> reset, "Reset to Defaults"), ")")
       else
@@ -24,7 +24,7 @@ object ExpertConfigResetComponent {
     .build
 
   def apply(modelProxy: ModelProxy[ExpertConfig]): ReactComponentU[Props, Unit, Unit, TopNode] =
-    component(Props(modelProxy.value.isModified, modelProxy.value.defaultWeights, modelProxy.theDispatch))
+    component(Props(modelProxy.value.isModified, modelProxy.value.defaultWeights, modelProxy.dispatchCB[Action]))
 
   def apply(isExpertConfigModified: Boolean, defaultWeights: Weights, dispatch: Action => Callback): ReactComponentU[Props, Unit, Unit, TopNode] =
     component(Props(isExpertConfigModified, defaultWeights, dispatch))

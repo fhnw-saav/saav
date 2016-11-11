@@ -13,19 +13,19 @@ object Settings {
   )
 
   object versions {
-    val scala = "2.11.8"
+    val scala = "2.12.0"
 
     // libraryDependencies
-    val scalaJsReact = "0.11.2"
-    val scalaCSS = "0.4.1"
-    val diode = "1.0.0"
-    val circe = "0.5.2"
+    val scalaJsReact = "0.11.3"
+    val scalaCSS = "0.5.1"
+    val diode = "1.1.0"
+    val circe = "0.6.0"
 
     // libraryDependencies (test)
-    val scalaTest = "3.0.0"
+    val scalaTest = "3.0.1"
 
     // jsDependencies
-    val react = "15.2.1"
+    val react = "15.3.2"
     val bootstrap = "3.3.7"
     val jQuery = "1.12.4"
   }

@@ -26,7 +26,7 @@ trait ChartComponent {
         svgRootRef($).map { svg =>
           val parent = svg.parentNode.asInstanceOf[HTMLElement]
           val width = parent.clientWidth
-          p.proxy.dispatch(UpdateChartWidthAction(width))
+          p.proxy.dispatchCB(UpdateChartWidthAction(width))
         }.toOption.getOrElse(Callback.empty)
       }
 
@@ -35,7 +35,7 @@ trait ChartComponent {
     def setHoveredEntity(hoveredEntity: Option[EntityId]): Callback =
       $.props >>= { p =>
         if (p.proxy.value.entitySelectionModel.hovered != hoveredEntity) {
-          p.proxy.dispatch(UpdateEntityHoveringAction(hoveredEntity))
+          p.proxy.dispatchCB(UpdateEntityHoveringAction(hoveredEntity))
         } else {
           Callback.empty
         }
@@ -43,7 +43,7 @@ trait ChartComponent {
 
     def setHoveredSubCriteria(hoveredSubCriteria: Option[SubCriteriaId]): Callback =
       $.props >>= { p =>
-        val dispatchAction = p.proxy.dispatch(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
+        val dispatchAction = p.proxy.dispatchCB(UpdateSubCriteriaHoveringAction(hoveredSubCriteria))
         val width = p.proxy.value.qualityModel.layout.width
         dispatchAction >> alignSubCriteriaLabel(width)
       }
@@ -72,7 +72,7 @@ trait ChartComponent {
       $.props >>= { p =>
         val isPinned = p.proxy.value.entitySelectionModel.pinned.contains(entity)
         val pinnedOrNone = if (isPinned) None else Some(entity)
-        p.proxy.dispatch(UpdateEntityPinningAction(pinnedOrNone))
+        p.proxy.dispatchCB(UpdateEntityPinningAction(pinnedOrNone))
       }
 
   }

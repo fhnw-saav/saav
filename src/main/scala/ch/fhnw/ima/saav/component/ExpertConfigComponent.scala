@@ -23,7 +23,7 @@ object ExpertConfigComponent {
   private val rightGlyph = <.i(css.glyph.right, ^.cursor.pointer)
   private val downGlyph = <.i(css.glyph.down, ^.cursor.pointer)
 
-  case class Props(analysis: Analysis, expertConfig: ExpertConfig, dispatch: Action => Callback)
+  case class Props(analysis: Analysis, expertConfig: ExpertConfig, dispatchCB: Action => Callback)
 
   case class State(
     criteriaToggleStates: Map[Criteria, ToggleState] = Map.empty[Criteria, ToggleState].withDefaultValue(Collapsed),
@@ -62,11 +62,11 @@ object ExpertConfigComponent {
       $.props >>= { p =>
         val isCurrentlyEnabled = p.expertConfig.actualWeights.enabledIndicators.contains(indicatorId)
         val toggled = !isCurrentlyEnabled
-        p.dispatch(UpdateIndicatorWeightAction(indicatorId, toggled))
+        p.dispatchCB(UpdateIndicatorWeightAction(indicatorId, toggled))
       }
 
     private def updateSubCriteria(subCriteriaId: SubCriteriaId, weight: Weight) =
-      $.props >>= (_.dispatch(UpdateSubCriteriaWeightAction(subCriteriaId, weight)))
+      $.props >>= (_.dispatchCB(UpdateSubCriteriaWeightAction(subCriteriaId, weight)))
 
     private def updateSubCriteriaQualityWeightValue(subCriteriaId: SubCriteriaId)(e: ReactEventI) =
       updateSubCriteria(subCriteriaId, Quality(e.target.value.toDouble))
@@ -76,7 +76,7 @@ object ExpertConfigComponent {
       <.div(css.boxed,
         <.h3(^.display.`inline-block`, Title),
         <.div(css.expertConfigToolbar,
-          ExpertConfigResetComponent(p.expertConfig.isModified, p.expertConfig.defaultWeights, p.dispatch),
+          ExpertConfigResetComponent(p.expertConfig.isModified, p.expertConfig.defaultWeights, p.dispatchCB),
           <.div(css.defaultButton, css.hSpaced, "Import...", ^.onClick --> alertComingSoon),
           <.div(css.defaultButton, css.hSpaced, "Export...", ^.onClick --> alertComingSoon)
         ),
@@ -84,7 +84,7 @@ object ExpertConfigComponent {
       )
     }
 
-    private final case class CriteriaTableProps(
+    private case class CriteriaTableProps(
       criteria: Seq[Criteria],
       criteriaToggleStates: Map[Criteria, ToggleState],
       subCriteriaToggleStates: Map[SubCriteria, ToggleState],
@@ -111,7 +111,7 @@ object ExpertConfigComponent {
       .build
 
 
-    private final case class CriteriaRowProps(
+    private case class CriteriaRowProps(
       criteria: Criteria,
       criteriaToggleState: ToggleState,
       subCriteriaToggleStates: Map[SubCriteria, ToggleState],
@@ -137,7 +137,7 @@ object ExpertConfigComponent {
       }
       .build
 
-    private final case class SubCriteriaTableProps(
+    private case class SubCriteriaTableProps(
       subCriteria: Seq[SubCriteria],
       subCriteriaToggleStates: Map[SubCriteria, ToggleState],
       weights: Weights
@@ -155,7 +155,7 @@ object ExpertConfigComponent {
       }
       .build
 
-    private final case class SubCriteriaRowProps(
+    private case class SubCriteriaRowProps(
       subCriteria: SubCriteria,
       subCriteriaToggleState: ToggleState,
       weights: Weights
@@ -227,7 +227,7 @@ object ExpertConfigComponent {
       }
       .build
 
-    private final case class IndicatorListProps(
+    private case class IndicatorListProps(
       indicators: Seq[Indicator],
       enabledIndicators: Set[IndicatorId]
     )
@@ -260,8 +260,8 @@ object ExpertConfigComponent {
 
   def apply(proxy: ModelProxy[(Analysis, ExpertConfig)]): ReactComponentU[Props, State, Backend, TopNode] = {
     val (analysis, expertConfig) = proxy.value
-    val dispatch = proxy.theDispatch
-    component(Props(analysis, expertConfig, dispatch))
+    val dispatchCB = proxy.dispatchCB[Action] _
+    component(Props(analysis, expertConfig, dispatchCB))
   }
 
 }

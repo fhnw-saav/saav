@@ -39,7 +39,7 @@ object VisualRankingComponent {
     model: QualityModel,
     selectionModel: EntitySelectionModel,
     colorMap: Map[EntityId, WebColor],
-    dispatch: Action => Callback
+    dispatchCB: Action => Callback
   )
 
   class Backend($: BackendScope[Props, Unit]) {
@@ -92,14 +92,14 @@ object VisualRankingComponent {
 
     private def setHoveredEntity(hoveredEntity: Option[EntityId]) =
       $.props >>= { p =>
-        p.dispatch(UpdateEntityHoveringAction(hoveredEntity))
+        p.dispatchCB(UpdateEntityHoveringAction(hoveredEntity))
       }
 
     private def toggleEntityPinning(entity: EntityId): Callback =
       $.props >>= { p =>
         val isPinned = p.selectionModel.pinned.contains(entity)
         val pinnedOrNone = if (isPinned) None else Some(entity)
-        p.dispatch(UpdateEntityPinningAction(pinnedOrNone))
+        p.dispatchCB(UpdateEntityPinningAction(pinnedOrNone))
       }
 
     def render(p: Props): ReactTagOf[SVGElement] = {
@@ -169,6 +169,6 @@ object VisualRankingComponent {
     .build
 
   def apply(proxy: ModelProxy[AppModel]): ReactComponentU[Props, Unit, Backend, TopNode] =
-    component(Props(proxy.value.qualityModel, proxy.value.entitySelectionModel, proxy.value.colorMap, proxy.theDispatch))
+    component(Props(proxy.value.qualityModel, proxy.value.entitySelectionModel, proxy.value.colorMap, proxy.dispatchCB[Action]))
 
 }

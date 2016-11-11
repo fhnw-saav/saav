@@ -45,7 +45,7 @@ git.remoteRepo := "https://github.com/fhnw-saav/saav.git"
 sources in EditSource += file("index.html")
 flatten in EditSource := true
 substitutions in EditSource ++= Seq(
-  sub("""\.\/target\/scala-2.11""".r, "js", SubAll),
+  sub("""\.\/target\/scala-2.12""".r, "js", SubAll),
   sub("""fastopt""".r, "opt", SubAll)
 )
 
@@ -74,7 +74,12 @@ def directory(sourceDir: File): Seq[(File, String)] = {
 lazy val cleanSite = taskKey[Unit]("Cleans contents of 'target/site'")
 cleanSite := IO.delete(siteDirectory.value)
 
-makeSite <<= makeSite.dependsOn(cleanSite, fullOptJS in Compile, edit in EditSource)
+makeSite := {
+  cleanSite.value
+  (fullOptJS in Compile).value
+  (edit in EditSource).value
+  makeSite.value
+}
 
 lazy val deployCommand = Command.command("deploy") {
   state =>

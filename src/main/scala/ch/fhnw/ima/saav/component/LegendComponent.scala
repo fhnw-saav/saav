@@ -21,27 +21,27 @@ object LegendComponent {
     entities: Seq[GroupedEntity],
     entitySelectionModel: EntitySelectionModel,
     colorMap: Map[EntityId, WebColor],
-    dispatch: Action => Callback
+    dispatchCB: Action => Callback
   )
 
   class Backend($: BackendScope[Props, Unit]) {
 
     private def updateEntityColor(entity: EntityId)(e: SyntheticEvent[HTMLInputElement]) = {
       val newColor = WebColor(e.target.value)
-      $.props >>= (_.dispatch(UpdateEntityColorAction(entity, newColor)))
+      $.props >>= (_.dispatchCB(UpdateEntityColorAction(entity, newColor)))
     }
 
     private def toggleEntityVisibility(entity: EntityId) = {
       $.props >>= { p =>
         val isVisible = p.entitySelectionModel.visible.contains(entity)
-        p.dispatch(UpdateEntityVisibilityAction(Set(entity), !isVisible))
+        p.dispatchCB(UpdateEntityVisibilityAction(Set(entity), !isVisible))
       }
     }
 
     private def updateAllEntityVisibility(visible: Boolean) = {
       $.props >>= { p =>
         val allEntities = p.entities.map(_.id).toSet
-        p.dispatch(UpdateEntityVisibilityAction(allEntities, visible = visible))
+        p.dispatchCB(UpdateEntityVisibilityAction(allEntities, visible = visible))
       }
     }
 
@@ -53,14 +53,14 @@ object LegendComponent {
         $.props >>= { p =>
           val isPinned = p.entitySelectionModel.pinned.contains(entity)
           val pinnedOrNone = if (isPinned) None else Some(entity)
-          p.dispatch(UpdateEntityPinningAction(pinnedOrNone))
+          p.dispatchCB(UpdateEntityPinningAction(pinnedOrNone))
         }
       }
     }
 
     private def setHoveredEntity(hoveredEntity: Option[EntityId]) =
       $.props >>= { p =>
-        p.dispatch(UpdateEntityHoveringAction(hoveredEntity))
+        p.dispatchCB(UpdateEntityHoveringAction(hoveredEntity))
       }
 
     private def header(entities: Seq[GroupedEntity], isShowRank: Boolean) = {
@@ -126,7 +126,7 @@ object LegendComponent {
     val model = proxy.value
     val entitySelectionModel = model.entitySelectionModel
     val entities = entityProvider(model)
-    val props = Props(showRank, entities, entitySelectionModel, model.colorMap, proxy.theDispatch)
+    val props = Props(showRank, entities, entitySelectionModel, model.colorMap, proxy.dispatchCB[Action])
     component(props)
   }
 
