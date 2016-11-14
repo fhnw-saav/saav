@@ -25,11 +25,8 @@ before_cache:
 
 # Scala.js tests need jsdom installed via npm
 install:
-  - "rm -rf ~/.nvm"
-  - "curl -L https://raw.githubusercontent.com/creationix/nvm/master/install.sh | sh"
-  - "source ~/.nvm/nvm.sh"
-  - "nvm install node"
-  - "nvm use node"
-
-before_script:
-  - "npm install jsdom"
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
+  - npm install
+  - npm install jsdom
