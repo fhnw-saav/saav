@@ -42,9 +42,7 @@ object Settings {
     "io.circe" %%% "circe-generic" % versions.circe,
 
     // test
-    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
-    // JVM rather than JS dependency to use ScalaTest in an IDE (https://github.com/scalatest/scalatest/issues/911)
-    "org.scalatest" %% "scalatest" % versions.scalaTest % "test"
+    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"
   ))
 
   val jsDependencies = Def.setting(Seq(
