@@ -59,7 +59,7 @@ object domain {
 
     def build: Analysis = {
       val criteria = criteriaBuilders.map(_.toCriteria)
-      Analysis(criteria, entities.toList.reverse, reviews.toList.reverse)
+      Analysis(criteria, entities.toList, reviews.toList)
     }
 
     trait CriteriaBuilder {

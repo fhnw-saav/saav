@@ -13,7 +13,7 @@ object Settings {
   )
 
   object versions {
-    val scala = "2.11.8"
+    val scala = "2.12.0"
 
     // libraryDependencies
     val scalaJsReact = "0.11.3"

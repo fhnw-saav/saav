@@ -23,3 +23,12 @@
 * Launch sbt via `sbt` command (WARNING: will download Scala compiler and dependencies when launched for the first time)
 * Inside sbt: `~fastOptJS` (continuously compiles all Scala sources and generates JavaScript)
 * Open `index.html` through a web server (IntelliJ: Context menu > Open in Browser)
+
+# Test
+
+Automated tests require `Node.js` and `jsdom`:
+
+* Download `Node.js` https://nodejs.org/en/download/[here] or install via `brew install npm`
+* Install `jsdom` with `npm install jsdom`
+
+Run automated tests via `sbt test`.
