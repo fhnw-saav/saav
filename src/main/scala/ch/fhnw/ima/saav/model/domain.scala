@@ -59,7 +59,7 @@ object domain {
 
     def build: Analysis = {
       val criteria = criteriaBuilders.map(_.toCriteria)
-      Analysis(criteria, entities.toList, reviews.toList) // https://issues.scala-lang.org/browse/SI-10005
+      Analysis(criteria, entities.toList.reverse, reviews.toList.reverse)
     }
 
     trait CriteriaBuilder {

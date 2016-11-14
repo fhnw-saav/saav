@@ -13,7 +13,7 @@ object Settings {
   )
 
   object versions {
-    val scala = "2.12.0"
+    val scala = "2.11.8"
 
     // libraryDependencies
     val scalaJsReact = "0.11.3"
@@ -22,7 +22,7 @@ object Settings {
     val circe = "0.6.0"
 
     // libraryDependencies (test)
-    val scalaTest = "3.0.1"
+    val scalaTest = "3.0.0"
 
     // jsDependencies
     val react = "15.3.2"
