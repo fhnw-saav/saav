@@ -21,8 +21,26 @@ import scalacss.ScalaCssReact._
 
 object PdfExportComponent {
 
-  private val FontSize = 10
-  private val LineHeight = 10
+  // all PDF metrics in mm
+
+  private object Page {
+    val Width = 297
+    val MarginX = 10
+    val MarginY = 20
+    val ContentWidth: Int = Width - 2 * MarginX
+  }
+
+  private object Chart {
+    val ChartImageY = 30
+  }
+
+  private object LegendTable {
+    val FontSize = 10
+    val LineHeight = 10
+    val RankColumnWidth = 30
+    val NameColumnWidth = 150
+    val ColorCellWidth = 6
+  }
 
   case class Props(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, model: AppModel)
 
@@ -48,22 +66,17 @@ object PdfExportComponent {
       val chartImageFuture = exportChart()
 
       chartImageFuture.foreach { (imageInfo: ImageInfo) =>
-        val mmPageMarginX = 10
-        val mmPageMarginY = 20
 
         // Title
-        pdf.text(title, mmPageMarginX, mmPageMarginY)
+        pdf.text(title, Page.MarginX, Page.MarginY)
 
-        val mmPageWidth = 297
-
-        val mmImageY = 30
-        val mmImageWidth = mmPageWidth - (2 * mmPageMarginX)
+        val mmImageWidth = Page.Width - (2 * Page.MarginX)
         val mmImageHeight = imageInfo.aspectRatio * mmImageWidth
-        pdf.addImage(imageInfo.dataURL, "png", mmPageMarginX, mmImageY, mmImageWidth, mmImageHeight)
+        pdf.addImage(imageInfo.dataURL, "png", Page.MarginX, Chart.ChartImageY, mmImageWidth, mmImageHeight)
 
         pdf.addPage()
 
-        appendLegend(pdf, mmPageMarginX, mmPageMarginY, activeTab, model)
+        appendLegend(pdf, activeTab, model)
 
         pdf.save("Report.pdf")
       }
@@ -106,36 +119,6 @@ object PdfExportComponent {
 
     }
 
-    private def appendLegend(pdf: jsPDF, mmPageMarginX: Int, mmPageMarginY: Int, activeTab: Tab, model: AppModel) = {
-
-      pdf.setFontSize(FontSize)
-
-      activeTab match {
-        case QualityTab =>
-          var x = mmPageMarginX
-          var y = mmPageMarginY
-          for (e <- model.qualityModel.rankedEntities) {
-            pdf.text(e.displayName, x, y)
-            val webColor = model.colorMap(e.id)
-
-            val color = Color(webColor.hexValue)
-            pdf.setFillColor(color.r, color.g, color.b)
-
-            pdf.rect(x + 100, y - 3, 6, 6, "F")
-            y += LineHeight
-          }
-
-        case ProfileTab =>
-          var x = mmPageMarginX
-          var y = mmPageMarginY
-          for (e <- model.profileModel.sortedEntities) {
-            pdf.text(e.displayName, x, y)
-            y += LineHeight
-          }
-      }
-
-    }
-
     private def createDefsWithInlinedCss(): Element = {
       // include our style
       val cssStyle = document.querySelector("style").cloneNode(true).asInstanceOf[Element]
@@ -145,6 +128,41 @@ object PdfExportComponent {
       val defsElement = document.createElement("defs")
       defsElement.appendChild(cssStyle)
       defsElement
+    }
+
+    private def appendLegend(pdf: jsPDF, activeTab: Tab, model: AppModel) = {
+
+      import LegendTable._
+
+      pdf.setFontSize(FontSize)
+
+      activeTab match {
+        case QualityTab =>
+          var y = Page.MarginY
+          for (e <- model.qualityModel.rankedEntities) {
+            var x = Page.MarginX
+
+            // rank
+            pdf.text(e.position + 1 + ".", x, y)
+            x += RankColumnWidth
+
+            // name
+            pdf.text(e.displayName, x, y)
+            x += NameColumnWidth
+
+            // color
+            val webColor = model.colorMap(e.id)
+            val color = Color(webColor.hexValue)
+            pdf.setFillColor(color.r, color.g, color.b)
+            pdf.rect(x, y - ColorCellWidth / 2, ColorCellWidth, ColorCellWidth, "F")
+
+            y += LineHeight
+          }
+
+        case ProfileTab =>
+          // TODO: Implementation
+      }
+
     }
 
     private def onTitleChange(e: ReactEventI) = {
