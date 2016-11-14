@@ -30,3 +30,6 @@ install:
   - nvm use stable
   - npm install
   - npm install jsdom
+
+before_script:
+  - node jsdom-debug.js
