@@ -6,7 +6,7 @@ sudo: false
 language: scala
 
 scala:
-  - 2.11.8
+  - 2.12.0
 
 jdk:
   - oraclejdk8
@@ -14,12 +14,11 @@ jdk:
 # These directories are cached to S3 at the end of the build
 cache:
   directories:
-    - $HOME/.ivy2/cache
+    - $HOME/.coursier/
     - $HOME/.sbt/boot/
 
 # Tricks to avoid unnecessary cache updates
 before_cache:
-  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
   - find $HOME/.sbt -name "*.lock" -delete
 
 # Scala.js tests need jsdom installed via npm
