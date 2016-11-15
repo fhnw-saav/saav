@@ -1,0 +1,33 @@
+{
+  "criteria": [
+    {
+      "name": "Angemessene Methodologie",
+      "subCriteria": [
+        {
+          "name": "Klare Fragestellung und Zielsetzung",
+          "weight": {
+            "Profile": {}
+          },
+          "indicators": [
+            {
+              "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "name": "Ergebnisoffene Anlage des Projektes",
+          "weight": {
+            "Profile": { "Quality" : { "weight" : 0.42 } }
+          },
+          "indicators": [
+            {
+              "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

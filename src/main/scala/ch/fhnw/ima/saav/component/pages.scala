@@ -21,6 +21,7 @@ object pages {
   // abstracts a sub-page identifiable via URL hash (i.e. the part that comes after the # separator)
   trait SubPage extends Page {
     def hashLink: String
+    def configFileUrl: String = s"conf/$hashLink.json"
   }
 
   object Page {
@@ -74,13 +75,13 @@ object pages {
 
   object AnalysisPageComponent {
 
-    case class Props(title: String, proxy: ModelProxy[SaavModel])
+    case class Props(title: String, configFileUrl: String, proxy: ModelProxy[SaavModel])
 
     private val component = ReactComponentB[Props](AnalysisPageComponent.getClass.getSimpleName)
       .render_P(p => {
 
         val (title, content): (String, TagMod) = p.proxy.value.model match {
-          case Left(noData) => (s"Import ${p.title}", FileImportComponent(p.proxy.zoom(_ => noData)))
+          case Left(noData) => (s"Import ${p.title}", FileImportComponent(p.configFileUrl, p.proxy.zoom(_ => noData)))
           case Right(data) => (p.title, PageWithDataComponent(p.title, p.proxy.zoom(_ => data)))
         }
 
@@ -89,7 +90,7 @@ object pages {
       })
       .build
 
-    def apply(title: String, proxy: ModelProxy[SaavModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(title, proxy))
+    def apply(title: String, configFileUrl: String, proxy: ModelProxy[SaavModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(title, configFileUrl, proxy))
 
   }
 

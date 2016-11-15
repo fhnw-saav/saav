@@ -37,9 +37,10 @@ object Settings {
     "com.github.japgolly.scalacss" %%% "ext-react" % versions.scalaCSS,
     "me.chrons" %%% "diode" % versions.diode,
     "me.chrons" %%% "diode-react" % versions.diode,
-    "io.circe" %%% "circe-scalajs" % versions.circe,
+    "io.circe" %%% "circe-core" % versions.circe,
     "io.circe" %%% "circe-parser" % versions.circe,
     "io.circe" %%% "circe-generic" % versions.circe,
+    "io.circe" %%% "circe-scalajs" % versions.circe,
 
     // test
     "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"

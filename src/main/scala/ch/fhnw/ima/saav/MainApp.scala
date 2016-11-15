@@ -31,7 +31,7 @@ object MainApp extends js.JSApp {
     // defines how hash-prefixed locations are mapped to a rendered component
     def routeSubPage(subPage: SubPage): Rule = staticRoute("#/" + subPage.hashLink, subPage) ~> renderR(_ => {
       subPage match {
-        case _ => modelConnection(proxy => AnalysisPageComponent(subPage.displayName, proxy))
+        case _ => modelConnection(proxy => AnalysisPageComponent(subPage.displayName, subPage.configFileUrl, proxy))
       }
     })
 

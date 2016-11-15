@@ -4,7 +4,7 @@ import ch.fhnw.ima.saav.component.bootstrap.Button
 import ch.fhnw.ima.saav.controller.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.config.AnalysisConfig
+import ch.fhnw.ima.saav.model.config._
 import ch.fhnw.ima.saav.model.domain._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -14,8 +14,8 @@ import org.scalajs.dom.raw.FileList
 import org.scalajs.dom.{DragEvent, Event, UIEvent, XMLHttpRequest}
 
 import scala.concurrent.{Future, Promise}
-import scala.scalajs.js
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
 import scala.util.{Failure, Success}
 import scalacss.ScalaCssReact._
 
@@ -25,7 +25,7 @@ import scalacss.ScalaCssReact._
 // TODO: Move actual IO out of component (to handler)
 object FileImportComponent {
 
-  case class Props(proxy: ModelProxy[NoDataAppModel])
+  case class Props(configFileUrl: String, proxy: ModelProxy[NoDataAppModel])
 
   type Row = Array[String]
 
@@ -50,19 +50,20 @@ object FileImportComponent {
   private def handleError(proxy: ModelProxy[NoDataAppModel])(t: Throwable): Unit =
     proxy.dispatchNow(AnalysisImportFailedAction(t))
 
-  private def handleFileDropped(proxy: ModelProxy[NoDataAppModel])(e: DragEvent): Callback = {
+  private def handleFileDropped(proxy: ModelProxy[NoDataAppModel], configFileUrl: String)(e: DragEvent): Callback = {
     e.stopPropagation()
     e.preventDefault()
-
-    // actual file parsing
 
     try {
       val files = e.dataTransfer.files
       if (files.length > 0) {
-        val configFuture = importConfig(proxy)
+        val configFuture = importConfig(proxy, configFileUrl)
         configFuture.onComplete {
-          case Success(analysisConfig) => importData(proxy, files)
-          case Failure(t) => handleError(proxy)(t)
+          case Success(analysisConfig) =>
+            print(analysisConfig)
+            importData(proxy, files)
+          case Failure(t) =>
+            handleError(proxy)(t)
         }
       } else {
         Callback.log("No files to import")
@@ -70,22 +71,29 @@ object FileImportComponent {
     } catch {
       case t: Throwable => handleError(proxy)(t)
     }
+
     Callback.empty
   }
 
-  private def importConfig(proxy: ModelProxy[NoDataAppModel]): Future[AnalysisConfig] = {
-    val url = "conf/test.json"
+  private def importConfig(proxy: ModelProxy[NoDataAppModel], configFileUrl: String): Future[AnalysisConfig] = {
     val xhr = new XMLHttpRequest()
-    xhr.open("GET", url)
+    xhr.open("GET", configFileUrl)
     handleConfigImportProgress(proxy)(0)
     val resultPromise = Promise[AnalysisConfig]()
     xhr.onload = { (_: Event) =>
       if (xhr.status == 200) {
         handleConfigImportProgress(proxy)(1)
-        // TODO: Actually parse config from JSON
-        resultPromise.success(AnalysisConfig(Seq()))
+        val json = xhr.responseText
+        val eitherConfigOrError = AnalysisConfig.fromJson(json)
+        eitherConfigOrError match {
+          case Right(analysisConfig: AnalysisConfig) =>
+            println(analysisConfig)
+            resultPromise.success(analysisConfig)
+          case Left(error: io.circe.Error) =>
+            resultPromise.failure(error.fillInStackTrace())
+        }
       } else {
-        resultPromise.failure(new IllegalStateException(s"Failed to retrieve configuration '$url'"))
+        resultPromise.failure(new IllegalStateException(s"Failed to retrieve configuration '$configFileUrl'"))
       }
     }
     xhr.send()
@@ -209,7 +217,7 @@ object FileImportComponent {
           <.div(
             <.div(css.fileDropZone,
               ^.onDragOver ==> handleDragOver,
-              ^.onDrop ==> handleFileDropped(p.proxy),
+              ^.onDrop ==> handleFileDropped(p.proxy, p.configFileUrl),
               <.div(
                 <.h1("Drag & Drop"),
                 <.p("To import data from CSV file")
@@ -230,6 +238,6 @@ object FileImportComponent {
     })
     .build
 
-  def apply(proxy: ModelProxy[NoDataAppModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(proxy))
+  def apply(configFileUrl: String, proxy: ModelProxy[NoDataAppModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(configFileUrl, proxy))
 
 }

@@ -2,8 +2,6 @@ package ch.fhnw.ima.saav.model
 
 import ch.fhnw.ima.saav.model.config.{AnalysisConfig, CriteriaConfig, IndicatorConfig, SubCriteriaConfig}
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality}
-import io.circe.generic.auto._
-import io.circe.parser._
 import org.scalatest.{FunSpec, Matchers}
 
 class ConfigModelSpec extends FunSpec with Matchers {
@@ -78,7 +76,7 @@ class ConfigModelSpec extends FunSpec with Matchers {
       )
     )
 
-    val actualAnalysisConfig = decode[AnalysisConfig](json)
+    val actualAnalysisConfig = AnalysisConfig.fromJson(json)
     actualAnalysisConfig shouldBe Right(expectedAnalysisConfig)
   }
 
