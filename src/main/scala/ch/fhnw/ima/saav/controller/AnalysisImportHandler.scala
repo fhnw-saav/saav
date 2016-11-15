@@ -8,7 +8,7 @@ import diode._
 
 import scala.language.postfixOps
 
-final case class AnalysisImportInProgressAction(progress: Float) extends Action
+final case class AnalysisImportInProgressAction(importStepDescription: String, progress: Float) extends Action
 
 final case class AnalysisImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
 
@@ -17,10 +17,11 @@ final case class AnalysisReadyAction(analysis: Analysis) extends Action
 class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
-    case AnalysisImportInProgressAction(progress) => updated(Left(NoDataAppModel(ImportInProgress(progress))))
+    case AnalysisImportInProgressAction(importStepDescription, progress) =>
+      updated(Left(NoDataAppModel(ImportInProgress(importStepDescription, progress))))
     case a@AnalysisImportFailedAction(t, logToConsole) =>
       if (logToConsole) {
-        println(s"[${getClass.getSimpleName}] Error: ${String.valueOf(a)}")
+        println(s"[${getClass.getSimpleName}] Error: ${String.valueOf(t.getMessage)}")
         t.printStackTrace()
       }
       updated(Left(NoDataAppModel(ImportFailed(t))))

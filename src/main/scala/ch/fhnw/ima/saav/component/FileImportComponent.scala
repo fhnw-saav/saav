@@ -4,19 +4,25 @@ import ch.fhnw.ima.saav.component.bootstrap.Button
 import ch.fhnw.ima.saav.controller.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
+import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}
 import org.scalajs.dom
-import org.scalajs.dom.{DragEvent, UIEvent}
+import org.scalajs.dom.raw.FileList
+import org.scalajs.dom.{DragEvent, Event, UIEvent, XMLHttpRequest}
 
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.util.{Failure, Success}
 import scalacss.ScalaCssReact._
 
 /**
   * A component which accepts a CSV file via drag and drop and imports its contents.
   */
+// TODO: Move actual IO out of component (to handler)
 object FileImportComponent {
 
   case class Props(proxy: ModelProxy[NoDataAppModel])
@@ -32,8 +38,11 @@ object FileImportComponent {
   // callbacks which are invoked during file parsing
   // 'dispatchNow' is needed because all parsing happens asynchronously
 
-  private def handleProgress(proxy: ModelProxy[NoDataAppModel])(progress: Float): Unit =
-    proxy.dispatchNow(AnalysisImportInProgressAction(progress))
+  private def handleConfigImportProgress(proxy: ModelProxy[NoDataAppModel])(progress: Float): Unit =
+    proxy.dispatchNow(AnalysisImportInProgressAction("Configuration", progress))
+
+  private def handleDataImportProgress(proxy: ModelProxy[NoDataAppModel])(progress: Float): Unit =
+    proxy.dispatchNow(AnalysisImportInProgressAction("Data", progress))
 
   private def handleReady(proxy: ModelProxy[NoDataAppModel])(analysis: Analysis): Unit =
     proxy.dispatchNow(AnalysisReadyAction(analysis))
@@ -50,14 +59,11 @@ object FileImportComponent {
     try {
       val files = e.dataTransfer.files
       if (files.length > 0) {
-        val reader = new dom.FileReader()
-        reader.readAsText(files.item(0))
-        reader.onload = (_: UIEvent) => {
-          // Cast is OK since we are calling readAsText
-          val contents = reader.result.asInstanceOf[String]
-          parseModel(contents, handleProgress(proxy), handleReady(proxy), handleError(proxy))
+        val configFuture = importConfig(proxy)
+        configFuture.onComplete {
+          case Success(analysisConfig) => importData(proxy, files)
+          case Failure(t) => handleError(proxy)(t)
         }
-
       } else {
         Callback.log("No files to import")
       }
@@ -65,6 +71,35 @@ object FileImportComponent {
       case t: Throwable => handleError(proxy)(t)
     }
     Callback.empty
+  }
+
+  private def importConfig(proxy: ModelProxy[NoDataAppModel]): Future[AnalysisConfig] = {
+    val url = "conf/test.json"
+    val xhr = new XMLHttpRequest()
+    xhr.open("GET", url)
+    handleConfigImportProgress(proxy)(0)
+    val resultPromise = Promise[AnalysisConfig]()
+    xhr.onload = { (_: Event) =>
+      if (xhr.status == 200) {
+        handleConfigImportProgress(proxy)(1)
+        // TODO: Actually parse config from JSON
+        resultPromise.success(AnalysisConfig(Seq()))
+      } else {
+        resultPromise.failure(new IllegalStateException(s"Failed to retrieve configuration '$url'"))
+      }
+    }
+    xhr.send()
+    resultPromise.future
+  }
+
+  private def importData(proxy: ModelProxy[NoDataAppModel], files: FileList) = {
+    val reader = new dom.FileReader()
+    reader.readAsText(files.item(0))
+    reader.onload = (_: UIEvent) => {
+      // Cast is OK since we are calling readAsText
+      val contents = reader.result.asInstanceOf[String]
+      parseModel(contents, handleDataImportProgress(proxy), handleReady(proxy), handleError(proxy))
+    }
   }
 
   private def parseModel(contents: String, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
@@ -176,16 +211,20 @@ object FileImportComponent {
               ^.onDragOver ==> handleDragOver,
               ^.onDrop ==> handleFileDropped(p.proxy),
               <.div(
-                <.h1("Drag and drop"),
+                <.h1("Drag & Drop"),
                 <.p("To import data from CSV file")
               )),
             <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockAnalysis(p.proxy), "Quick, some mock data, please!")),
             <.p(^.textAlign.center, css.vSpaced, Button(onClick = importAlphabetSoupAnalysis(p.proxy), "Quick, some alphabet soup, please!"))
           )
-        case ImportInProgress(progress) =>
-          <.div(css.fileDropZone, <.h1("Import in progress"), <.p((progress * 100).toInt + "%"))
+        case ImportInProgress(importStepDescription, progress) =>
+          <.div(css.fileDropZone,
+            <.h1("Import In Progress"),
+            <.h3(importStepDescription),
+            <.p((progress * 100).toInt + "%")
+          )
         case ImportFailed(_) =>
-          <.div(css.fileDropZone, <.h1("Import failed"), <.p("See console log for details"))
+          <.div(css.fileDropZone, <.h1("Import Failed"), <.p("See console log for details"))
         case _ => <.div()
       }
     })

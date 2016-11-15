@@ -21,11 +21,12 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
     it("should wire a progress value") {
       val circuit = new SaavCircuit()
-      circuit.dispatch(AnalysisImportInProgressAction(0.9f))
+      circuit.dispatch(AnalysisImportInProgressAction("description", 0.9f))
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {
-        case Left(NoDataAppModel(ImportInProgress(progress))) =>
+        case Left(NoDataAppModel(ImportInProgress(description, progress))) =>
           progress shouldBe 0.9f
+          description shouldBe "description"
         case _ => failOnUnexpectedAction
       }
     }
