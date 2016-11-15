@@ -359,6 +359,8 @@ class jsPDF( orientation : String = "i", unit : String = "mm", format : String =
     */
   def text(text : String, x: Double, y : Double, flags : js.Any ) : jsPDF = js.native
 
+  def text(text : String, x: Double, y : Double, flags : js.UndefOr[String] = js.undefined, angle: js.UndefOr[String] = js.undefined, align: js.UndefOr[String] = js.undefined) : jsPDF = js.native
+
   /**
     * Adds text to page. Supports adding multiline text when 'text' argument is an Array of Strings.
     *

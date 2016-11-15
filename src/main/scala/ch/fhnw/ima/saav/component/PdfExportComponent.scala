@@ -16,12 +16,13 @@ import org.scalajs.dom.raw.{HTMLImageElement, SVGSVGElement, XMLSerializer}
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
 import scala.util.Success
 import scalacss.ScalaCssReact._
 
 object PdfExportComponent {
 
-  // all PDF metrics in mm
+  // all PDF metrics in mm unless indicated
 
   private object Page {
     val Width = 297
@@ -35,11 +36,16 @@ object PdfExportComponent {
   }
 
   private object LegendTable {
-    val FontSize = 10
-    val LineHeight = 10
-    val RankColumnWidth = 30
-    val NameColumnWidth = 150
-    val ColorCellWidth = 6
+    val FontSize = 10 // pt
+    val LineGap = 10
+
+    case class ColumnPositions(rankColumnX: Option[Int], nameColumnX: Int, colorColumnX: Int)
+
+    val WithRank = ColumnPositions(rankColumnX = Some(15), nameColumnX = 20, colorColumnX = 100)
+    val WithoutRank = ColumnPositions(rankColumnX = None, nameColumnX = Page.MarginX, colorColumnX = 80)
+
+    val ColorCellDimension = 6
+    val ColorCellOffsetY = 1
   }
 
   case class Props(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, model: AppModel)
@@ -131,36 +137,38 @@ object PdfExportComponent {
     }
 
     private def appendLegend(pdf: jsPDF, activeTab: Tab, model: AppModel) = {
-
       import LegendTable._
+
+      val (entities, columnPositions) = activeTab match {
+        case QualityTab =>
+          (model.qualityModel.rankedEntities, WithRank)
+
+        case ProfileTab =>
+          (model.profileModel.sortedEntities, WithoutRank)
+      }
 
       pdf.setFontSize(FontSize)
 
-      activeTab match {
-        case QualityTab =>
-          var y = Page.MarginY
-          for (e <- model.qualityModel.rankedEntities) {
-            var x = Page.MarginX
+      var y = Page.MarginY
+      for (e <- entities) {
 
-            // rank
-            pdf.text(e.position + 1 + ".", x, y)
-            x += RankColumnWidth
+        columnPositions match {
+          case ColumnPositions(Some(rankColumnX), _, _) =>
+            pdf.text(e.position + 1 + ".", rankColumnX, y, js.undefined, js.undefined, "right")
+          case _ =>
+        }
 
-            // name
-            pdf.text(e.displayName, x, y)
-            x += NameColumnWidth
+        // name
+        pdf.text(e.displayName, columnPositions.nameColumnX, y)
 
-            // color
-            val webColor = model.colorMap(e.id)
-            val color = Color(webColor.hexValue)
-            pdf.setFillColor(color.r, color.g, color.b)
-            pdf.rect(x, y - ColorCellWidth / 2, ColorCellWidth, ColorCellWidth, "F")
+        // color
+        val webColor = model.colorMap(e.id)
+        val color = Color(webColor.hexValue)
+        pdf.setFillColor(color.r, color.g, color.b)
+        val colorColumnY = y - ColorCellDimension + ColorCellOffsetY // no support for vertical centering
+        pdf.rect(columnPositions.colorColumnX, colorColumnY, ColorCellDimension, ColorCellDimension, "F")
 
-            y += LineHeight
-          }
-
-        case ProfileTab =>
-          // TODO: Implementation
+        y += LineGap
       }
 
     }

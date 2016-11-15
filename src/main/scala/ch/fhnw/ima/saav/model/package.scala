@@ -98,7 +98,7 @@ package object model {
 
     val r = Random
 
-    for (i <- 1 to 10) {
+    for (i <- 1 to 12) {
       val project = Entity(EntityId(s"Project $i"))
       indicatorScope.addValue(project, reviewOne, r.nextInt(100))
       indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
