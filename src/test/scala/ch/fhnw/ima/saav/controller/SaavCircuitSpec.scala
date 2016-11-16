@@ -21,12 +21,11 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
     it("should wire a progress value") {
       val circuit = new SaavCircuit()
-      circuit.dispatch(AnalysisImportInProgressAction("description", 0.9f))
+      circuit.dispatch(DataImportInProgressAction(0.9f, AnalysisBuilder(), Seq(), 0))
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {
-        case Left(NoDataAppModel(ImportInProgress(description, progress))) =>
+        case Left(NoDataAppModel(ImportInProgress(progress))) =>
           progress shouldBe 0.9f
-          description shouldBe "description"
         case _ => failOnUnexpectedAction
       }
     }
@@ -34,7 +33,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
     it("should wire a throwable") {
       val circuit = new SaavCircuit()
       val throwable = new Throwable("test")
-      circuit.dispatch(AnalysisImportFailedAction(throwable, logToConsole = false))
+      circuit.dispatch(DataImportFailedAction(throwable, logToConsole = false))
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {
         case Left(NoDataAppModel(ImportFailed(t))) =>

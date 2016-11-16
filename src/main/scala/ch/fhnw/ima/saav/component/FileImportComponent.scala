@@ -1,33 +1,22 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.bootstrap.Button
-import ch.fhnw.ima.saav.controller.{AnalysisImportFailedAction, AnalysisImportInProgressAction, AnalysisReadyAction}
+import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportFailedAction, StartImportAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.config._
-import ch.fhnw.ima.saav.model.domain._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}
-import org.scalajs.dom
-import org.scalajs.dom.raw.FileList
-import org.scalajs.dom.{DragEvent, Event, UIEvent, XMLHttpRequest}
+import org.scalajs.dom.DragEvent
 
-import scala.concurrent.{Future, Promise}
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import scala.scalajs.js
-import scala.util.{Failure, Success}
 import scalacss.ScalaCssReact._
 
 /**
   * A component which accepts a CSV file via drag and drop and imports its contents.
   */
-// TODO: Move actual IO out of component (to handler)
 object FileImportComponent {
 
   case class Props(configFileUrl: String, proxy: ModelProxy[NoDataAppModel])
-
-  type Row = Array[String]
 
   private def handleDragOver(e: DragEvent) = Callback {
     e.stopPropagation()
@@ -35,174 +24,19 @@ object FileImportComponent {
     e.dataTransfer.dropEffect = "copy"
   }
 
-  // callbacks which are invoked during file parsing
-  // 'dispatchNow' is needed because all parsing happens asynchronously
-
-  private def handleConfigImportProgress(proxy: ModelProxy[NoDataAppModel])(progress: Float): Unit =
-    proxy.dispatchNow(AnalysisImportInProgressAction("Configuration", progress))
-
-  private def handleDataImportProgress(proxy: ModelProxy[NoDataAppModel])(progress: Float): Unit =
-    proxy.dispatchNow(AnalysisImportInProgressAction("Data", progress))
-
-  private def handleReady(proxy: ModelProxy[NoDataAppModel])(analysis: Analysis): Unit =
-    proxy.dispatchNow(AnalysisReadyAction(analysis))
-
-  private def handleError(proxy: ModelProxy[NoDataAppModel])(t: Throwable): Unit =
-    proxy.dispatchNow(AnalysisImportFailedAction(t))
-
   private def handleFileDropped(proxy: ModelProxy[NoDataAppModel], configFileUrl: String)(e: DragEvent): Callback = {
     e.stopPropagation()
     e.preventDefault()
-
     try {
       val files = e.dataTransfer.files
       if (files.length > 0) {
-        val configFuture = importConfig(proxy, configFileUrl)
-        configFuture.onComplete {
-          case Success(analysisConfig) =>
-            println(s"[${getClass.getSimpleName}] Parsed config:\n$analysisConfig")
-            importData(proxy, files)
-          case Failure(t) =>
-            // TODO: Fail once all valid JSONs are in place
-            importData(proxy, files)
-        }
+        proxy.dispatchCB(StartImportAction(configFileUrl, files.item(0)))
       } else {
         Callback.log("No files to import")
       }
     } catch {
-      case t: Throwable => handleError(proxy)(t)
+      case t: Throwable => proxy.dispatchCB(DataImportFailedAction(t))
     }
-
-    Callback.empty
-  }
-
-  private def importConfig(proxy: ModelProxy[NoDataAppModel], configFileUrl: String): Future[AnalysisConfig] = {
-    val xhr = new XMLHttpRequest()
-    xhr.open("GET", configFileUrl)
-    handleConfigImportProgress(proxy)(0)
-    val resultPromise = Promise[AnalysisConfig]()
-    xhr.onload = { (_: Event) =>
-      if (xhr.status == 200) {
-        handleConfigImportProgress(proxy)(1)
-        val json = xhr.responseText
-        println(s"[${getClass.getSimpleName}] Fetched $configFileUrl:\n$json")
-        val eitherConfigOrError = AnalysisConfig.fromJson(json)
-        eitherConfigOrError match {
-          case Right(analysisConfig: AnalysisConfig) =>
-            resultPromise.success(analysisConfig)
-          case Left(error: io.circe.Error) =>
-            resultPromise.failure(error.fillInStackTrace())
-        }
-      } else {
-        resultPromise.failure(new IllegalStateException(s"Failed to retrieve configuration '$configFileUrl'"))
-      }
-    }
-    xhr.send()
-    resultPromise.future
-  }
-
-  private def importData(proxy: ModelProxy[NoDataAppModel], files: FileList) = {
-    val reader = new dom.FileReader()
-    reader.readAsText(files.item(0))
-    reader.onload = (_: UIEvent) => {
-      // Cast is OK since we are calling readAsText
-      val contents = reader.result.asInstanceOf[String]
-      parseModel(contents, handleDataImportProgress(proxy), handleReady(proxy), handleError(proxy))
-    }
-  }
-
-  private def parseModel(contents: String, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
-
-    // to be used as a basis to fill analysis model
-    val rows: Seq[Row] = splitContentsIntoRows(contents)
-
-    val builder = AnalysisBuilder()
-
-    // to report progress, rows are parsed asynchronously, giving react a chance to update the UI in between
-    // to avoid timer congestion, we don't spawn a timer for each row, but parse row batches
-    parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, handleError)
-  }
-
-  private def splitContentsIntoRows(contents: String) = {
-    (for {
-      line <- contents.lines
-    } yield {
-
-      def unquote(str: String) = {
-        if (str != null && str.length >= 2 && str.charAt(0) == '\"' && str.charAt(str.length - 1) == '\"')
-          str.substring(1, str.length - 1)
-        else
-          str
-      }
-
-      // split at comma (but handle quotes > http://stackoverflow.com/questions/15738918/splitting-a-csv-file-with-quotes-as-text-delimiter-using-string-split)
-      line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")
-        .map(_.trim)
-        .map(unquote)
-
-    }).toStream
-      .drop(1) // skip header
-  }
-
-  def parseRowBatchAsync(builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int, handleProgress: Float => Any, handleReady: Analysis => Any, handleError: Throwable => Any): Unit = {
-
-    val batchSize = 10
-
-    js.timers.setTimeout(0) {
-
-      try {
-
-        for (
-          indexWithinBatch <- 0 until batchSize;
-          rowIndex = (batchIndex * batchSize) + indexWithinBatch
-          if rowIndex < rows.length
-        ) {
-
-          val row = rows(rowIndex)
-
-          parseRow(builder, row)
-
-          // parsing is complete -> model can be built
-          if (rowIndex == rows.length - 1) {
-            val analysis = builder.build
-            handleReady(analysis)
-          }
-          // report progress and schedule next batch
-          else if (indexWithinBatch == batchSize - 1) {
-            val progress = (rowIndex + 1).toFloat / rows.length
-            handleProgress(progress)
-            parseRowBatchAsync(builder, rows, batchIndex + 1, handleProgress, handleReady, handleError)
-          }
-
-        }
-      } catch {
-        case t: Throwable => handleError(t)
-      }
-
-    }
-
-  }
-
-  def parseRow(builder: AnalysisBuilder, row: Row): AnalysisBuilder = {
-
-    val columnIt = row.iterator
-
-    val project = Entity(EntityId(columnIt.next()))
-    val hierarchyLevels = columnIt.next().split(":::")
-    val criteria = hierarchyLevels(0)
-    val subCriteria = hierarchyLevels(1)
-    val indicator = hierarchyLevels(2)
-    val review = ReviewId(columnIt.next())
-    val value = columnIt.next().toDouble
-
-    builder
-      .criteria(criteria)
-      .subCriteria(subCriteria)
-      .indicator(indicator)
-      .addValue(project, review, value)
-
-    builder
-
   }
 
   private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) =
@@ -226,10 +60,9 @@ object FileImportComponent {
             <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockAnalysis(p.proxy), "Quick, some mock data, please!")),
             <.p(^.textAlign.center, css.vSpaced, Button(onClick = importAlphabetSoupAnalysis(p.proxy), "Quick, some alphabet soup, please!"))
           )
-        case ImportInProgress(importStepDescription, progress) =>
+        case ImportInProgress(progress) =>
           <.div(css.fileDropZone,
             <.h1("Import In Progress"),
-            <.h3(importStepDescription),
             <.p((progress * 100).toInt + "%")
           )
         case ImportFailed(_) =>

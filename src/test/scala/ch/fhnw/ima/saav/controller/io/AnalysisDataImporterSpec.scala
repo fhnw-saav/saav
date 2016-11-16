@@ -1,14 +1,14 @@
-package ch.fhnw.ima.saav.component
+package ch.fhnw.ima.saav.controller.io
 
-import ch.fhnw.ima.saav.component.FileImportComponent.Row
-import ch.fhnw.ima.saav.model.domain.{Analysis, AnalysisBuilder}
+import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportInProgressAction}
+import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.{BatchSize, Row, parseRow}
+import ch.fhnw.ima.saav.model.domain.AnalysisBuilder
+import diode.Action
 import org.scalatest.FlatSpec
 
-import scala.scalajs.js
+class AnalysisDataImporterSpec extends FlatSpec {
 
-class FileImportComponentSpec extends FlatSpec {
-
-  "A file import component" should "import a single row" in {
+  "An importer" should "import a single row" in {
 
     val projectName = "project"
     val criteriaName = "testCriteria"
@@ -19,7 +19,7 @@ class FileImportComponentSpec extends FlatSpec {
 
     val builder = AnalysisBuilder()
 
-    FileImportComponent.parseRow(builder, row)
+    parseRow(builder, row)
 
     val analysis = builder.build
     assert(analysis.criteria.size == 1)
@@ -33,31 +33,29 @@ class FileImportComponentSpec extends FlatSpec {
 
   it should "import multiple rows in batches" in {
 
-    val rowCount: Int = 17
+    val rowCount: Int = (1.5 * BatchSize).toInt
     val rows = for (i <- 0 until rowCount) yield createTestRow(s"project-$i", s"criteria-$i", s"subCriteria-$i", s"indicator-$i")
-
-    // poor man's synchronization (all that we got in JS)
-    var done = false
 
     val builder = AnalysisBuilder()
 
-    val handleProgress = (progress: Float) => assert(Math.round(100 * progress) == Math.round(100 * (10f / rowCount)))
-
-    val handleReady = (analysis: Analysis) => {
-      assert(analysis.entities.length == rowCount)
-      done = true
+    val firstBatch: Action = AnalysisDataImporter.parseRowBatch(builder, rows, 0)
+    firstBatch match {
+      case DataImportInProgressAction(progress, _, _, batchIndex) =>
+        assert(progress === (BatchSize.toFloat / rowCount))
+        assert(batchIndex === 1)
+      case a @ _ => fail(s"Unexpected action $a")
     }
 
-    FileImportComponent.parseRowBatchAsync(builder, rows, 0, handleProgress, handleReady, { _ => })
-
-    js.timers.setTimeout(1000) {
-      assert(done, "Async parsing not complete -> consider setting a higher timeout")
+    val secondBatch: Action = AnalysisDataImporter.parseRowBatch(builder, rows, 1)
+    secondBatch match {
+      case AnalysisReadyAction(analysis) =>
+        assert(analysis.entities.size === rowCount)
+      case a @ _ => fail(s"Unexpected action $a")
     }
-
   }
 
   private def createTestRow(project: String, criteria: String, subCriteria: String, indicator: String): Row = {
-    Array(project, s"$criteria:::$subCriteria:::$indicator","testReviewer","42")
+    Array(project, s"$criteria:::$subCriteria:::$indicator", "testReviewer", "42")
   }
 
 }

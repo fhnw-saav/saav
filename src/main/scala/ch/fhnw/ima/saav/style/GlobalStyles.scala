@@ -83,7 +83,6 @@ object GlobalStyles extends StyleSheet.Inline {
     borderRadius(5 px),
     marginTop(20 px),
     padding(25 px),
-    height(200 px),
     textAlign.center,
     color(c"#bbb")
   )

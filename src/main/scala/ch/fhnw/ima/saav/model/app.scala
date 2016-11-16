@@ -24,7 +24,7 @@ object app {
 
   final case class ImportNotStarted() extends ImportState
 
-  final case class ImportInProgress(importStepDescription: String, progress: Float) extends ImportState
+  final case class ImportInProgress(progress: Float) extends ImportState
 
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
