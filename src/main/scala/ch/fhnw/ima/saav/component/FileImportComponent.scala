@@ -60,10 +60,11 @@ object FileImportComponent {
         val configFuture = importConfig(proxy, configFileUrl)
         configFuture.onComplete {
           case Success(analysisConfig) =>
-            print(analysisConfig)
+            println(s"[${getClass.getSimpleName}] Parsed config:\n$analysisConfig")
             importData(proxy, files)
           case Failure(t) =>
-            handleError(proxy)(t)
+            // TODO: Fail once all valid JSONs are in place
+            importData(proxy, files)
         }
       } else {
         Callback.log("No files to import")
@@ -84,10 +85,10 @@ object FileImportComponent {
       if (xhr.status == 200) {
         handleConfigImportProgress(proxy)(1)
         val json = xhr.responseText
+        println(s"[${getClass.getSimpleName}] Fetched $configFileUrl:\n$json")
         val eitherConfigOrError = AnalysisConfig.fromJson(json)
         eitherConfigOrError match {
           case Right(analysisConfig: AnalysisConfig) =>
-            println(analysisConfig)
             resultPromise.success(analysisConfig)
           case Left(error: io.circe.Error) =>
             resultPromise.failure(error.fillInStackTrace())

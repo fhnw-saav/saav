@@ -13,6 +13,12 @@ object weight {
 
   final case class Weights(subCriteriaWeights: Map[SubCriteriaId, Weight], enabledIndicators: Set[IndicatorId])
 
+  // Works around SI-7046, a scalac issue which will be fixed in 2.11.9 / 2.12.1
+  // https://gitter.im/travisbrown/circe?at=582b833a37fbab5354b90cba
+  object Weight {
+    implicit val decodeWeight: io.circe.Decoder[Weight] = io.circe.generic.semiauto.deriveDecoder
+  }
+
   private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
 
     // TODO: Replace this poor man's calculation with something more efficient
