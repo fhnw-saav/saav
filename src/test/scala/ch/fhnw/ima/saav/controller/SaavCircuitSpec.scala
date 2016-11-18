@@ -1,6 +1,7 @@
 package ch.fhnw.ima.saav.controller
 
-import ch.fhnw.ima.saav.AnalysisTestData
+import ch.fhnw.ima.saav.TestUtil
+import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.ImportState
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
@@ -8,7 +9,7 @@ import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Profile, Weights}
 import org.scalatest.{FunSpec, Matchers}
 
-class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
+class SaavCircuitSpec extends FunSpec with Matchers with TestUtil {
 
   private def circuitWithAnalysis() = {
     val circuit = new SaavCircuit()
@@ -20,13 +21,14 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
   describe(s"${AnalysisImportHandler.getClass.getSimpleName}") {
 
-    it("should wire a progress value") {
+    it("should calculate a progress value") {
       val circuit = new SaavCircuit()
-      circuit.dispatch(DataImportInProgressAction(AnalysisConfig.empty, 0.9f, AnalysisBuilder(), Seq(), 0))
+      val rows = TestUtil.createTestRows(20)
+      circuit.dispatch(AnalysisDataImportInProgressAction(ImportState(AnalysisConfig.empty, AnalysisBuilder(), rows, 1)))
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {
         case Left(NoDataAppModel(ImportInProgress(progress))) =>
-          progress shouldBe 0.9f
+          progress shouldBe 0.5f
         case _ => failOnUnexpectedAction
       }
     }
@@ -34,7 +36,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
     it("should wire a throwable") {
       val circuit = new SaavCircuit()
       val throwable = new Throwable("test")
-      circuit.dispatch(DataImportFailedAction(throwable, logToConsole = false))
+      circuit.dispatch(ImportFailedAction(throwable, logToConsole = false))
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {
         case Left(NoDataAppModel(ImportFailed(t))) =>

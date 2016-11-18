@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.bootstrap.Button
-import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportFailedAction, StartImportAction}
+import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, ImportFailedAction, StartImportAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
 import diode.react.ModelProxy
@@ -35,7 +35,7 @@ object FileImportComponent {
         Callback.log("No files to import")
       }
     } catch {
-      case t: Throwable => proxy.dispatchCB(DataImportFailedAction(t))
+      case t: Throwable => proxy.dispatchCB(ImportFailedAction(t))
     }
   }
 

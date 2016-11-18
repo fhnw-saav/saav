@@ -1,3 +1,8 @@
 {
-  "debug": "persons"
+  "criteria": [
+    {
+      "name": "A valid but useless 'persons' config",
+      "subCriteria": []
+    }
+  ]
 }

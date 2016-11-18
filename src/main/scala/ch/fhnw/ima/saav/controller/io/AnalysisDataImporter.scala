@@ -1,41 +1,40 @@
 package ch.fhnw.ima.saav.controller.io
 
-import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportFailedAction, DataImportInProgressAction}
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain._
-import diode.Action
 import org.scalajs.dom
 import org.scalajs.dom._
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 
+/**
+  * Asynchronous data import, scheduled in batches in order to give the UI a chance to render progress (the pleasures
+  * of single-threaded JavaScript).
+  */
 object AnalysisDataImporter {
 
   val BatchSize = 10
 
-  def importData(analysisConfig: AnalysisConfig, dataFile: File): Future[Action] = {
+  type Row = Array[String]
+
+  /** Accumulates imported data in a builder and carries current import state from one batch to the next */
+  final case class ImportState(analysisConfig: AnalysisConfig, analysisBuilder: AnalysisBuilder, allRows: Seq[Row], nextBatchIndex: Int)
+
+  /** Reads all rows from the given data file and prepares the necessary data structures for subsequent, batched import. */
+  def importDataAsync(analysisConfig: AnalysisConfig, dataFile: File): Future[ImportState] = {
     val reader = new dom.FileReader()
     reader.readAsText(dataFile)
-    val resultPromise = Promise[Action]()
+    val resultPromise = Promise[ImportState]()
     reader.onload = (_: UIEvent) => {
       // Cast is OK since we are calling readAsText
       val contents = reader.result.asInstanceOf[String]
-      resultPromise.success(parseModel(analysisConfig, contents))
+      val rows: Seq[Row] = splitContentsIntoRows(contents)
+      val builder = AnalysisBuilder()
+      val firstBatch = ImportState(analysisConfig, builder, rows, 0)
+      resultPromise.success(firstBatch)
     }
     resultPromise.future
-  }
-
-  type Row = Array[String]
-
-  private def parseModel(analysisConfig: AnalysisConfig, contents: String): Action = {
-
-    // to be used as a basis to fill analysis model
-    val rows: Seq[Row] = splitContentsIntoRows(contents)
-
-    val builder = AnalysisBuilder()
-
-    DataImportInProgressAction(analysisConfig, 0, builder, rows, 0)
   }
 
   private def splitContentsIntoRows(contents: String) = {
@@ -59,15 +58,19 @@ object AnalysisDataImporter {
       .drop(1) // skip header
   }
 
-  def parseRowBatchAsync(analysisConfig: AnalysisConfig, builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int): Future[Action] = {
+  /**
+    * Asynchronously parses one batch of rows. Either returns the complete analysis (if this parsing invocation managed
+    * to parse all remaining rows), or it returns a configuration for the next batch to be parsed.
+    */
+  def parseRowBatchAsync(importState: ImportState): Future[Either[Analysis, ImportState]] = {
 
-    val resultPromise = Promise[Action]()
+    val resultPromise = Promise[Either[Analysis, ImportState]]()
     js.timers.setTimeout(0) {
       try {
-        val action = parseRowBatch(analysisConfig, builder, rows, batchIndex)
+        val action = parseRowBatch(importState)
         resultPromise.success(action)
       } catch {
-        case t: Throwable => resultPromise.success(DataImportFailedAction(t))
+        case t: Throwable => resultPromise.failure(t)
       }
     }
 
@@ -75,7 +78,11 @@ object AnalysisDataImporter {
 
   }
 
-  def parseRowBatch(analysisConfig: AnalysisConfig, builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int): Action = {
+  def parseRowBatch(importState: ImportState): Either[Analysis, ImportState] = {
+    val batchIndex = importState.nextBatchIndex
+    val rows = importState.allRows
+    val builder = importState.analysisBuilder
+    val analysisConfig = importState.analysisConfig
     for (
       indexWithinBatch <- 0 until BatchSize;
       rowIndex = (batchIndex * BatchSize) + indexWithinBatch
@@ -88,10 +95,9 @@ object AnalysisDataImporter {
     val isLastBatch = parsedRowCount >= rows.length
     if (isLastBatch) {
       val analysis = builder.build
-      AnalysisReadyAction(analysisConfig, analysis)
+      Left(analysis)
     } else {
-      val progress = parsedRowCount.toFloat / rows.length
-      DataImportInProgressAction(analysisConfig, progress, builder, rows, batchIndex + 1)
+      Right(ImportState(analysisConfig, builder, rows, batchIndex + 1))
     }
   }
 

@@ -1,3 +1,8 @@
 {
-  "debug": "organisations"
+  "criteria": [
+    {
+      "name": "A valid but useless 'organisations' config",
+      "subCriteria": []
+    }
+  ]
 }

@@ -1,8 +1,9 @@
 package ch.fhnw.ima.saav
 
+import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.Row
 import ch.fhnw.ima.saav.model.domain._
 
-trait AnalysisTestData {
+trait TestUtil {
 
   val entityOne = Entity(EntityId("P1"))
   val entityTwo = Entity(EntityId("P2"))
@@ -60,5 +61,16 @@ trait AnalysisTestData {
     sc <- c.subCriteria
     i <- sc.indicators
   } yield i.id).toSet
+
+
+}
+
+object TestUtil {
+
+  def createTestRow(project: String, criteria: String, subCriteria: String, indicator: String): Row = {
+    Array(project, s"$criteria:::$subCriteria:::$indicator", "testReviewer", "42")
+  }
+
+  def createTestRows(rowCount: Int): Seq[Row] = for (i <- 0 until rowCount) yield createTestRow(s"project-$i", s"criteria-$i", s"subCriteria-$i", s"indicator-$i")
 
 }

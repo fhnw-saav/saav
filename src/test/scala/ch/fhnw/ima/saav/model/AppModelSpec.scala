@@ -1,13 +1,13 @@
 package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.AnalysisTestData
+import ch.fhnw.ima.saav.TestUtil
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Quality, Weights}
 import org.scalatest.{FunSpec, Matchers}
 
-class AppModelSpec extends FunSpec with Matchers with AnalysisTestData {
+class AppModelSpec extends FunSpec with Matchers with TestUtil {
 
   describe(s"A ${AppModel.getClass.getSimpleName}") {
 

@@ -8,7 +8,7 @@ import scala.concurrent.{Future, Promise}
 
 object AnalysisConfigImporter {
 
-  def importConfig(configFileUrl: String): Future[AnalysisConfig] = {
+  def importConfigAsync(configFileUrl: String): Future[AnalysisConfig] = {
     val xhr = new XMLHttpRequest()
     xhr.open("GET", configFileUrl)
     val resultPromise = Promise[AnalysisConfig]()

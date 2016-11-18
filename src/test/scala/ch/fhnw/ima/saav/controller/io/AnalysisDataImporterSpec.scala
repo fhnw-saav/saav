@@ -1,10 +1,9 @@
 package ch.fhnw.ima.saav.controller.io
 
-import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportInProgressAction}
-import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.{BatchSize, Row, parseRow}
+import ch.fhnw.ima.saav.TestUtil
+import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.{BatchSize, ImportState, Row, parseRow}
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.AnalysisBuilder
-import diode.Action
 import org.scalatest.FlatSpec
 
 class AnalysisDataImporterSpec extends FlatSpec {
@@ -16,7 +15,7 @@ class AnalysisDataImporterSpec extends FlatSpec {
     val subCriteriaName = "testSubCriteria"
     val indicatorName = "testIndicator"
 
-    val row: Row = createTestRow(projectName, criteriaName, subCriteriaName, indicatorName)
+    val row: Row = TestUtil.createTestRow(projectName, criteriaName, subCriteriaName, indicatorName)
 
     val builder = AnalysisBuilder()
 
@@ -35,28 +34,26 @@ class AnalysisDataImporterSpec extends FlatSpec {
   it should "import multiple rows in batches" in {
 
     val rowCount: Int = (1.5 * BatchSize).toInt
-    val rows = for (i <- 0 until rowCount) yield createTestRow(s"project-$i", s"criteria-$i", s"subCriteria-$i", s"indicator-$i")
+    val rows = TestUtil.createTestRows(rowCount)
 
     val builder = AnalysisBuilder()
 
-    val firstBatch: Action = AnalysisDataImporter.parseRowBatch(AnalysisConfig.empty, builder, rows, 0)
-    firstBatch match {
-      case DataImportInProgressAction(_, progress, _, _, batchIndex) =>
-        assert(progress === (BatchSize.toFloat / rowCount))
+    val stateAfterFirstBatch = AnalysisDataImporter.parseRowBatch(ImportState(AnalysisConfig.empty, builder, rows, 0))
+    stateAfterFirstBatch match {
+      case Right(ImportState(_, _, _, batchIndex)) =>
         assert(batchIndex === 1)
-      case a @ _ => fail(s"Unexpected action $a")
+        assert(builder.build.criteria.size === BatchSize)
+      case a@_ => fail(s"Unexpected parsing result $a")
     }
 
-    val secondBatch: Action = AnalysisDataImporter.parseRowBatch(AnalysisConfig.empty, builder, rows, 1)
-    secondBatch match {
-      case AnalysisReadyAction(_, analysis) =>
+    val stateAfterSecondBatch = AnalysisDataImporter.parseRowBatch(ImportState(AnalysisConfig.empty, builder, rows, 1))
+    stateAfterSecondBatch match {
+      case Left(analysis) =>
         assert(analysis.entities.size === rowCount)
-      case a @ _ => fail(s"Unexpected action $a")
+      case a@_ => fail(s"Unexpected parsing result $a")
     }
   }
 
-  private def createTestRow(project: String, criteria: String, subCriteria: String, indicator: String): Row = {
-    Array(project, s"$criteria:::$subCriteria:::$indicator", "testReviewer", "42")
-  }
+
 
 }
