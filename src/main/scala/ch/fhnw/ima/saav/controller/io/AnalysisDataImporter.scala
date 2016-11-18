@@ -1,6 +1,7 @@
 package ch.fhnw.ima.saav.controller.io
 
-import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportInProgressAction, DataImportFailedAction}
+import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportFailedAction, DataImportInProgressAction}
+import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain._
 import diode.Action
 import org.scalajs.dom
@@ -13,28 +14,28 @@ object AnalysisDataImporter {
 
   val BatchSize = 10
 
-  def importData(file: File): Future[Action] = {
+  def importData(analysisConfig: AnalysisConfig, dataFile: File): Future[Action] = {
     val reader = new dom.FileReader()
-    reader.readAsText(file)
+    reader.readAsText(dataFile)
     val resultPromise = Promise[Action]()
     reader.onload = (_: UIEvent) => {
       // Cast is OK since we are calling readAsText
       val contents = reader.result.asInstanceOf[String]
-      resultPromise.success(parseModel(contents))
+      resultPromise.success(parseModel(analysisConfig, contents))
     }
     resultPromise.future
   }
 
   type Row = Array[String]
 
-  private def parseModel(contents: String): Action = {
+  private def parseModel(analysisConfig: AnalysisConfig, contents: String): Action = {
 
     // to be used as a basis to fill analysis model
     val rows: Seq[Row] = splitContentsIntoRows(contents)
 
     val builder = AnalysisBuilder()
 
-    DataImportInProgressAction(0, builder, rows, 0)
+    DataImportInProgressAction(analysisConfig, 0, builder, rows, 0)
   }
 
   private def splitContentsIntoRows(contents: String) = {
@@ -58,12 +59,12 @@ object AnalysisDataImporter {
       .drop(1) // skip header
   }
 
-  def parseRowBatchAsync(builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int): Future[Action] = {
+  def parseRowBatchAsync(analysisConfig: AnalysisConfig, builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int): Future[Action] = {
 
     val resultPromise = Promise[Action]()
     js.timers.setTimeout(0) {
       try {
-        val action = parseRowBatch(builder, rows, batchIndex)
+        val action = parseRowBatch(analysisConfig, builder, rows, batchIndex)
         resultPromise.success(action)
       } catch {
         case t: Throwable => resultPromise.success(DataImportFailedAction(t))
@@ -74,7 +75,7 @@ object AnalysisDataImporter {
 
   }
 
-  def parseRowBatch(builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int): Action = {
+  def parseRowBatch(analysisConfig: AnalysisConfig, builder: AnalysisBuilder, rows: Seq[Row], batchIndex: Int): Action = {
     for (
       indexWithinBatch <- 0 until BatchSize;
       rowIndex = (batchIndex * BatchSize) + indexWithinBatch
@@ -87,10 +88,10 @@ object AnalysisDataImporter {
     val isLastBatch = parsedRowCount >= rows.length
     if (isLastBatch) {
       val analysis = builder.build
-      AnalysisReadyAction(analysis)
+      AnalysisReadyAction(analysisConfig, analysis)
     } else {
       val progress = parsedRowCount.toFloat / rows.length
-      DataImportInProgressAction(progress, builder, rows, batchIndex + 1)
+      DataImportInProgressAction(analysisConfig, progress, builder, rows, batchIndex + 1)
     }
   }
 

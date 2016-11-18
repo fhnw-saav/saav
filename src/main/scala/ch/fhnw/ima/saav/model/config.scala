@@ -13,6 +13,7 @@ object config {
   }
 
   object AnalysisConfig {
+    val empty = AnalysisConfig(Seq())
     def fromJson(json: String): Either[Error, AnalysisConfig] = decode[AnalysisConfig](json)
   }
 

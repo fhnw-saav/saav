@@ -18,7 +18,9 @@
         {
           "name": "Ergebnisoffene Anlage des Projektes",
           "weight": {
-            "Profile": { "Quality" : { "weight" : 0.42 } }
+            "Quality": {
+              "weight": 0.2
+            }
           },
           "indicators": [
             {

@@ -2,6 +2,7 @@ package ch.fhnw.ima.saav.controller.io
 
 import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, DataImportInProgressAction}
 import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.{BatchSize, Row, parseRow}
+import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.AnalysisBuilder
 import diode.Action
 import org.scalatest.FlatSpec
@@ -38,17 +39,17 @@ class AnalysisDataImporterSpec extends FlatSpec {
 
     val builder = AnalysisBuilder()
 
-    val firstBatch: Action = AnalysisDataImporter.parseRowBatch(builder, rows, 0)
+    val firstBatch: Action = AnalysisDataImporter.parseRowBatch(AnalysisConfig.empty, builder, rows, 0)
     firstBatch match {
-      case DataImportInProgressAction(progress, _, _, batchIndex) =>
+      case DataImportInProgressAction(_, progress, _, _, batchIndex) =>
         assert(progress === (BatchSize.toFloat / rowCount))
         assert(batchIndex === 1)
       case a @ _ => fail(s"Unexpected action $a")
     }
 
-    val secondBatch: Action = AnalysisDataImporter.parseRowBatch(builder, rows, 1)
+    val secondBatch: Action = AnalysisDataImporter.parseRowBatch(AnalysisConfig.empty, builder, rows, 1)
     secondBatch match {
-      case AnalysisReadyAction(analysis) =>
+      case AnalysisReadyAction(_, analysis) =>
         assert(analysis.entities.size === rowCount)
       case a @ _ => fail(s"Unexpected action $a")
     }

@@ -60,7 +60,7 @@ siteMappings ++=
   ) ++
     directory(saav.base / "css") ++
     directory(saav.base / "js") ++
-    directory(saav.base / "conf") ++
+    directory(saav.base / "config") ++
     directory(saav.base / "fonts")
 
 def toJsFolder(f: File) = f -> s"js/${f.name}"

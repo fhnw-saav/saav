@@ -21,7 +21,7 @@ object pages {
   // abstracts a sub-page identifiable via URL hash (i.e. the part that comes after the # separator)
   trait SubPage extends Page {
     def hashLink: String
-    def configFileUrl: String = s"conf/$hashLink.json"
+    def configFileUrl: String = s"config/$hashLink.json"
   }
 
   object Page {

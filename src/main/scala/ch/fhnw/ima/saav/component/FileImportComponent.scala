@@ -40,10 +40,10 @@ object FileImportComponent {
   }
 
   private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(mockAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(analysis = mockAnalysis))
 
   private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(alphabetSoupAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(analysis = alphabetSoupAnalysis))
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {

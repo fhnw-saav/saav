@@ -3,6 +3,7 @@ package ch.fhnw.ima.saav.controller
 import ch.fhnw.ima.saav.AnalysisTestData
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
+import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Profile, Weights}
 import org.scalatest.{FunSpec, Matchers}
@@ -11,7 +12,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
   private def circuitWithAnalysis() = {
     val circuit = new SaavCircuit()
-    circuit.dispatch(AnalysisReadyAction(analysis))
+    circuit.dispatch(AnalysisReadyAction(analysis = analysis))
     circuit
   }
 
@@ -21,7 +22,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with AnalysisTestData {
 
     it("should wire a progress value") {
       val circuit = new SaavCircuit()
-      circuit.dispatch(DataImportInProgressAction(0.9f, AnalysisBuilder(), Seq(), 0))
+      circuit.dispatch(DataImportInProgressAction(AnalysisConfig.empty, 0.9f, AnalysisBuilder(), Seq(), 0))
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {
         case Left(NoDataAppModel(ImportInProgress(progress))) =>
