@@ -28,6 +28,18 @@
               "enabled": true
             }
           ]
+        },
+        {
+          "name": "Bewusstsein für ethische und rechtliche Anforderungen in der Forschung",
+          "weight": {
+            "Profile": {}
+          },
+          "indicators": [
+            {
+              "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)",
+              "enabled": false
+            }
+          ]
         }
       ]
     }
