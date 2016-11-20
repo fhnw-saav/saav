@@ -24,6 +24,15 @@
 * Inside sbt: `~fastOptJS` (continuously compiles all Scala sources and generates JavaScript)
 * Open `index.html` through a web server (IntelliJ: Context menu > Open in Browser)
 
+# Optional: Browser Sync
+
+Synchronizes your browser whenever any of the SAAV artifacts change:
+
+* Install Node.js: Download https://nodejs.org/en/download/[here] or install via `brew install npm`
+* Install Browsersync: `npm install -g browser-sync`
+* Run: `browser-sync start -s . -f 'css' 'js' 'config' 'target/scala-2.12/saav-*.js'`
+* Details: https://www.browsersync.io
+
 # Test
 
 Automated tests require `Node.js` and `jsdom`:
