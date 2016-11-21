@@ -36,6 +36,7 @@ object PdfExportComponent {
   }
 
   private object LegendTable {
+    val Font = "arial"
     val FontSize = 10 // pt
     val LineGap = 10
 
@@ -150,7 +151,14 @@ object PdfExportComponent {
       pdf.setFontSize(FontSize)
 
       var y = Page.MarginY
-      for (e <- entities) {
+      for {
+        e <- entities
+        isPinned = model.entitySelectionModel.pinned.contains(e.id)
+        isVisible = model.entitySelectionModel.visible.contains(e.id)
+        if isVisible
+      } {
+        if (isPinned) pdf.setFont(Font, "bold")
+        else pdf.setFont(Font, "normal")
 
         columnPositions match {
           case ColumnPositions(Some(rankColumnX), _, _) =>
@@ -162,9 +170,13 @@ object PdfExportComponent {
         pdf.text(e.displayName, columnPositions.nameColumnX, y)
 
         // color
-        val webColor = model.colorMap(e.id)
-        val color = Color(webColor.hexValue)
-        pdf.setFillColor(color.r, color.g, color.b)
+        if (isPinned) {
+          pdf.setFillColor("black")
+        } else {
+          val webColor = model.colorMap(e.id)
+          val color = Color(webColor.hexValue)
+          pdf.setFillColor(color.r, color.g, color.b)
+        }
         val colorColumnY = y - ColorCellDimension + ColorCellOffsetY // no support for vertical centering
         pdf.rect(columnPositions.colorColumnX, colorColumnY, ColorCellDimension, ColorCellDimension, "F")
 
