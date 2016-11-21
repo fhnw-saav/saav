@@ -17,6 +17,8 @@ import scalacss.ScalaCssReact._
 
 object VisualRankingComponent {
 
+  val ElementId: String = "saav-visual-ranking"
+
   private val width = 100
   private val height = QualityChartLayout.Height
 
@@ -74,8 +76,9 @@ object VisualRankingComponent {
 
       <.svg.svg(
         css.centerBlock,
+        ^.id := ElementId,
         ^.svg.viewBox := s"0 0 $width $height",
-        ^.svg.width := width,
+        ^.svg.width := s"${width}px",
         ^.svg.height := s"${height}px",
         ^.svg.preserveAspectRatio := "none",
         background,

@@ -24,18 +24,23 @@ object PdfExportComponent {
 
   // all PDF metrics in mm unless indicated
 
+  val PixelsPerMillimeter = 12 // ~300 dpi
+
   private object Page {
     val Width = 297
-    val MarginX = 10
-    val MarginY = 20
-    val ContentWidth: Int = Width - 2 * MarginX
+    val Height = 210
+    val Margin = 10
+    val ContentWidth: Int = Width - 2 * Margin
+    val ContentHeight: Int = Height - 2 * Margin
   }
 
   private object Chart {
+    val TitleY = 20
     val ChartImageY = 30
   }
 
   private object LegendTable {
+    val Y = 28 // brute force alignment with visual ranking
     val Font = "arial"
     val FontSize = 10 // pt
     val LineGap = 10
@@ -43,7 +48,7 @@ object PdfExportComponent {
     case class ColumnPositions(rankColumnX: Option[Int], nameColumnX: Int, colorColumnX: Int)
 
     val WithRank = ColumnPositions(rankColumnX = Some(15), nameColumnX = 20, colorColumnX = 100)
-    val WithoutRank = ColumnPositions(rankColumnX = None, nameColumnX = Page.MarginX, colorColumnX = 80)
+    val WithoutRank = ColumnPositions(rankColumnX = None, nameColumnX = Page.Margin, colorColumnX = 80)
 
     val ColorCellDimension = 6
     val ColorCellOffsetY = 1
@@ -70,46 +75,86 @@ object PdfExportComponent {
       val landscape = "l"
       val pdf = new jsPDF(landscape, "mm", "a4")
 
-      val chartImageFuture = exportChart()
+      val chartImageFuture = exportSVG(ChartComponent.ElementId, MaxToPageWidth)
+      val visualRankingFuture: Future[Option[ImageInfo]] = if (activeTab == QualityTab) {
+        val future = exportSVG(VisualRankingComponent.ElementId, MaxToPageHeight)
+        future.map(f => Some(f))
+      } else {
+        Future.successful(None)
+      }
 
-      chartImageFuture.foreach { (imageInfo: ImageInfo) =>
+      for {
+        chartImageInfo <- chartImageFuture
+        optionalVisualRankingImageInfo <- visualRankingFuture
+      } {
 
-        // Title
-        pdf.text(title, Page.MarginX, Page.MarginY)
+        // Page 1: Chart
+        pdf.text(title, Page.Margin, Chart.TitleY)
 
-        val mmImageWidth = Page.Width - (2 * Page.MarginX)
-        val mmImageHeight = imageInfo.aspectRatio * mmImageWidth
-        pdf.addImage(imageInfo.dataURL, "png", Page.MarginX, Chart.ChartImageY, mmImageWidth, mmImageHeight)
+        {
+          val mmChartImageWidth = Page.ContentWidth
+          val mmChartImageHeight = Page.ContentWidth / chartImageInfo.aspectRatio
+          pdf.addImage(chartImageInfo.dataURL, "png", Page.Margin, Chart.ChartImageY, mmChartImageWidth, mmChartImageHeight)
+        }
 
+        // Page 2: Legend & Visual Ranking
         pdf.addPage()
 
         appendLegend(pdf, activeTab, model)
 
+        optionalVisualRankingImageInfo.foreach { visualRankingImageInfo =>
+          val mmWidth = (Page.ContentHeight * visualRankingImageInfo.aspectRatio).toInt
+          val mmHeight = Page.ContentHeight
+          val x = Page.Width - Page.Margin - mmWidth
+          val y = Page.Margin
+          pdf.addImage(visualRankingImageInfo.dataURL, "png", x, y, mmWidth, mmHeight)
+        }
+
+        // Done!
         pdf.save("Report.pdf")
       }
     }
 
-    case class ImageInfo(dataURL: String, aspectRatio: Int)
+    case class ImageInfo(dataURL: String, aspectRatio: Double)
 
-    private def exportChart(): Future[ImageInfo] = {
-      val svgChart = document.getElementById(ChartComponent.ElementId).asInstanceOf[SVGSVGElement]
-      val width = svgChart.width.baseVal.value
-      val height = svgChart.height.baseVal.value
+    trait MaxStrategy
+    case object MaxToPageWidth extends MaxStrategy
+    case object MaxToPageHeight extends MaxStrategy
+
+    private def exportSVG(elementId: String, maximization: MaxStrategy): Future[ImageInfo] = {
+      val svgElement = document.getElementById(elementId).asInstanceOf[SVGSVGElement]
+
+      val width = svgElement.width.baseVal.value
+      val height = svgElement.height.baseVal.value
+      val aspectRatio = width / height
 
       // 1. build an SVG/XML string representation (including CSS)
-      val svg = svgChart.cloneNode(true)
+      val svg = svgElement.cloneNode(true).asInstanceOf[SVGSVGElement]
+      svg.setAttribute("width", "100%")
       svg.insertBefore(createDefsWithInlinedCss(), svg.firstChild)
       val svgString = new XMLSerializer().serializeToString(svg)
 
-      // create a canvas, taking high-resolution displays into account (otherwise looks blurry on retina)
+      val pageContentWidthPx = Page.ContentWidth * PixelsPerMillimeter
+      val pageContentHeightPx = Page.ContentHeight * PixelsPerMillimeter
+      val (canvasWidth, canvasHeight) = maximization match {
+        case MaxToPageWidth =>
+          val w = pageContentWidthPx.toInt
+          val h = (pageContentWidthPx / aspectRatio).toInt
+          (w, h)
+
+        case MaxToPageHeight =>
+          val w = (pageContentHeightPx * aspectRatio).toInt
+          val h = pageContentHeightPx.toInt
+          (w, h)
+      }
       val canvas = document.createElement("canvas").asInstanceOf[Canvas]
-      val pixelRatio = window.devicePixelRatio.toInt
-      canvas.width = (width * pixelRatio).toInt
-      canvas.height = (height * pixelRatio).toInt
+      canvas.width = canvasWidth
+      canvas.height = canvasHeight
 
       // 2. render SVG string onto an HTML canvas
       val image = document.createElement("img").asInstanceOf[HTMLImageElement]
       image.src = "data:image/svg+xml," + svgString
+
       val ctx = canvas.getContext("2d")
 
       val resultPromise = Promise[ImageInfo]()
@@ -118,7 +163,6 @@ object PdfExportComponent {
         ctx.drawImage(image, 0, 0)
         // 3. export the HTML canvas to PNG
         val dataURL = canvas.toDataURL("image/png", 1.0)
-        val aspectRatio = canvas.height / canvas.width
         resultPromise.complete(Success(ImageInfo(dataURL, aspectRatio)))
       }
 
@@ -150,7 +194,7 @@ object PdfExportComponent {
 
       pdf.setFontSize(FontSize)
 
-      var y = Page.MarginY
+      var y = LegendTable.Y
       for {
         e <- entities
         isPinned = model.entitySelectionModel.pinned.contains(e.id)
@@ -177,6 +221,7 @@ object PdfExportComponent {
           val color = Color(webColor.hexValue)
           pdf.setFillColor(color.r, color.g, color.b)
         }
+
         val colorColumnY = y - ColorCellDimension + ColorCellOffsetY // no support for vertical centering
         pdf.rect(columnPositions.colorColumnX, colorColumnY, ColorCellDimension, ColorCellDimension, "F")
 
