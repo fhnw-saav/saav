@@ -1,9 +1,9 @@
 package ch.fhnw.ima.saav
 
 import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.Row
-import ch.fhnw.ima.saav.model.config.Config
+import ch.fhnw.ima.saav.model.config._
 import ch.fhnw.ima.saav.model.domain._
-import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weights}
+import ch.fhnw.ima.saav.model.weight.{Profile, Quality}
 
 trait TestUtil {
 
@@ -16,6 +16,54 @@ trait TestUtil {
   val reviewOne = ReviewId("Review1")
   val reviewTwo = ReviewId("Review2")
   val reviewThree = ReviewId("Review3")
+
+  val analysisConfig = AnalysisConfig(
+    Seq(
+      CriteriaConfig(
+        "C_1",
+        aggregatable = true,
+        subCriteria = Seq(
+          SubCriteriaConfig(
+            "SC_11",
+            Quality(1.0),
+            Seq(
+              IndicatorConfig("I_111", enabled = true),
+              IndicatorConfig("I_112", enabled = true)
+            )
+          )
+        )
+      ),
+      CriteriaConfig(
+        name = "C_2",
+        aggregatable = true,
+        subCriteria = Seq(
+          SubCriteriaConfig(
+            "SC_21",
+            Quality(0.42),
+            Seq(
+              IndicatorConfig("I_211", enabled = true),
+              IndicatorConfig("I_212", enabled = true)
+            )
+          )
+        )
+      ),
+      CriteriaConfig(
+        name = "C_3",
+        aggregatable = false,
+        subCriteria = Seq(
+          SubCriteriaConfig(
+            "SC_31",
+            Profile,
+            Seq(
+              IndicatorConfig("I_311", enabled = false),
+              IndicatorConfig("I_312", enabled = true)
+            )
+          )
+        )
+      )
+
+    )
+  )
 
   val analysis: Analysis = AnalysisBuilder()
     .criteria("C_1")
@@ -54,6 +102,11 @@ trait TestUtil {
           .addValue(entityOne, reviewTwo, 2)
           .addValue(entityTwo, reviewOne, 3)
         .build
+        .indicator("I_312")
+          .addValue(entityOne, reviewOne, 1)
+          .addValue(entityOne, reviewTwo, 2)
+          .addValue(entityTwo, reviewOne, 3)
+        .build
       .build
     .build
     .build
@@ -72,19 +125,6 @@ trait TestUtil {
     sc <- c.subCriteria
     i <- sc.indicators
   } yield i.id).toSet
-
-  val config: Config = {
-    new Config {
-      val defaultWeights: Weights = Weights(
-        subCriteriaWeights = Map(
-          SubCriteriaId(CriteriaId("C_1"), "SC_11") -> Quality(1.0),
-          SubCriteriaId(CriteriaId("C_2"), "SC_21") -> Quality(1.0),
-          SubCriteriaId(CriteriaId("C_3"), "SC_31") -> Profile
-        ),
-        enabledIndicators = allIndicatorIds)
-      val nonAggregatableCriteria: Set[CriteriaId] = Set(CriteriaId("C_3"))
-    }
-  }
 
 }
 

@@ -1,87 +1,92 @@
 package ch.fhnw.ima.saav.model
 
-import ch.fhnw.ima.saav.model.config.{AnalysisConfig, CriteriaConfig, IndicatorConfig, SubCriteriaConfig}
-import ch.fhnw.ima.saav.model.weight.{Profile, Quality}
+import ch.fhnw.ima.saav.TestUtil
+import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import org.scalatest.{FunSpec, Matchers}
 
-class ConfigModelSpec extends FunSpec with Matchers {
+class ConfigModelSpec extends FunSpec with Matchers with TestUtil {
 
   val json =
     """{
         "criteria" : [
           {
-            "name" : "Criteria A",
-            "aggregatable": false,
+            "name" : "C_1",
+            "aggregatable" : true,
             "subCriteria" : [
               {
-                "name" : "Sub-Criteria A1",
-                "weight" : { "Profile" : { } },
+                "name" : "SC_11",
+                "weight" : {
+                  "Quality" : {
+                    "weight" : 1
+                  }
+                },
                 "indicators" : [
                   {
-                    "name" : "Indicator Foo",
+                    "name" : "I_111",
                     "enabled" : true
                   },
                   {
-                    "name" : "Indicator Bar",
-                    "enabled" : false
+                    "name" : "I_112",
+                    "enabled" : true
                   }
                 ]
               }
             ]
           },
           {
-            "name" : "Criteria B",
-            "aggregatable": true,
+            "name" : "C_2",
+            "aggregatable" : true,
             "subCriteria" : [
               {
-                "name" : "Sub-Criteria B1",
-                "weight" : { "Quality" : { "weight" : 0.42 } },
+                "name" : "SC_21",
+                "weight" : {
+                  "Quality" : {
+                    "weight" : 0.42
+                  }
+                },
                 "indicators" : [
                   {
-                    "name" : "Indicator Foo",
+                    "name" : "I_211",
+                    "enabled" : true
+                  },
+                  {
+                    "name" : "I_212",
+                    "enabled" : true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name" : "C_3",
+            "aggregatable" : false,
+            "subCriteria" : [
+              {
+                "name" : "SC_31",
+                "weight" : {
+                  "Profile" : {
+
+                  }
+                },
+                "indicators" : [
+                  {
+                    "name" : "I_311",
                     "enabled" : false
+                  },
+                  {
+                    "name" : "I_312",
+                    "enabled" : true
                   }
                 ]
               }
             ]
           }
         ]
-  }"""
+      }"""
 
   it("should parse an analysis config") {
-
-    val expectedAnalysisConfig = AnalysisConfig(
-      Seq(
-        CriteriaConfig(
-          "Criteria A",
-          aggregatable = false,
-          subCriteria = Seq(
-            SubCriteriaConfig(
-              "Sub-Criteria A1",
-              Profile,
-              Seq(
-                IndicatorConfig("Indicator Foo", enabled = true),
-                IndicatorConfig("Indicator Bar", enabled = false)
-              )
-            )
-          )
-        ),
-        CriteriaConfig(
-          name = "Criteria B",
-          aggregatable = true,
-          subCriteria = Seq(
-            SubCriteriaConfig(
-              "Sub-Criteria B1",
-              Quality(0.42d),
-              Seq(IndicatorConfig("Indicator Foo", enabled = false))
-            )
-          )
-        )
-      )
-    )
-
     val actualAnalysisConfig = AnalysisConfig.fromJson(json)
-    actualAnalysisConfig shouldBe Right(expectedAnalysisConfig)
+    actualAnalysisConfig shouldBe Right(analysisConfig)
   }
 
 }

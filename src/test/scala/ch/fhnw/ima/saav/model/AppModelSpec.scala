@@ -1,6 +1,7 @@
 package ch.fhnw.ima.saav.model
 
 import ch.fhnw.ima.saav.TestUtil
+import ch.fhnw.ima.saav.controller.logic.AppModelFactory
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.weight.{Quality, Weights}
 import org.scalatest.{FunSpec, Matchers}
@@ -9,7 +10,7 @@ class AppModelSpec extends FunSpec with Matchers with TestUtil {
 
   describe(s"A ${AppModel.getClass.getSimpleName}") {
 
-    val model = AppModel(analysis, config)
+    val model = AppModelFactory.createAppModel(analysisConfig, analysis)
 
     it("should aggregate medians across all categories and sub-categories") {
 
