@@ -21,7 +21,7 @@ final case class AnalysisDataImportInProgressAction(importState: ImportState) ex
 
 final case class ImportFailedAction(throwable: Throwable, logToConsole: Boolean = true) extends Action
 
-final case class AnalysisReadyAction(analysisConfig: AnalysisConfig = AnalysisConfig.empty, analysis: Analysis) extends Action
+final case class AnalysisReadyAction(analysisConfig: AnalysisConfig, analysis: Analysis) extends Action
 
 class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
 

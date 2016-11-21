@@ -44,7 +44,7 @@ object ExpertConfigHandler {
       am.copy(
         expertConfig = v,
         qualityModel = QualityModel(am.analysis, v.actualWeights, am.qualityModel.layout.width),
-        profileModel = ProfileModel(am.analysis, v.actualWeights, am.profileModel.layout.width)
+        profileModel = ProfileModel(am.analysis, v.actualWeights, am.config.nonAggregatableCriteria, am.profileModel.layout.width)
       )
     })
   }

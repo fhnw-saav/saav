@@ -162,14 +162,10 @@ object layout {
       index += 1
     }
 
-
-
-    // Prepare for when/If we have criteria that do not get aggregated...
-
-    def getAggregatedCriteriaCount(criteria: Seq[GroupedCriteria]): Int = criteria.size
-    def isCriteriaAggregated(criteria: GroupedCriteria): Boolean = true
-
     // And now for the getters or something...
+
+    def getAggregatedCriteriaCount(criteria: Seq[GroupedCriteria]): Int = criteria.count(_.aggregated)
+    def isCriteriaAggregated(criteria: GroupedCriteria): Boolean = criteria.aggregated
 
     def getCriteriaBox(criteria: GroupedCriteria): (Int, Int) = criteriaBoxesMap(criteria.id)
 

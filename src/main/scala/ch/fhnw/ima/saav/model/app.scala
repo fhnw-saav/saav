@@ -49,7 +49,7 @@ object app {
 
       val defaultLayoutWidth = 1000
       val qualityModel = QualityModel(analysis, config.defaultWeights, defaultLayoutWidth)
-      val profileModel = ProfileModel(analysis, config.defaultWeights, defaultLayoutWidth)
+      val profileModel = ProfileModel(analysis, config.defaultWeights, config.nonAggregatableCriteria, defaultLayoutWidth)
       val expertConfig = ExpertConfig(visibility = ExpertConfigHidden, config.defaultWeights, config.defaultWeights)
 
       val entitySelectionModel = EntitySelectionModel(analysis.entities.map(_.id).toSet, None)
@@ -119,10 +119,11 @@ object app {
 
   object ProfileModel {
 
-    def apply(analysis: Analysis, weights: Weights, layoutWidth: Int): ProfileModel = {
+    def apply(analysis: Analysis, weights: Weights, nonAggregatableCriteria: Set[CriteriaId], layoutWidth: Int): ProfileModel = {
 
       val allCriteria = analysis.criteria.map { c =>
-        GroupedCriteria.forProfile(analysis.entities.map(_.id), c, weights)
+        val aggregatable = !nonAggregatableCriteria.contains(c.id)
+        GroupedCriteria.forProfile(analysis.entities.map(_.id), c, weights, aggregatable)
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
@@ -158,7 +159,7 @@ object app {
   // GroupedXXX classes enrich the plain domain classes with grouped values
   // --------------------------------------------------------------------------
 
-  final case class GroupedCriteria(id: CriteriaId, displayName: String, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[EntityId, Double]) {
+  final case class GroupedCriteria(id: CriteriaId, displayName: String, aggregated: Boolean, subCriteria: Seq[GroupedSubCriteria], groupedValues: Map[EntityId, Double]) {
 
     // Deliberately not using min/max of groupedValues for our purpose
     val minValue: Option[Double] = safeMinMax(subCriteria.flatMap(_.minValue))._1
@@ -194,11 +195,12 @@ object app {
         weightedMedian(valuesWithWeights)
       }
 
-      GroupedCriteria(entities, criteria, qualitySubCriteria, groupedValue)
+      val aggregatable = true // not relevant for quality
+      GroupedCriteria(entities, criteria, aggregatable, qualitySubCriteria, groupedValue)
 
     }
 
-    def forProfile(entities: Seq[EntityId], criteria: Criteria, weights: Weights): GroupedCriteria = {
+    def forProfile(entities: Seq[EntityId], criteria: Criteria, weights: Weights, aggregatable: Boolean): GroupedCriteria = {
 
       val allSubCriteria = criteria.subCriteria.map(sc => GroupedSubCriteria(entities, sc, weights.enabledIndicators))
       val nonEmptySubCriteria = allSubCriteria.filter(_.indicators.nonEmpty)
@@ -216,16 +218,16 @@ object app {
         weightedMedian(valuesWithWeights)
       }
 
-      GroupedCriteria(entities, criteria, profileSubCriteria, groupedValue)
+      GroupedCriteria(entities, criteria, aggregatable, profileSubCriteria, groupedValue)
 
     }
 
-    private def apply(entities: Seq[EntityId], criteria: Criteria, subCriteria: Seq[GroupedSubCriteria], groupedValue: EntityId => Option[Double]): GroupedCriteria = {
+    private def apply(entities: Seq[EntityId], criteria: Criteria, aggregatable: Boolean, subCriteria: Seq[GroupedSubCriteria], groupedValue: EntityId => Option[Double]): GroupedCriteria = {
       val groupedValues = (for {
         entity <- entities
         groupedValue <- groupedValue(entity)
       } yield entity -> groupedValue).toMap
-      GroupedCriteria(criteria.id, criteria.displayName, subCriteria, groupedValues)
+      GroupedCriteria(criteria.id, criteria.displayName, aggregatable, subCriteria, groupedValues)
     }
 
   }

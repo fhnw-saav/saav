@@ -13,7 +13,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with TestUtil {
 
   private def circuitWithAnalysis() = {
     val circuit = new SaavCircuit()
-    circuit.dispatch(AnalysisReadyAction(analysis = analysis))
+    circuit.dispatch(AnalysisReadyAction(analysisConfig = AnalysisConfig.empty, analysis = analysis))
     circuit
   }
 
@@ -249,13 +249,13 @@ class SaavCircuitSpec extends FunSpec with Matchers with TestUtil {
       }
       val modelWithQualityAndProfileCategories = circuit.zoom(ChartLayoutHandler.modelGet).value
       modelWithQualityAndProfileCategories._1.criteria.size shouldBe 0
-      modelWithQualityAndProfileCategories._2.criteria.size shouldBe 2
+      modelWithQualityAndProfileCategories._2.criteria.size shouldBe 3
 
       // assert that the quality vs. profile assignment is not lost after updating chart layouts
       circuit.dispatch(UpdateChartWidthAction(42))
       val model = circuit.zoom(ChartLayoutHandler.modelGet).value
       model._1.criteria.size shouldBe 0
-      model._2.criteria.size shouldBe 2
+      model._2.criteria.size shouldBe 3
     }
 
   }

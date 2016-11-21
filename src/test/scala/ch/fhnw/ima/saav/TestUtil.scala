@@ -1,7 +1,9 @@
 package ch.fhnw.ima.saav
 
 import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.Row
+import ch.fhnw.ima.saav.model.config.Config
 import ch.fhnw.ima.saav.model.domain._
+import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weights}
 
 trait TestUtil {
 
@@ -16,9 +18,9 @@ trait TestUtil {
   val reviewThree = ReviewId("Review3")
 
   val analysis: Analysis = AnalysisBuilder()
-    .criteria("Cat 1")
-      .subCriteria("Sub-Cat 11")
-        .indicator("Indicator 111")
+    .criteria("C_1")
+      .subCriteria("SC_11")
+        .indicator("I_111")
           .addValue(entityOne, reviewOne, 1)
           .addValue(entityOne, reviewTwo, 0.1)
           .addValue(entityOne, reviewThree, 2)
@@ -26,25 +28,34 @@ trait TestUtil {
           .addValue(entityTwo, reviewTwo, 100)
           .addValue(entityTwo, reviewThree, 102)
         .build
-        .indicator("Indicator 112")
+        .indicator("I_112")
           .addValue(entityOne, reviewOne, 3)
           .addValue(entityTwo, reviewOne, 101)
           .addValue(entityThree, reviewOne, 0)
         .build
       .build
     .build
-    .criteria("Cat 2")
-      .subCriteria("Sub-Cat 21")
-        .indicator("Indicator 211")
+    .criteria("C_2")
+      .subCriteria("SC_21")
+        .indicator("I_211")
           .addValue(entityOne, reviewOne, 41)
           .addValue(entityOne, reviewTwo, 43)
           .addValue(entityTwo, reviewOne, 99)
         .build
-        .indicator("Indicator 212")
+        .indicator("I_212")
           .addValue(entityOne, reviewOne, 43)
         .build
         .build
       .build
+    .criteria("C_3")
+      .subCriteria("SC_31")
+        .indicator("I_311")
+          .addValue(entityOne, reviewOne, 1)
+          .addValue(entityOne, reviewTwo, 2)
+          .addValue(entityTwo, reviewOne, 3)
+        .build
+      .build
+    .build
     .build
 
   val subCriteriaId: SubCriteriaId = analysis.criteria.head.subCriteria.head.id
@@ -62,6 +73,18 @@ trait TestUtil {
     i <- sc.indicators
   } yield i.id).toSet
 
+  val config: Config = {
+    new Config {
+      val defaultWeights: Weights = Weights(
+        subCriteriaWeights = Map(
+          SubCriteriaId(CriteriaId("C_1"), "SC_11") -> Quality(1.0),
+          SubCriteriaId(CriteriaId("C_2"), "SC_21") -> Quality(1.0),
+          SubCriteriaId(CriteriaId("C_3"), "SC_31") -> Profile
+        ),
+        enabledIndicators = allIndicatorIds)
+      val nonAggregatableCriteria: Set[CriteriaId] = Set(CriteriaId("C_3"))
+    }
+  }
 
 }
 

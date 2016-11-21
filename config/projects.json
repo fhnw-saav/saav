@@ -2,6 +2,7 @@
   "criteria": [
     {
       "name": "Angemessene Methodologie",
+      "aggregatable": false,
       "subCriteria": [
         {
           "name": "Klare Fragestellung und Zielsetzung",

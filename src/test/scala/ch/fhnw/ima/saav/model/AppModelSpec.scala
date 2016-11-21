@@ -2,8 +2,6 @@ package ch.fhnw.ima.saav.model
 
 import ch.fhnw.ima.saav.TestUtil
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.config.Config
-import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Quality, Weights}
 import org.scalatest.{FunSpec, Matchers}
 
@@ -11,7 +9,7 @@ class AppModelSpec extends FunSpec with Matchers with TestUtil {
 
   describe(s"A ${AppModel.getClass.getSimpleName}") {
 
-    val model = AppModel(analysis, createConfig(analysis))
+    val model = AppModel(analysis, config)
 
     it("should aggregate medians across all categories and sub-categories") {
 
@@ -55,7 +53,7 @@ class AppModelSpec extends FunSpec with Matchers with TestUtil {
 
       // enable all indicators below criteria 1
       val someIndicators = analysis.criteria(1).subCriteria(0).indicators.map(_.id).toSet
-      val weights = createWeights(someIndicators)
+      val weights = Weights(subCriteriaWeights = Map().withDefaultValue(Quality(1.0)), enabledIndicators = someIndicators)
 
       val qualityModel = QualityModel(model.analysis, weights, 1000)
 
@@ -83,17 +81,12 @@ class AppModelSpec extends FunSpec with Matchers with TestUtil {
       criteriaTwo.subCriteria(0).groupedValues.get(entityThree.id) shouldBe None
 
     }
-  }
 
-  private def createWeights(indicators: Set[IndicatorId]) = {
-    Weights(subCriteriaWeights = Map().withDefaultValue(Quality(1.0)), enabledIndicators = indicators)
-  }
-
-  private def createConfig(a: Analysis) = {
-    val indicators = a.criteria.flatMap(_.subCriteria.flatMap(_.indicators).map(_.id))
-    new Config {
-      val defaultWeights: Weights = createWeights(indicators.toSet)
+    it("should wire criteria aggregation") {
+      model.config.nonAggregatableCriteria.size shouldBe 1
+      model.profileModel.criteria.head.aggregated shouldBe false
     }
+
   }
 
 }

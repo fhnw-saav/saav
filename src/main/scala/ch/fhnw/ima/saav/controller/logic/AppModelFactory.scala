@@ -34,10 +34,10 @@ object AppModelFactory {
       }).toSet
 
     val enabledIndicators = subCriteria.flatMap(_.indicators).map(_.id).filterNot(configuredDisabledIndicators.contains)
-    val weights = Weights(subCriteriaWeights, enabledIndicators.toSet)
 
     val config = new Config {
-      val defaultWeights: Weights = weights
+      val defaultWeights: Weights = Weights(subCriteriaWeights, enabledIndicators.toSet)
+      val nonAggregatableCriteria: Set[CriteriaId] = analysisConfig.criteria.filterNot(_.aggregatable).map(c => CriteriaId(c.name)).toSet
     }
 
     AppModel(analysis, config)

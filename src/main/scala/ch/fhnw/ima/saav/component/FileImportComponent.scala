@@ -4,6 +4,7 @@ import ch.fhnw.ima.saav.component.bootstrap.Button
 import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, ImportFailedAction, StartImportAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
+import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}
@@ -40,10 +41,10 @@ object FileImportComponent {
   }
 
   private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(analysis = mockAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.empty, analysis = mockAnalysis))
 
   private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(analysis = alphabetSoupAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.empty, analysis = alphabetSoupAnalysis))
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {

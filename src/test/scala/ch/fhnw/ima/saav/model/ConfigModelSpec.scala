@@ -11,6 +11,7 @@ class ConfigModelSpec extends FunSpec with Matchers {
         "criteria" : [
           {
             "name" : "Criteria A",
+            "aggregatable": false,
             "subCriteria" : [
               {
                 "name" : "Sub-Criteria A1",
@@ -30,6 +31,7 @@ class ConfigModelSpec extends FunSpec with Matchers {
           },
           {
             "name" : "Criteria B",
+            "aggregatable": true,
             "subCriteria" : [
               {
                 "name" : "Sub-Criteria B1",
@@ -52,7 +54,8 @@ class ConfigModelSpec extends FunSpec with Matchers {
       Seq(
         CriteriaConfig(
           "Criteria A",
-          Seq(
+          aggregatable = false,
+          subCriteria = Seq(
             SubCriteriaConfig(
               "Sub-Criteria A1",
               Profile,
@@ -65,7 +68,8 @@ class ConfigModelSpec extends FunSpec with Matchers {
         ),
         CriteriaConfig(
           name = "Criteria B",
-          Seq(
+          aggregatable = true,
+          subCriteria = Seq(
             SubCriteriaConfig(
               "Sub-Criteria B1",
               Quality(0.42d),
