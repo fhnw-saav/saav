@@ -2,6 +2,7 @@
   "criteria": [
     {
       "name": "A valid but useless 'organisations' config",
+      "aggregatable": true,
       "subCriteria": []
     }
   ]
