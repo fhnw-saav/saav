@@ -264,12 +264,14 @@ object app {
 
     def apply(indicator: Indicator): GroupedIndicator = {
 
-      val (entities, reviews) = indicator.values.keys.unzip
+      val (entities, _) = indicator.values.keySet.unzip
+
       val groupedValues = (
         for {
           entity <- entities
-          values = reviews.flatMap(r => indicator.values.get((entity, r))).toSeq
-          groupedValue <- median(values)
+          // collect values across all reviews
+          values = indicator.values.collect { case ((e, _), value) if e == entity => value }
+          groupedValue <- median(values.toSeq)
         } yield {
           entity -> groupedValue
         }
