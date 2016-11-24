@@ -3,6 +3,8 @@ package ch.fhnw.ima.saav.model
 import ch.fhnw.ima.saav.TestUtil
 import ch.fhnw.ima.saav.controller.logic.AppModelFactory
 import ch.fhnw.ima.saav.model.app._
+import ch.fhnw.ima.saav.model.config.AnalysisConfig
+import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Entity, EntityId, ReviewId}
 import ch.fhnw.ima.saav.model.weight.{Quality, Weights}
 import org.scalatest.{FunSpec, Matchers}
 
@@ -86,6 +88,33 @@ class AppModelSpec extends FunSpec with Matchers with TestUtil {
     it("should wire criteria aggregation") {
       model.config.nonAggregatableCriteria.size shouldBe 1
       model.profileModel.criteria.head.aggregated shouldBe false
+    }
+
+    it("https://github.com/fhnw-saav/saav/issues/72") {
+
+      val e1 = EntityId("E1")
+      val e2 = EntityId("E2")
+
+      val analysis = AnalysisBuilder().criteria("C").subCriteria("SC").indicator("I")
+
+        .addValue(Entity(e1), ReviewId("R1"), 1)
+        .addValue(Entity(e1), ReviewId("R2"), 1)
+        .addValue(Entity(e1), ReviewId("R3"), 2)
+
+        .addValue(Entity(e2), ReviewId("R1"), 2)
+        .addValue(Entity(e2), ReviewId("R2"), 2)
+        .addValue(Entity(e2), ReviewId("R3"), 3)
+
+        .build.build.build.build
+
+      val model = AppModelFactory.createAppModel(AnalysisConfig.empty, analysis)
+      val indicator = model.qualityModel.criteria(0).subCriteria(0).indicators(0)
+
+      // median of 1,1,2
+      indicator.groupedValues.get(e1) shouldBe Some(1)
+
+      // median of 2,2,3
+      indicator.groupedValues.get(e2) shouldBe Some(2)
     }
 
   }
