@@ -20,7 +20,7 @@ object IndicatorComponent {
         pinnedEntity <- p.pinnedEntity.toSeq
         indicator <- p.indicators
       } yield {
-        val value = indicator.groupedValues.get(pinnedEntity).map(_.toString).getOrElse("-")
+        val value = formatValue(indicator.groupedValues.get(pinnedEntity))
         <.tr(
           <.td(css.colXs1, value),
           <.td(css.colXs11, css.overflowHidden, ^.textOverflow.ellipsis, ^.title := indicator.displayName, indicator.displayName)

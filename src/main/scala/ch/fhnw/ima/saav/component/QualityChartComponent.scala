@@ -388,7 +388,7 @@ object QualityChartComponent extends ChartComponent {
           for (criteria <- model.qualityModel.criteria) {
             val containsHoveredSubCriteria = criteria.subCriteria.count(sc => hoveredSubCriteria.contains(sc.id)) > 0
             if (containsHoveredSubCriteria) {
-              val label = criteria.groupedValues.get(groupedEntity.id).map(_.toString).getOrElse("-")
+              val label = formatValue(criteria.groupedValues.get(groupedEntity.id))
               criteriaValueLabel =
                 <.svg.text(
                   ^.svg.textAnchor := "middle",
@@ -400,7 +400,7 @@ object QualityChartComponent extends ChartComponent {
 
             for (subCriteria <- criteria.subCriteria) {
               if (hoveredSubCriteria.contains(subCriteria.id)) {
-                val label = subCriteria.groupedValues.get(groupedEntity.id).map(_.toString).getOrElse("-")
+                val label = formatValue(subCriteria.groupedValues.get(groupedEntity.id))
                 subCriteriaValueLabel =
                   <.svg.text(
                     ^.svg.textAnchor := "middle",

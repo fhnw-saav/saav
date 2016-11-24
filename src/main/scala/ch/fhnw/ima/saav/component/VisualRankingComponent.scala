@@ -143,7 +143,7 @@ object VisualRankingComponent {
             (p.colorMap(entity.id).hexValue, r)
           }
 
-        val formattedValue = entity.value.map(_.toString).getOrElse("-")
+        val formattedValue = formatValue(entity.value)
         val tooltip = s"${entity.displayName}: $formattedValue"
 
         <.svg.circle(
