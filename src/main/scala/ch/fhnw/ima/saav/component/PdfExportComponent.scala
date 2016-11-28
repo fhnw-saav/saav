@@ -247,7 +247,10 @@ object PdfExportComponent {
         val modal = Modal(
           Modal.Props(
             header = _ => <.h2(exportPdfLabel),
-            footer = hide => Button(generatePdf(s.title, p.activeTab, p.model) >> hide >> hideReportForm, "OK")),
+            footer = hide => <.div(
+              Button(hide >> hideReportForm, "Cancel"),
+              Button(generatePdf(s.title, p.activeTab, p.model) >> hide >> hideReportForm, "OK")
+            )),
           labelledTitleInput
         )
         <.div(button, modal)
