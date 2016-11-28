@@ -1,0 +1,9 @@
+{
+  "criteria": [
+    {
+      "name": "A valid but useless 'persons' config",
+      "aggregatable": true,
+      "subCriteria": []
+    }
+  ]
+}

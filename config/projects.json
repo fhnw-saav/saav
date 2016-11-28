@@ -1,0 +1,48 @@
+{
+  "criteria": [
+    {
+      "name": "Angemessene Methodologie",
+      "aggregatable": false,
+      "subCriteria": [
+        {
+          "name": "Klare Fragestellung und Zielsetzung",
+          "weight": {
+            "Profile": {}
+          },
+          "indicators": [
+            {
+              "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "name": "Ergebnisoffene Anlage des Projektes",
+          "weight": {
+            "Quality": {
+              "weight": 0.2
+            }
+          },
+          "indicators": [
+            {
+              "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "name": "Bewusstsein für ethische und rechtliche Anforderungen in der Forschung",
+          "weight": {
+            "Profile": {}
+          },
+          "indicators": [
+            {
+              "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)",
+              "enabled": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
