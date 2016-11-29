@@ -8,7 +8,7 @@ import ch.fhnw.ima.saav.model.layout.{ProfileChartLayout, QualityChartLayout}
 import ch.fhnw.ima.saav.model.weight._
 
 /**
- * Application model classes complement the domain model with grouped values (medians) and presentation state.
+ * Application model classes complement the domain model with grouped values (means) and presentation state.
  */
 object app {
 
@@ -88,9 +88,9 @@ object app {
       }
       val criteria = allCriteria.filter(_.subCriteria.nonEmpty)
 
-      // calculate median values and sort entity/value pairs in descending value order
+      // calculate mean values and sort entity/value pairs in descending value order
       val sortedEntityValuePairs = analysis.entities.map { entity =>
-        val value = median(criteria.flatMap(_.groupedValues.get(entity.id)))
+        val value = mean(criteria.flatMap(_.groupedValues.get(entity.id)))
         (entity, value)
       }.reverse.sortBy(_._2).reverse // first `reverse` assures that ties appear in import order, second `reverse` for descending values
 
@@ -129,7 +129,7 @@ object app {
 
       // TODO: Support different sorting strategies
       val sortedEntities = analysis.entities.zipWithIndex.map { case (e, i) =>
-        val value = median(criteria.flatMap(_.groupedValues.get(e.id)))
+        val value = mean(criteria.flatMap(_.groupedValues.get(e.id)))
         GroupedEntity(e.id, e.displayName, value = value, position = i)
       }.sortBy(_.displayName)
 
@@ -192,7 +192,7 @@ object app {
         } yield {
           (value, weightValue)
         }
-        weightedMedian(valuesWithWeights)
+        weightedMean(valuesWithWeights)
       }
 
       val aggregatable = true // not relevant for quality
@@ -215,7 +215,7 @@ object app {
         } yield {
           (value, 1d) // no weighting for profile chart
         }
-        weightedMedian(valuesWithWeights)
+        weightedMean(valuesWithWeights)
       }
 
       GroupedCriteria(entities, criteria, aggregatable, profileSubCriteria, groupedValue)
@@ -247,7 +247,7 @@ object app {
       val groupedValues = (for {
         entity <- entities
         values = indicators.flatMap(i => i.groupedValues.get(entity))
-        groupedValue <- median(values)
+        groupedValue <- mean(values)
       } yield {
         entity -> groupedValue
       }
@@ -271,7 +271,7 @@ object app {
           entity <- entities
           // collect values across all reviews
           values = indicator.values.collect { case ((e, _), value) if e == entity => value }
-          groupedValue <- median(values.toSeq)
+          groupedValue <- mean(values.toSeq)
         } yield {
           entity -> groupedValue
         }

@@ -69,43 +69,49 @@ trait TestUtil {
     .criteria("C_1")
       .subCriteria("SC_11")
         .indicator("I_111")
+
           .addValue(entityOne, reviewOne, 1)
-          .addValue(entityOne, reviewTwo, 0.1)
-          .addValue(entityOne, reviewThree, 2)
-          .addValue(entityTwo, reviewOne, 101)
-          .addValue(entityTwo, reviewTwo, 100)
-          .addValue(entityTwo, reviewThree, 102)
+          .addValue(entityOne, reviewTwo, 1)
+          .addValue(entityOne, reviewThree, 1)
+
+          .addValue(entityTwo, reviewOne, 1)
+          .addValue(entityTwo, reviewTwo, 2)
+          .addValue(entityTwo, reviewThree, 3)
+
         .build
         .indicator("I_112")
-          .addValue(entityOne, reviewOne, 3)
-          .addValue(entityTwo, reviewOne, 101)
-          .addValue(entityThree, reviewOne, 0)
+          .addValue(entityOne, reviewOne, 1)
+          .addValue(entityTwo, reviewOne, 2)
+          .addValue(entityThree, reviewOne, 3)
         .build
       .build
     .build
     .criteria("C_2")
       .subCriteria("SC_21")
         .indicator("I_211")
-          .addValue(entityOne, reviewOne, 41)
-          .addValue(entityOne, reviewTwo, 43)
-          .addValue(entityTwo, reviewOne, 99)
+          .addValue(entityOne, reviewOne, 100)
+          .addValue(entityOne, reviewTwo, 100)
+
+          .addValue(entityTwo, reviewOne, 200)
         .build
         .indicator("I_212")
-          .addValue(entityOne, reviewOne, 43)
+          .addValue(entityOne, reviewOne, 200)
         .build
         .build
       .build
     .criteria("C_3")
       .subCriteria("SC_31")
         .indicator("I_311")
-          .addValue(entityOne, reviewOne, 1)
-          .addValue(entityOne, reviewTwo, 2)
-          .addValue(entityTwo, reviewOne, 3)
+          .addValue(entityOne, reviewOne, 1001)
+          .addValue(entityOne, reviewTwo, 1002)
+
+          .addValue(entityTwo, reviewOne, 2000)
         .build
         .indicator("I_312")
-          .addValue(entityOne, reviewOne, 1)
-          .addValue(entityOne, reviewTwo, 2)
-          .addValue(entityTwo, reviewOne, 3)
+          .addValue(entityOne, reviewOne, 42)
+          .addValue(entityOne, reviewTwo, 42)
+
+          .addValue(entityTwo, reviewOne, 42)
         .build
       .build
     .build

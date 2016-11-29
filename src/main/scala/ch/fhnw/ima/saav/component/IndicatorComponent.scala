@@ -30,7 +30,7 @@ object IndicatorComponent {
       <.div(css.boxed,
         <.h3("Indicators"),
         <.table(css.table,
-          <.thead(<.tr(<.th(css.colXs1, "Median"), <.th(css.colXs11, "Indicator"))),
+          <.thead(<.tr(<.th(css.colXs1, "Mean"), <.th(css.colXs11, "Indicator"))),
           <.tbody(
             if (indicators.isEmpty) {
               <.tr(<.td(^.colSpan := 2, <.i("Select a row and move your mouse over an axis to see something here")))

@@ -19,28 +19,23 @@ object weight {
     implicit val decodeWeight: io.circe.Decoder[Weight] = io.circe.generic.semiauto.deriveDecoder
   }
 
-  private[model] def weightedMedian(valuesWithWeight: Seq[(Double, Double)]) = {
-
-    // TODO: Replace this poor man's calculation with something more efficient
-
-    def explode = (value: Double, weight: Double) => {
-      val count = (weight * 100).toInt
-      Seq.fill(count)(value)
+  private[model] def weightedMean(valuesWithWeight: Seq[(Double, Double)]): Option[Double] = {
+    if (valuesWithWeight.isEmpty) None
+    else {
+      val (sumOfProducts, sumOfWeights) = valuesWithWeight.foldLeft((0d, 0d)) { case ((products, weights), (v, w)) =>
+        (products + (v * w), weights + w)
+      }
+      if (sumOfWeights == 0) {
+        None
+      } else {
+        Some(sumOfProducts / sumOfWeights)
+      }
     }
-
-    val explodedValues = valuesWithWeight.flatMap(explode.tupled)
-    median(explodedValues)
   }
 
-  private[model] def median(values: Seq[Double]) = {
-    val sortedValues = values.sorted
-    sortedValues.size match {
-      case 0 => None
-      case length if length % 2 == 0 =>
-        val i = (length - 1) / 2
-        Some((sortedValues(i) + sortedValues(i + 1)) / 2)
-      case length => Some(sortedValues(length / 2))
-    }
+  private[model] def mean(values: Seq[Double]): Option[Double] = {
+    if (values.isEmpty) None
+    else Some(values.sum / values.length)
   }
 
 }
