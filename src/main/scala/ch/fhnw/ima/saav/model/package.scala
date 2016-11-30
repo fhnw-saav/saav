@@ -27,8 +27,9 @@ package object model {
     populateIndicator(builder, "Machbarkeit", "x3", "Indikator 1")
 
     populateIndicator(builder, "Leistung", "x1", "Indikator 1")
+    populateIndicator(builder, "Leistung", "x1", "Indikator 2")
     populateIndicator(builder, "Leistung", "x2", "Indikator 1")
-    populateIndicator(builder, "Leistung", "x3", "Indikator 1")
+    populateIndicator(builder, "Leistung", "x3", "missing")
     populateIndicator(builder, "Leistung", "x4", "Indikator 1")
 
     populateIndicator(builder, "Ver...", "x1", "Indikator 1")
@@ -100,8 +101,12 @@ package object model {
 
     for (i <- 1 to 12) {
       val project = Entity(EntityId(s"Project $i"))
-      indicatorScope.addValue(project, reviewOne, r.nextInt(100))
-      indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
+      if (project.displayName.equals("Project 3") && indicatorName.equals("missing")) {
+        // Do nothing so as to "generate" missing values
+      } else {
+        indicatorScope.addValue(project, reviewOne, r.nextInt(100))
+        indicatorScope.addValue(project, reviewTwo, r.nextInt(100))
+      }
     }
   }
 

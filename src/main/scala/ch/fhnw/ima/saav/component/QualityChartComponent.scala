@@ -11,6 +11,8 @@ import org.scalajs.dom
 import org.scalajs.dom.raw._
 import org.scalajs.dom.svg.SVG
 
+import scala.collection.mutable.ListBuffer
+
 object QualityChartComponent extends ChartComponent {
 
   class Backend($: BackendScope[Props, Unit]) extends ChartBackend($) {
@@ -85,14 +87,17 @@ object QualityChartComponent extends ChartComponent {
           for (entity <- selectionModel.visible) {
             val axisValue1 = computeAxisValue(criteria1.groupedValues.get(entity), layout, AxisType.Criteria)
             val axisValue2 = computeAxisValue(criteria2.groupedValues.get(entity), layout, AxisType.Criteria)
-            val y = QualityChartLayout.CriteriaAxisBotY - cursorPt.y
 
-            val interpolatedValue = axisValue1 + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2 - axisValue1))
-            val distance = Math.abs(interpolatedValue - y)
+            if (axisValue1.isDefined && axisValue2.isDefined) {
+              val y = QualityChartLayout.CriteriaAxisBotY - cursorPt.y
 
-            if (distance < minDistance) {
-              minDistance = distance
-              closestEntity = Some(entity)
+              val interpolatedValue = axisValue1.get + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2.get - axisValue1.get))
+              val distance = Math.abs(interpolatedValue - y)
+
+              if (distance < minDistance) {
+                minDistance = distance
+                closestEntity = Some(entity)
+              }
             }
           }
         }
@@ -115,14 +120,16 @@ object QualityChartComponent extends ChartComponent {
           for (entity <- selectionModel.visible) {
             val axisValue1 = computeAxisValue(subCriteria1.groupedValues.get(entity), layout, AxisType.Subcriteria)
             val axisValue2 = computeAxisValue(subCriteria2.groupedValues.get(entity), layout, AxisType.Subcriteria)
-            val y = QualityChartLayout.SubCriteriaAxisBotY - cursorPt.y
+            if (axisValue1.isDefined && axisValue2.isDefined) {
+              val y = QualityChartLayout.SubCriteriaAxisBotY - cursorPt.y
 
-            val interpolatedValue = axisValue1 + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2 - axisValue1))
-            val distance = Math.abs(interpolatedValue - y)
+              val interpolatedValue = axisValue1.get + ((cursorPt.x - x1) / (x2 - x1) * (axisValue2.get - axisValue1.get))
+              val distance = Math.abs(interpolatedValue - y)
 
-            if (distance < minDistance) {
-              minDistance = distance
-              closestEntity = Some(entity)
+              if (distance < minDistance) {
+                minDistance = distance
+                closestEntity = Some(entity)
+              }
             }
           }
         }
@@ -311,6 +318,58 @@ object QualityChartComponent extends ChartComponent {
 
         // create the criteria values lines
 
+        val criteria = model.qualityModel.criteria
+
+        var valueCoordinates = new ListBuffer[(Double, Double)]()
+
+        var isPreviousPresent = false
+
+        val criteriaValuesLine =
+          for (i <- criteria.indices) yield {
+            var lineSegment = <.svg.g
+
+            var isThisPresent = computeAxisValue(criteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).isDefined
+
+            if (isThisPresent) {
+              val x1 = layout.getCriteriaAxisX(criteria(i))
+              val y1 = QualityChartLayout.CriteriaAxisBotY - computeAxisValue(criteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).get
+              valueCoordinates += new Tuple2(x1, y1)
+//              valueCoordinates += (x1, y1)
+
+              var isNextPresent = i < (criteria.size - 1) && computeAxisValue(criteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).isDefined
+              if (isNextPresent) {
+                val x2 = layout.getCriteriaAxisX(criteria(i + 1))
+                val y2 = QualityChartLayout.CriteriaAxisBotY - computeAxisValue(criteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).get
+                lineSegment = <.svg.g(
+                  <.svg.line(
+                    ^.svg.x1 := x1, ^.svg.y1 := y1,
+                    ^.svg.x2 := x2, ^.svg.y2 := y2,
+                    ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
+                    ^.onClick --> toggleEntityPinning(groupedEntity.id)
+                  )
+                )
+              } else {
+                if (!isPreviousPresent) {
+                  lineSegment = <.svg.g(
+                    <.svg.line(
+                      ^.svg.x1 := x1 - 10, ^.svg.y1 := y1,
+                      ^.svg.x2 := x1 + 10, ^.svg.y2 := y1,
+                      ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
+                      ^.onClick --> toggleEntityPinning(groupedEntity.id)
+                    )
+                  )
+                }
+              }
+            }
+
+            isPreviousPresent = isThisPresent
+
+            lineSegment
+          }
+
+
+
+/*
         var coordString = "M"
         var index = 0
 
@@ -333,9 +392,61 @@ object QualityChartComponent extends ChartComponent {
             ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
             ^.onClick --> toggleEntityPinning(groupedEntity.id)
           )
+*/
 
         // create the subcriteria values lines
 
+//        var valueSubCoordinates = new ListBuffer[(Double, Double)]()
+
+        isPreviousPresent = false
+
+        val subCriteriaValuesLine =
+          for (criterion <- criteria) yield {
+            val subCriteria = criterion.subCriteria
+            for (i <- subCriteria.indices) yield {
+              var lineSegment = <.svg.g
+
+              var isThisPresent = computeAxisValue(subCriteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).isDefined
+
+              if (isThisPresent) {
+                val x1: Double = layout.getSubCriteriaAxisX(subCriteria(i))
+                val y1: Double = QualityChartLayout.SubCriteriaAxisBotY - computeAxisValue(subCriteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).get
+                valueCoordinates += new Tuple2(x1, y1)
+//                valueCoordinates += (x1, y1)  // what's wrong with this???
+
+                var isNextPresent = i < (subCriteria.size - 1) && computeAxisValue(subCriteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).isDefined
+                if (isNextPresent) {
+                  val x2 = layout.getSubCriteriaAxisX(subCriteria(i + 1))
+                  val y2 = QualityChartLayout.SubCriteriaAxisBotY - computeAxisValue(subCriteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).get
+                  lineSegment = <.svg.g(
+                    <.svg.line(
+                      ^.svg.x1 := x1, ^.svg.y1 := y1,
+                      ^.svg.x2 := x2, ^.svg.y2 := y2,
+                      ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
+                      ^.onClick --> toggleEntityPinning(groupedEntity.id)
+                    )
+                  )
+                } else {
+                  if (!isPreviousPresent) {
+                    lineSegment = <.svg.g(
+                      <.svg.line(
+                        ^.svg.x1 := x1 - 10, ^.svg.y1 := y1,
+                        ^.svg.x2 := x1 + 10, ^.svg.y2 := y1,
+                        ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
+                        ^.onClick --> toggleEntityPinning(groupedEntity.id)
+                      )
+                    )
+                  }
+                }
+              }
+
+              isPreviousPresent = isThisPresent
+
+              lineSegment
+            }
+          }
+
+/*
         coordString = "M"
         index = 0
 
@@ -362,6 +473,7 @@ object QualityChartComponent extends ChartComponent {
             ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
             ^.onClick --> toggleEntityPinning(groupedEntity.id)
           )
+*/
 
         // Create the circles if entity is pinned
 
@@ -435,6 +547,16 @@ object QualityChartComponent extends ChartComponent {
       val Criteria, Subcriteria = Value
     }
 
+    private def computeAxisValue(value: Option[Double], layout: QualityChartLayout, axisType: AxisType.Value): Option[Double] = {
+      val (topY, botY) = axisType match {
+        case AxisType.Criteria => (QualityChartLayout.CriteriaAxisTopY, QualityChartLayout.CriteriaAxisBotY)
+        case AxisType.Subcriteria => (QualityChartLayout.SubCriteriaAxisTopY, QualityChartLayout.SubCriteriaAxisBotY)
+      }
+
+      value.map { v => v / (layout.maxValue - layout.minValue) * (botY - topY) }
+    }
+
+/*
     private def computeAxisValue(value: Option[Double], layout: QualityChartLayout, axisType: AxisType.Value): Double = {
       val (topY, botY) = axisType match {
         case AxisType.Criteria => (QualityChartLayout.CriteriaAxisTopY, QualityChartLayout.CriteriaAxisBotY)
@@ -447,6 +569,7 @@ object QualityChartComponent extends ChartComponent {
 
     }
 
+*/
   }
 
   private val component = ReactComponentB[Props](QualityChartComponent.getClass.getSimpleName)
