@@ -10,7 +10,7 @@ package object model {
     val builder = AnalysisBuilder()
 
     populateIndicator(builder, "Methodologie", "Klare Fragestellung und Zielsetzung", "Indikator 1")
-    populateIndicator(builder, "Methodologie", "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", "Indikator 1")
+    populateIndicator(builder, "Methodologie", "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", "missing")
     populateIndicator(builder, "Methodologie", "Ergebnisoffene Anlage des Projektes", "Indikator 1")
     populateIndicator(builder, "Methodologie", "Reflexion über die vielfachen Voraussetzungen", "Indikator 1")
     populateIndicator(builder, "Methodologie", "Gebrauch klarer, verständlicher Wissenschaftssprache", "Indikator 1")
@@ -18,7 +18,7 @@ package object model {
 
     populateIndicator(builder, "Integration", "Situierung des Projektes zum Forschungsstand", "Indikator 1")
     populateIndicator(builder, "Integration", "Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten", "Indikator 1")
-    populateIndicator(builder, "Integration", "Situierung des Projektes zu vorherrschenden Deutungen, Schulen, Paradigmen", "Indikator 1")
+    populateIndicator(builder, "Integration", "Situierung des Projektes zu vorherrschenden Deutungen, Schulen, Paradigmen", "missing")
     populateIndicator(builder, "Integration", "Erweiterung des Kenntnisstandes bestehender Forschungsfelder", "Indikator 1")
     populateIndicator(builder, "Integration", "Eröffnung neuer Forschungsfelder", "Indikator 1")
 
@@ -32,9 +32,9 @@ package object model {
     populateIndicator(builder, "Leistung", "x3", "missing")
     populateIndicator(builder, "Leistung", "x4", "Indikator 1")
 
-    populateIndicator(builder, "Ver...", "x1", "Indikator 1")
+    populateIndicator(builder, "Ver...", "x1", "missing")
 
-    populateIndicator(builder, "Inf...", "x1", "Indikator 1")
+    populateIndicator(builder, "Inf...", "x1", "missing")
 
     populateIndicator(builder, "A very looooong criteria name", "A very loooooong sub-criteria name", "Indikator 1")
 

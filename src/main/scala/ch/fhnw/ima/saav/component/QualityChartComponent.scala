@@ -9,8 +9,9 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactComponentU, ReactMouseEvent, TopNode}
 import org.scalajs.dom
 import org.scalajs.dom.raw._
-import org.scalajs.dom.svg.SVG
+import org.scalajs.dom.svg.{G, SVG}
 
+import scala.collection.immutable.IndexedSeq
 import scala.collection.mutable.ListBuffer
 
 object QualityChartComponent extends ChartComponent {
@@ -316,112 +317,23 @@ object QualityChartComponent extends ChartComponent {
           else
             ("#cccccc", 1)
 
-        // create the criteria values lines
+        // create the criteria values line
 
-        val criteria = model.qualityModel.criteria
-
-        var valueCoordinates = new ListBuffer[(Double, Double)]()
-
-        var isPreviousPresent = false
-
-        val criteriaValuesLine =
-          for (i <- criteria.indices) yield {
-            var lineSegment = <.svg.g
-
-            var isThisPresent = computeAxisValue(criteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).isDefined
-
-            if (isThisPresent) {
-              val x1 = layout.getCriteriaAxisX(criteria(i))
-              val y1 = QualityChartLayout.CriteriaAxisBotY - computeAxisValue(criteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).get
-              valueCoordinates += new Tuple2(x1, y1)
-//              valueCoordinates += (x1, y1)
-
-              var isNextPresent = i < (criteria.size - 1) && computeAxisValue(criteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).isDefined
-              if (isNextPresent) {
-                val x2 = layout.getCriteriaAxisX(criteria(i + 1))
-                val y2 = QualityChartLayout.CriteriaAxisBotY - computeAxisValue(criteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).get
-                lineSegment = <.svg.g(
-                  <.svg.line(
-                    ^.svg.x1 := x1, ^.svg.y1 := y1,
-                    ^.svg.x2 := x2, ^.svg.y2 := y2,
-                    ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
-                    ^.onClick --> toggleEntityPinning(groupedEntity.id)
-                  )
-                )
-              } else {
-                if (!isPreviousPresent) {
-                  lineSegment = <.svg.g(
-                    <.svg.line(
-                      ^.svg.x1 := x1 - 10, ^.svg.y1 := y1,
-                      ^.svg.x2 := x1 + 10, ^.svg.y2 := y1,
-                      ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
-                      ^.onClick --> toggleEntityPinning(groupedEntity.id)
-                    )
-                  )
-                }
-              }
-            }
-
-            isPreviousPresent = isThisPresent
-
-            lineSegment
-          }
-
-
-
-/*
-        var coordString = "M"
-        var index = 0
-
-        var valueCoordinates =
-          for (criteria <- model.qualityModel.criteria) yield {
-            val x = layout.getCriteriaAxisX(criteria)
-            val value = computeAxisValue(criteria.groupedValues.get(groupedEntity.id), layout, AxisType.Criteria)
-            val y = QualityChartLayout.CriteriaAxisBotY - value
-
-            if (index == 1) coordString += " L"
-            coordString += " " + x + " " + y
-
-            index += 1
-
-            (x, y)
-          }
-
-        val criteriaValuesLine =
-          <.svg.path(^.svg.d := coordString,
-            ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-            ^.onClick --> toggleEntityPinning(groupedEntity.id)
-          )
-*/
-
-        // create the subcriteria values lines
-
-//        var valueSubCoordinates = new ListBuffer[(Double, Double)]()
-
-        isPreviousPresent = false
-
-        val subCriteriaValuesLine =
-          for (criterion <- criteria) yield {
-            val subCriteria = criterion.subCriteria
-            for (i <- subCriteria.indices) yield {
+        def createLine(groupedEntity: GroupedEntity, strokeColor: String, strokeWidth: Int, valueCoordinates: ListBuffer[Option[(Double, Double)]]): IndexedSeq[ReactTagOf[G]] = {
+          var isPreviousPresent = false
+          val criteriaValuesLine =
+            for (i <- valueCoordinates.indices) yield {
               var lineSegment = <.svg.g
 
-              var isThisPresent = computeAxisValue(subCriteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).isDefined
-
+              var isThisPresent = valueCoordinates(i).isDefined
               if (isThisPresent) {
-                val x1: Double = layout.getSubCriteriaAxisX(subCriteria(i))
-                val y1: Double = QualityChartLayout.SubCriteriaAxisBotY - computeAxisValue(subCriteria(i).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).get
-                valueCoordinates += new Tuple2(x1, y1)
-//                valueCoordinates += (x1, y1)  // what's wrong with this???
 
-                var isNextPresent = i < (subCriteria.size - 1) && computeAxisValue(subCriteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).isDefined
+                var isNextPresent = i < (valueCoordinates.size - 1) && valueCoordinates(i + 1).isDefined
                 if (isNextPresent) {
-                  val x2 = layout.getSubCriteriaAxisX(subCriteria(i + 1))
-                  val y2 = QualityChartLayout.SubCriteriaAxisBotY - computeAxisValue(subCriteria(i + 1).groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).get
                   lineSegment = <.svg.g(
                     <.svg.line(
-                      ^.svg.x1 := x1, ^.svg.y1 := y1,
-                      ^.svg.x2 := x2, ^.svg.y2 := y2,
+                      ^.svg.x1 := valueCoordinates(i).get._1, ^.svg.y1 := valueCoordinates(i).get._2,
+                      ^.svg.x2 := valueCoordinates(i + 1).get._1, ^.svg.y2 := valueCoordinates(i + 1).get._2,
                       ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
                       ^.onClick --> toggleEntityPinning(groupedEntity.id)
                     )
@@ -430,60 +342,73 @@ object QualityChartComponent extends ChartComponent {
                   if (!isPreviousPresent) {
                     lineSegment = <.svg.g(
                       <.svg.line(
-                        ^.svg.x1 := x1 - 10, ^.svg.y1 := y1,
-                        ^.svg.x2 := x1 + 10, ^.svg.y2 := y1,
+                        ^.svg.x1 := valueCoordinates(i).get._1 - 10, ^.svg.y1 := valueCoordinates(i).get._2,
+                        ^.svg.x2 := valueCoordinates(i).get._1 + 10, ^.svg.y2 := valueCoordinates(i).get._2,
                         ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth,
                         ^.onClick --> toggleEntityPinning(groupedEntity.id)
                       )
                     )
                   }
                 }
-              }
 
+              }
               isPreviousPresent = isThisPresent
 
               lineSegment
             }
-          }
-
-/*
-        coordString = "M"
-        index = 0
-
-        for (criteria <- model.qualityModel.criteria) {
-          val valueSubCoordinates =
-            for (subCriteria <- criteria.subCriteria) yield {
-              val x = layout.getSubCriteriaAxisX(subCriteria)
-              val value = computeAxisValue(subCriteria.groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria)
-              val y = QualityChartLayout.SubCriteriaAxisBotY - value
-
-              if (index == 1) coordString += " L"
-              coordString += " " + x + " " + y
-
-              index += 1
-
-              (x, y)
-            }
-
-          valueCoordinates = valueCoordinates ++ valueSubCoordinates
+          criteriaValuesLine
         }
 
-        val subCriteriaValuesLine =
-          <.svg.path(^.svg.d := coordString,
-            ^.svg.stroke := strokeColor, ^.svg.strokeWidth := strokeWidth, ^.svg.fill := "none",
-            ^.onClick --> toggleEntityPinning(groupedEntity.id)
-          )
-*/
+        val criteria = model.qualityModel.criteria
+
+        var criteriaCoordinates = new ListBuffer[Option[(Double, Double)]]()
+        for (criterion <- criteria) {
+          var value = computeAxisValue(criterion.groupedValues.get(groupedEntity.id), layout, AxisType.Criteria)
+
+          if (value.isDefined) {
+            val x1 = layout.getCriteriaAxisX(criterion)
+            val y1 = QualityChartLayout.CriteriaAxisBotY - computeAxisValue(criterion.groupedValues.get(groupedEntity.id), layout, AxisType.Criteria).get
+            criteriaCoordinates += Some(Tuple2(x1, y1))
+          } else {
+            criteriaCoordinates += None
+          }
+        }
+
+        val criteriaValuesLine = createLine(groupedEntity, strokeColor, strokeWidth, criteriaCoordinates)
+
+        // create the subcriteria values lines
+
+        var subCriteriaCoordinates = new ListBuffer[Option[(Double, Double)]]()
+        for (criterion <- criteria) {
+          for (subCriterion <- criterion.subCriteria) {
+            var value = computeAxisValue(subCriterion.groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria)
+
+            if (value.isDefined) {
+              val x1 = layout.getSubCriteriaAxisX(subCriterion)
+              val y1 = QualityChartLayout.SubCriteriaAxisBotY - computeAxisValue(subCriterion.groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria).get
+              subCriteriaCoordinates += Some(Tuple2(x1, y1))
+            } else {
+              subCriteriaCoordinates += None
+            }
+          }
+        }
+
+        val subCriteriaValuesLine = createLine(groupedEntity, strokeColor, strokeWidth, subCriteriaCoordinates)
+
 
         // Create the circles if entity is pinned
 
         val circles = if (isPinned(groupedEntity)) {
-          val c = for ((x, y) <- valueCoordinates) yield {
-            <.svg.circle(
-              ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := 5,
-              ^.svg.fill := "black",
-              ^.svg.strokeWidth := 0
-            )
+          val c = for (coords <- criteriaCoordinates ++ subCriteriaCoordinates) yield {
+            if (coords.isDefined) {
+              <.svg.circle(
+                ^.svg.cx := coords.get._1, ^.svg.cy := coords.get._2, ^.svg.r := 5,
+                ^.svg.fill := "black",
+                ^.svg.strokeWidth := 0
+              )
+            } else {
+              <.svg.g
+            }
           }
           <.svg.g(c)
         } else {
@@ -555,21 +480,6 @@ object QualityChartComponent extends ChartComponent {
 
       value.map { v => v / (layout.maxValue - layout.minValue) * (botY - topY) }
     }
-
-/*
-    private def computeAxisValue(value: Option[Double], layout: QualityChartLayout, axisType: AxisType.Value): Double = {
-      val (topY, botY) = axisType match {
-        case AxisType.Criteria => (QualityChartLayout.CriteriaAxisTopY, QualityChartLayout.CriteriaAxisBotY)
-        case AxisType.Subcriteria => (QualityChartLayout.SubCriteriaAxisTopY, QualityChartLayout.SubCriteriaAxisBotY)
-      }
-
-      value.map { v =>
-        v / (layout.maxValue - layout.minValue) * (botY - topY)
-      }.getOrElse(0) // TODO: Handle missing values (Nan will blow up SVG)
-
-    }
-
-*/
   }
 
   private val component = ReactComponentB[Props](QualityChartComponent.getClass.getSimpleName)
