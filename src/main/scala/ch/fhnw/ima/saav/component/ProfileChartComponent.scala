@@ -262,31 +262,35 @@ object ProfileChartComponent extends ChartComponent {
 
         val y = layout.getEntityCenterY(entityIndex, model.sortedEntities.size)
 
-        val entityLine = for (criteria <- model.criteria) yield {
+        val entityLine = for (criterion <- model.criteria) yield {
+
           // Create aggregated criteria circle, if it is defined
-          val x = layout.getCriteriaCenterX(criteria)
-          val criteriaCircle = if (x.isDefined) {
-            val circle = <.svg.circle(
-              ^.svg.cx := x.get, ^.svg.cy := y, ^.svg.r := computeRadius(criteria.groupedValues.get(groupedEntity.id), layout, maxRadius),
-              ^.svg.fill := strokeColor,
-              ^.svg.strokeWidth := 0
-            )
-            Option(circle)
-          } else {
-            Option.empty
-          }
+          val x = layout.getCriteriaCenterX(criterion)
+          val criteriaCircle =
+            if (x.isDefined) {
+              val circle = <.svg.circle(
+                ^.svg.cx := x.get, ^.svg.cy := y,
+                ^.svg.r := computeRadius(criterion.groupedValues.get(groupedEntity.id), layout, maxRadius),  // huh? why does this work? why don't we have to do a "get" here?
+                ^.svg.fill := strokeColor,
+                ^.svg.strokeWidth := 0
+              )
+              Option(circle)
+            } else {
+              Option.empty
+            }
 
-          // Create subcriteria cricles
-          val subCriteriaCircles = for (subCriteria <- criteria.subCriteria) yield {
-            val x = layout.getSubCriteriaCenterX(subCriteria)
-            <.svg.circle(
-              ^.svg.cx := x, ^.svg.cy := y, ^.svg.r := computeRadius(subCriteria.groupedValues.get(groupedEntity.id), layout, maxRadius),
-              ^.svg.fill := "none",
-              ^.svg.stroke := strokeColor,
-              ^.svg.strokeWidth := strokeWidth
+          // Create subcriteria circles
+          val subCriteriaCircles = criterion.subCriteria
+            .filter(subCriterion => computeRadius(subCriterion.groupedValues.get(groupedEntity.id), layout, maxRadius).isDefined)
+            .map(subCriterion =>
+              <.svg.circle(
+                ^.svg.cx := layout.getSubCriteriaCenterX(subCriterion), ^.svg.cy := y,
+                ^.svg.r := computeRadius(subCriterion.groupedValues.get(groupedEntity.id), layout, maxRadius),
+                ^.svg.fill := "none",
+                ^.svg.stroke := strokeColor,
+                ^.svg.strokeWidth := strokeWidth)
             )
-          }
-
+          
           // Combine the circles
           if (criteriaCircle.isDefined) {
             <.svg.g(criteriaCircle.get, subCriteriaCircles)
@@ -302,10 +306,10 @@ object ProfileChartComponent extends ChartComponent {
       entities
     }
 
-    private def computeRadius(value: Option[Double], layout: ProfileChartLayout, maxRadius: Double): Double = {
+    private def computeRadius(value: Option[Double], layout: ProfileChartLayout, maxRadius: Double): Option[Double] = {
       value.map { v =>
         v / (layout.maxValue - layout.minValue) * maxRadius
-      }.getOrElse(0) // TODO: Handle missing values (Nan will blow up SVG)
+      }
     }
   }
 
