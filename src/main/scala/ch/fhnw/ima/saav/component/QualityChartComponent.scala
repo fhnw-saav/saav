@@ -325,10 +325,10 @@ object QualityChartComponent extends ChartComponent {
             for (i <- valueCoordinates.indices) yield {
               var lineSegment = <.svg.g
 
-              var isThisPresent = valueCoordinates(i).isDefined
+              val isThisPresent = valueCoordinates(i).isDefined
               if (isThisPresent) {
 
-                var isNextPresent = i < (valueCoordinates.size - 1) && valueCoordinates(i + 1).isDefined
+                val isNextPresent = i < (valueCoordinates.size - 1) && valueCoordinates(i + 1).isDefined
                 if (isNextPresent) {
                   lineSegment = <.svg.g(
                     <.svg.line(
@@ -363,7 +363,7 @@ object QualityChartComponent extends ChartComponent {
 
         var criteriaCoordinates = new ListBuffer[Option[(Double, Double)]]()
         for (criterion <- criteria) {
-          var value = computeAxisValue(criterion.groupedValues.get(groupedEntity.id), layout, AxisType.Criteria)
+          val value = computeAxisValue(criterion.groupedValues.get(groupedEntity.id), layout, AxisType.Criteria)
 
           if (value.isDefined) {
             val x1 = layout.getCriteriaAxisX(criterion)
@@ -381,7 +381,7 @@ object QualityChartComponent extends ChartComponent {
         var subCriteriaCoordinates = new ListBuffer[Option[(Double, Double)]]()
         for (criterion <- criteria) {
           for (subCriterion <- criterion.subCriteria) {
-            var value = computeAxisValue(subCriterion.groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria)
+            val value = computeAxisValue(subCriterion.groupedValues.get(groupedEntity.id), layout, AxisType.Subcriteria)
 
             if (value.isDefined) {
               val x1 = layout.getSubCriteriaAxisX(subCriterion)
