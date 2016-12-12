@@ -11,7 +11,7 @@ class WeightModelSpec extends FunSpec with Matchers {
       val weightedMean = weight.weightedMean(valuesWithWeights)
       implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.01)
       weightedMean match {
-        case Some(mean) => mean === 24.418
+        case Some(mean) => assert(mean === 24.418)
         case wrongValue @ _ => fail(s"Unexpected mean value $wrongValue")
       }
   }

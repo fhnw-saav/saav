@@ -37,7 +37,7 @@ object AnalysisDataImporter {
     resultPromise.future
   }
 
-  private def splitContentsIntoRows(contents: String) = {
+  def splitContentsIntoRows(contents: String): Seq[Row] = {
     (for {
       line <- contents.lines
     } yield {
