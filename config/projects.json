@@ -2,7 +2,77 @@
     "criteria": [
         {
             "aggregatable": false, 
-            "subcriteria": [
+            "subCriteria": [
+                {
+                    "indicators": [
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                        }
+                    ], 
+                    "name": "Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche", 
+                    "weight": {
+                        "Profile": {}
+                    }
+                }, 
+                {
+                    "indicators": [
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                        }
+                    ], 
+                    "name": "Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche", 
+                    "weight": {
+                        "Profile": {}
+                    }
+                }, 
+                {
+                    "indicators": [
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                        }
+                    ], 
+                    "name": "Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche", 
+                    "weight": {
+                        "Profile": {}
+                    }
+                }, 
+                {
+                    "indicators": [
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                        }
+                    ], 
+                    "name": "Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche", 
+                    "weight": {
+                        "Profile": {}
+                    }
+                }
+            ], 
+            "name": "Aktualität und Anschlussfähigkeit"
+        }, 
+        {
+            "aggregatable": false, 
+            "subCriteria": [
                 {
                     "indicators": [
                         {
@@ -11,17 +81,13 @@
                         }, 
                         {
                             "enabled": false, 
-                            "name": "Anzahl wissenschaftlicher Publikationen"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Zitationsh\u00e4ufigkeit oder Ableitungen davon"
+                            "name": "vollständige Referenzierung des Wissensstandes"
                         }
                     ], 
-                    "name": "Erweiterung des Kenntnisstandes bestehender Forschungsfelder", 
+                    "name": "Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten", 
                     "weight": {
                         "Quality": {
-                            "weight": 1
+                            "weight": 0.5
                         }
                     }
                 }, 
@@ -33,17 +99,13 @@
                         }, 
                         {
                             "enabled": false, 
-                            "name": "Anzahl wissenschaftlicher Publikationen"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Zitationsh\u00e4ufigkeit oder Ableitungen davon"
+                            "name": "vollständige Referenzierung des Wissensstandes"
                         }
                     ], 
-                    "name": "Erweiterung des Kenntnisstandes bestehender Forschungsfelder", 
+                    "name": "Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten", 
                     "weight": {
                         "Quality": {
-                            "weight": 1
+                            "weight": 0.5
                         }
                     }
                 }, 
@@ -55,17 +117,13 @@
                         }, 
                         {
                             "enabled": false, 
-                            "name": "Anzahl wissenschaftlicher Publikationen"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Zitationsh\u00e4ufigkeit oder Ableitungen davon"
+                            "name": "vollständige Referenzierung des Wissensstandes"
                         }
                     ], 
-                    "name": "Erweiterung des Kenntnisstandes bestehender Forschungsfelder", 
+                    "name": "Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten", 
                     "weight": {
                         "Quality": {
-                            "weight": 1
+                            "weight": 0.5
                         }
                     }
                 }, 
@@ -77,17 +135,13 @@
                         }, 
                         {
                             "enabled": false, 
-                            "name": "Anzahl wissenschaftlicher Publikationen"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Zitationsh\u00e4ufigkeit oder Ableitungen davon"
+                            "name": "vollständige Referenzierung des Wissensstandes"
                         }
                     ], 
-                    "name": "Erweiterung des Kenntnisstandes bestehender Forschungsfelder", 
+                    "name": "Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten", 
                     "weight": {
                         "Quality": {
-                            "weight": 1
+                            "weight": 0.5
                         }
                     }
                 }, 
@@ -99,17 +153,13 @@
                         }, 
                         {
                             "enabled": false, 
-                            "name": "Anzahl wissenschaftlicher Publikationen"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Zitationsh\u00e4ufigkeit oder Ableitungen davon"
+                            "name": "vollständige Referenzierung des Wissensstandes"
                         }
                     ], 
-                    "name": "Erweiterung des Kenntnisstandes bestehender Forschungsfelder", 
+                    "name": "Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten", 
                     "weight": {
                         "Quality": {
-                            "weight": 1
+                            "weight": 0.5
                         }
                     }
                 }
@@ -118,45 +168,15 @@
         }, 
         {
             "aggregatable": false, 
-            "subcriteria": [
-                {
-                    "indicators": [
-                        {
-                            "enabled": false, 
-                            "name": "qualitative Beurteilung der Diversit\u00e4t in der personellen Zusammensetzung von Forschungsprojekten"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "qualitative Beurteilung der Diversit\u00e4t in der personellen Zusammensetzung von Forschungsprojekten"
-                        }
-                    ], 
-                    "name": "F\u00f6rderung von Diversit\u00e4t (durch Geschlechtergerechtigkeit, Multikulturalit\u00e4t, Mehrsprachigkeit, ...)", 
-                    "weight": {
-                        "Profile": {}
-                    }
-                }
-            ], 
-            "name": "Beg\u00fcnstigende Begleitumst\u00e4nde"
-        }, 
-        {
-            "aggregatable": false, 
-            "subcriteria": [
+            "subCriteria": [
                 {
                     "indicators": [
                         {
                             "enabled": true, 
                             "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
                         }
                     ], 
-                    "name": "Bewusstsein f\u00fcr ethische und rechtliche Anforderungen in der Forschung", 
+                    "name": "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -168,17 +188,9 @@
                         {
                             "enabled": true, 
                             "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
                         }
                     ], 
-                    "name": "Bewusstsein f\u00fcr ethische und rechtliche Anforderungen in der Forschung", 
+                    "name": "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -190,17 +202,9 @@
                         {
                             "enabled": true, 
                             "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
                         }
                     ], 
-                    "name": "Bewusstsein f\u00fcr ethische und rechtliche Anforderungen in der Forschung", 
+                    "name": "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -212,17 +216,9 @@
                         {
                             "enabled": true, 
                             "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
                         }
                     ], 
-                    "name": "Bewusstsein f\u00fcr ethische und rechtliche Anforderungen in der Forschung", 
+                    "name": "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -234,17 +230,9 @@
                         {
                             "enabled": true, 
                             "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
                         }
                     ], 
-                    "name": "Bewusstsein f\u00fcr ethische und rechtliche Anforderungen in der Forschung", 
+                    "name": "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -256,17 +244,9 @@
                         {
                             "enabled": true, 
                             "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Begutachtung des Projektgesuchs durch einen interdisziplin\u00e4ren Ethikrat"
                         }
                     ], 
-                    "name": "Bewusstsein f\u00fcr ethische und rechtliche Anforderungen in der Forschung", 
+                    "name": "Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -278,12 +258,12 @@
         }, 
         {
             "aggregatable": false, 
-            "subcriteria": [
+            "subCriteria": [
                 {
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung gemeinsamer Aktivit\u00e4ten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an terti\u00e4ren Hochschulen im In- und Ausland durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
                         }
                     ], 
                     "name": "Vernetzung innerhalb der Wissenschaftsgemeinschaft", 
@@ -297,7 +277,7 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung gemeinsamer Aktivit\u00e4ten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an terti\u00e4ren Hochschulen im In- und Ausland durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
                         }
                     ], 
                     "name": "Vernetzung innerhalb der Wissenschaftsgemeinschaft", 
@@ -311,7 +291,7 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung gemeinsamer Aktivit\u00e4ten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an terti\u00e4ren Hochschulen im In- und Ausland durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
                         }
                     ], 
                     "name": "Vernetzung innerhalb der Wissenschaftsgemeinschaft", 
@@ -325,7 +305,7 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung gemeinsamer Aktivit\u00e4ten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an terti\u00e4ren Hochschulen im In- und Ausland durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
                         }
                     ], 
                     "name": "Vernetzung innerhalb der Wissenschaftsgemeinschaft", 
@@ -339,7 +319,7 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung gemeinsamer Aktivit\u00e4ten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an terti\u00e4ren Hochschulen im In- und Ausland durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
                         }
                     ], 
                     "name": "Vernetzung innerhalb der Wissenschaftsgemeinschaft", 
@@ -354,19 +334,19 @@
         }, 
         {
             "aggregatable": false, 
-            "subcriteria": [
+            "subCriteria": [
                 {
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung der Arbeitsplatzausstattung und der Verf\u00fcgbarkeit ggf. ben\u00f6tigter Forschungsapparate und Ausr\u00fcstung (inkl. Zugang zu Informationsmedien, Software, informationstechnologische und audiovisuelle Ger\u00e4te etc.) durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung der Arbeitsplatzausstattung und der Verfügbarkeit ggf. benötigter Forschungsapparate und Ausrüstung (inkl. Zugang zu Informationsmedien, Software, informationstechnologische und audiovisuelle Geräte etc.) durch Fachgutachter/-innen"
                         }, 
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung der Arbeitsplatzausstattung und der Verf\u00fcgbarkeit ggf. ben\u00f6tigter Forschungsapparate und Ausr\u00fcstung (inkl. Zugang zu Informationsmedien, Software, informationstechnologische und audiovisuelle Ger\u00e4te etc.) durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung der Arbeitsplatzausstattung und der Verfügbarkeit ggf. benötigter Forschungsapparate und Ausrüstung (inkl. Zugang zu Informationsmedien, Software, informationstechnologische und audiovisuelle Geräte etc.) durch Fachgutachter/-innen"
                         }
                     ], 
-                    "name": "Sicherung der praktischen Durchf\u00fchrung des Projekts (B\u00fcro, Computer, Forschungsmittel, Reisekosten, Bibliotheken und Archive, Datenbanken usw.)", 
+                    "name": "Sicherung der praktischen Durchführung des Projekts (Büro, Computer, Forschungsmittel, Reisekosten, Bibliotheken und Archive, Datenbanken usw.)", 
                     "weight": {
                         "Quality": {
                             "weight": 0.75
@@ -378,15 +358,53 @@
         }, 
         {
             "aggregatable": false, 
-            "subcriteria": [
+            "subCriteria": [
+                {
+                    "indicators": [
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                        }
+                    ], 
+                    "name": "Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)", 
+                    "weight": {
+                        "Profile": {}
+                    }
+                }
+            ], 
+            "name": "Begünstigende Begleitumstände"
+        }, 
+        {
+            "aggregatable": false, 
+            "subCriteria": [
                 {
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung von Publikationen durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "eingeworbene Drittmittel"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl von Forschungsprojekten"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl betreuter Doktorierender (abgeschlossene)"
                         }
                     ], 
-                    "name": "Qualit\u00e4t der bisherigen Forschungsergebnisse", 
+                    "name": "Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -397,10 +415,26 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung von Publikationen durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "eingeworbene Drittmittel"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl von Forschungsprojekten"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl betreuter Doktorierender (abgeschlossene)"
                         }
                     ], 
-                    "name": "Qualit\u00e4t der bisherigen Forschungsergebnisse", 
+                    "name": "Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -411,10 +445,26 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung von Publikationen durch Fachgutachter/-innen"
+                            "name": "qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "eingeworbene Drittmittel"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl von Forschungsprojekten"
+                        }, 
+                        {
+                            "enabled": false, 
+                            "name": "Anzahl betreuter Doktorierender (abgeschlossene)"
                         }
                     ], 
-                    "name": "Qualit\u00e4t der bisherigen Forschungsergebnisse", 
+                    "name": "Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)", 
                     "weight": {
                         "Quality": {
                             "weight": 1
@@ -426,7 +476,7 @@
         }, 
         {
             "aggregatable": false, 
-            "subcriteria": [
+            "subCriteria": [
                 {
                     "indicators": [
                         {
@@ -474,121 +524,15 @@
         }, 
         {
             "aggregatable": false, 
-            "subcriteria": [
-                {
-                    "indicators": [
-                        {
-                            "enabled": false, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }
-                    ], 
-                    "name": "Ankn\u00fcpfung an ein vorhandenes Interesse oder offene Fragen in der Gesellschaft", 
-                    "weight": {
-                        "Profile": {}
-                    }
-                }, 
-                {
-                    "indicators": [
-                        {
-                            "enabled": false, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }
-                    ], 
-                    "name": "Ankn\u00fcpfung an ein vorhandenes Interesse oder offene Fragen in der Gesellschaft", 
-                    "weight": {
-                        "Profile": {}
-                    }
-                }, 
-                {
-                    "indicators": [
-                        {
-                            "enabled": false, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }
-                    ], 
-                    "name": "Ankn\u00fcpfung an ein vorhandenes Interesse oder offene Fragen in der Gesellschaft", 
-                    "weight": {
-                        "Profile": {}
-                    }
-                }, 
-                {
-                    "indicators": [
-                        {
-                            "enabled": false, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }, 
-                        {
-                            "enabled": false, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
-                        }
-                    ], 
-                    "name": "Ankn\u00fcpfung an ein vorhandenes Interesse oder offene Fragen in der Gesellschaft", 
-                    "weight": {
-                        "Profile": {}
-                    }
-                }
-            ], 
-            "name": "Aktualit\u00e4t und Anschlussf\u00e4higkeit"
-        }, 
-        {
-            "aggregatable": false, 
-            "subcriteria": [
+            "subCriteria": [
                 {
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus relevanten gesellschaftlichen Feldern (zu Beginn des Projekts)"
-                        }, 
-                        {
-                            "enabled": true, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
                         }
                     ], 
-                    "name": "Relevanz f\u00fcr den gesellschaftlichen Diskurs", 
+                    "name": "Relevanz für den kirchlichen Diskurs", 
                     "weight": {
                         "Profile": {}
                     }
@@ -597,14 +541,10 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus relevanten gesellschaftlichen Feldern (zu Beginn des Projekts)"
-                        }, 
-                        {
-                            "enabled": true, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
                         }
                     ], 
-                    "name": "Relevanz f\u00fcr den gesellschaftlichen Diskurs", 
+                    "name": "Relevanz für den kirchlichen Diskurs", 
                     "weight": {
                         "Profile": {}
                     }
@@ -613,14 +553,10 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus relevanten gesellschaftlichen Feldern (zu Beginn des Projekts)"
-                        }, 
-                        {
-                            "enabled": true, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
                         }
                     ], 
-                    "name": "Relevanz f\u00fcr den gesellschaftlichen Diskurs", 
+                    "name": "Relevanz für den kirchlichen Diskurs", 
                     "weight": {
                         "Profile": {}
                     }
@@ -629,14 +565,10 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus relevanten gesellschaftlichen Feldern (zu Beginn des Projekts)"
-                        }, 
-                        {
-                            "enabled": true, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
                         }
                     ], 
-                    "name": "Relevanz f\u00fcr den gesellschaftlichen Diskurs", 
+                    "name": "Relevanz für den kirchlichen Diskurs", 
                     "weight": {
                         "Profile": {}
                     }
@@ -645,14 +577,10 @@
                     "indicators": [
                         {
                             "enabled": true, 
-                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus relevanten gesellschaftlichen Feldern (zu Beginn des Projekts)"
-                        }, 
-                        {
-                            "enabled": true, 
-                            "name": "Pr\u00e4senz des Themas in Publikumsmedien"
+                            "name": "qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
                         }
                     ], 
-                    "name": "Relevanz f\u00fcr den gesellschaftlichen Diskurs", 
+                    "name": "Relevanz für den kirchlichen Diskurs", 
                     "weight": {
                         "Profile": {}
                     }
