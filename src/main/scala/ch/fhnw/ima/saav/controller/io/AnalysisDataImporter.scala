@@ -89,7 +89,7 @@ object AnalysisDataImporter {
       if rowIndex < rows.length
     ) {
       val row = rows(rowIndex)
-      parseRow(builder, row)
+      parseRow(builder, rowIndex, row)
     }
     val parsedRowCount = (batchIndex * BatchSize) + BatchSize
     val isLastBatch = parsedRowCount >= rows.length
@@ -101,7 +101,7 @@ object AnalysisDataImporter {
     }
   }
 
-  def parseRow(builder: AnalysisBuilder, row: Row): AnalysisBuilder = {
+  def parseRow(builder: AnalysisBuilder, rowIndex: Int, row: Row): AnalysisBuilder = {
 
     val columnIt = row.iterator
 
@@ -112,6 +112,11 @@ object AnalysisDataImporter {
     val indicator = hierarchyLevels(2)
     val review = ReviewId(columnIt.next())
     val value = columnIt.next().toDouble
+
+    if (value < 1 || value > 5) {
+      val humanFriendlyRowIndex = rowIndex + 2 // off-by-one, header
+      throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [1,5]")
+    }
 
     builder
       .criteria(criteria)
