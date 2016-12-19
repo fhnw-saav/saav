@@ -1,10 +1,11 @@
 package ch.fhnw.ima.saav
 package component
 
+import ch.fhnw.ima.saav.component.bootstrap.DismissibleWarning
 import ch.fhnw.ima.saav.controller.UpdateVisibility
 import ch.fhnw.ima.saav.model.app._
 import diode.react.ModelProxy
-import japgolly.scalajs.react.vdom.ReactTagOf
+import japgolly.scalajs.react.vdom.{ReactAttr, ReactTagOf}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactComponentU, TopNode}
 import org.scalajs.dom.html.Div
@@ -80,12 +81,25 @@ object pages {
     private val component = ReactComponentB[Props](AnalysisPageComponent.getClass.getSimpleName)
       .render_P(p => {
 
-        val (title, content): (String, TagMod) = p.proxy.value.model match {
-          case Left(noData) => (s"Import ${p.title}", FileImportComponent(p.configFileUrl, p.proxy.zoom(_ => noData)))
-          case Right(data) => (p.title, PageWithDataComponent(p.title, p.proxy.zoom(_ => data)))
+        val (showWarning, title, content): (Boolean, String, TagMod) = p.proxy.value.model match {
+          case Left(noData) => (
+            false,
+            s"Import ${p.title}",
+            FileImportComponent(p.configFileUrl, p.proxy.zoom(_ => noData))
+          )
+          case Right(data) => (
+            data.config.missingIndicators.nonEmpty || data.config.unexpectedIndicators.nonEmpty,
+            p.title,
+            PageWithDataComponent(p.title, p.proxy.zoom(_ => data))
+          )
         }
 
-        <.div(<.h3(title), content)
+        if (showWarning) {
+          val warning = DismissibleWarning("Imported data does not match expected analysis structure (console log for details)")
+          <.div(warning, <.h3(title), content)
+        } else {
+          <.div(<.h3(title), content)
+        }
 
       })
       .build

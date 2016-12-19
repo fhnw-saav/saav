@@ -15,7 +15,6 @@ object AnalysisConfigImporter {
     xhr.onload = { (_: Event) =>
       if (xhr.status == 200) {
         val json = xhr.responseText
-        println(s"[${getClass.getSimpleName}] Fetched $configFileUrl:\n$json")
         val eitherConfigOrError = AnalysisConfig.fromJson(json)
         eitherConfigOrError match {
           case Right(analysisConfig: AnalysisConfig) =>

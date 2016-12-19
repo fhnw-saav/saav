@@ -37,7 +37,6 @@ class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppMod
       effectOnly(Effect(nextAction))
 
     case AnalysisConfigReadyAction(analysisConfig, dataFile) =>
-      println(s"[${getClass.getSimpleName}] Parsed config:\n$analysisConfig")
       val importDataFuture = AnalysisDataImporter.importDataAsync(analysisConfig, dataFile)
       val nextAction = importDataFuture.transform {
         case Success(importState) => Success(AnalysisDataImportInProgressAction(importState))

@@ -39,8 +39,13 @@ object GlobalStyles extends StyleSheet.Inline {
 
   val defaultButton = styleWrap("btn btn-default")
 
-  // bootstrap's info-style alert box
-  val infoBox = styleWrap("alert", "alert-info")
+  // bootstrap's alert boxes
+  val alert = "alert"
+  val infoBox = styleWrap(s"$alert alert-info")
+  val dismissibleWarningBox = styleWrap(s"$alert alert-warning alert-dismissible")
+
+  val button = "button"
+  val close = "close"
 
   val pullRight = styleWrap("pull-right")
 

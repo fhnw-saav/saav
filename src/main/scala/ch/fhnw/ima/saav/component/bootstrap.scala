@@ -1,12 +1,14 @@
 package ch.fhnw.ima.saav
 package component
 
+import japgolly.scalajs.react.ReactComponentC.ReqProps
+import japgolly.scalajs.react.vdom.ReactAttr
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{ReactComponentB, ReactNode, _}
 
+import scala.language.implicitConversions
 import scala.scalajs.js
 import scalacss.ScalaCssReact._
-import scala.language.implicitConversions
 
 object bootstrap {
 
@@ -76,6 +78,24 @@ object bootstrap {
       .build
 
     def apply(props: Props, children: ReactElement*) = component(props, children: _*)
+  }
+
+  object DismissibleWarning {
+
+    val component = ReactComponentB[String]("DismissibleWarning")
+      .render_P { msg =>
+        val dataDismiss = ReactAttr.Generic("data-dismiss")
+        <.div(css.dismissibleWarningBox, ^.role := css.alert,
+          <.button(^.`type` := css.button, ^.`class` := css.close, dataDismiss := css.alert, ^.aria.label := "Close",
+            <.span(^.aria.hidden := "true", "×")
+          ),
+          <.strong("Warning!"), " " + msg
+        )
+      }
+      .build
+
+    def apply(msg: String) = component(msg)
+
   }
 
 }

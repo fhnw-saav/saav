@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 package model
 
-import ch.fhnw.ima.saav.model.domain.CriteriaId
+import ch.fhnw.ima.saav.model.domain.{CriteriaId, IndicatorId}
 import ch.fhnw.ima.saav.model.weight.{Weight, Weights}
 import io.circe.Error
 import io.circe.generic.auto._
@@ -12,6 +12,8 @@ object config {
   trait Config {
     def defaultWeights: Weights
     def nonAggregatableCriteria: Set[CriteriaId] // blacklist semantics until our configs are complete
+    def missingIndicators: Seq[IndicatorId]
+    def unexpectedIndicators: Seq[IndicatorId]
   }
 
   object AnalysisConfig {
