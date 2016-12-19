@@ -5,6 +5,7 @@ import ch.fhnw.ima.saav.component.bootstrap.{Button, Modal}
 import ch.fhnw.ima.saav.component.pages.PageWithDataComponent.{ProfileTab, QualityTab, Tab}
 import ch.fhnw.ima.saav.jspdf.jsPDF
 import ch.fhnw.ima.saav.model.app.AppModel
+import ch.fhnw.ima.saav.model.domain.IndicatorId
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
@@ -39,11 +40,15 @@ object PdfExportComponent {
     val ChartImageY = 30
   }
 
+  private object Font {
+    val Name = "arial"
+    val TitleSize = 16 // pt
+    val DefaultSize = 10 // pt
+    val LineGap = 10
+  }
+
   private object LegendTable {
     val Y = 28 // brute force alignment with visual ranking
-    val Font = "arial"
-    val FontSize = 10 // pt
-    val LineGap = 10
 
     case class ColumnPositions(rankColumnX: Option[Int], nameColumnX: Int, colorColumnX: Int)
 
@@ -89,6 +94,7 @@ object PdfExportComponent {
       } {
 
         // Page 1: Chart
+        pdf.setFontSize(Font.TitleSize)
         pdf.text(title, Page.Margin, Chart.TitleY)
 
         {
@@ -109,6 +115,10 @@ object PdfExportComponent {
           val y = Page.Margin
           pdf.addImage(visualRankingImageInfo.dataURL, "png", x, y, mmWidth, mmHeight)
         }
+
+        // Page 3: Configuration Mismatch
+        appendConfigMismatch(pdf, "Missing Indicator(s)", model.config.missingIndicators)
+        appendConfigMismatch(pdf, "Unexpected Indicator(s)", model.config.unexpectedIndicators)
 
         // Done!
         pdf.save("Report.pdf")
@@ -192,7 +202,7 @@ object PdfExportComponent {
           (model.profileModel.sortedEntities, WithoutRank)
       }
 
-      pdf.setFontSize(FontSize)
+      pdf.setFontSize(Font.DefaultSize)
 
       var y = LegendTable.Y
       for {
@@ -201,8 +211,8 @@ object PdfExportComponent {
         isVisible = model.entitySelectionModel.visible.contains(e.id)
         if isVisible
       } {
-        if (isPinned) pdf.setFont(Font, "bold")
-        else pdf.setFont(Font, "normal")
+        if (isPinned) pdf.setFont(Font.Name, "bold")
+        else pdf.setFont(Font.Name, "normal")
 
         columnPositions match {
           case ColumnPositions(Some(rankColumnX), _, _) =>
@@ -225,7 +235,43 @@ object PdfExportComponent {
         val colorColumnY = y - ColorCellDimension + ColorCellOffsetY // no support for vertical centering
         pdf.rect(columnPositions.colorColumnX, colorColumnY, ColorCellDimension, ColorCellDimension, "F")
 
-        y += LineGap
+        y += Font.LineGap
+      }
+
+    }
+
+    // TODO: Improve reporting of config mismatches
+    // Once we include expert configuration options in the PDF, missing/unexpected indicators
+    // can be reported directly as part of the expert configuration hierarchy (marked in color/bold)
+    // Until then we just dump the first 10 for illustration purposes...
+    private def appendConfigMismatch(pdf: jsPDF, title: String, indicators: Seq[IndicatorId]) = {
+
+      val x = Page.Margin
+      var y = Chart.TitleY
+
+      if (indicators.nonEmpty) {
+        pdf.addPage()
+        pdf.setFontSize(Font.TitleSize)
+
+        pdf.text(s"${indicators.size} $title", x, y)
+        pdf.setFontSize(Font.DefaultSize)
+
+        indicators.take(10).foreach { indicator =>
+          y += Font.LineGap
+
+          val c = indicator.subCriteriaId.criteriaId.name
+          val sc = indicator.subCriteriaId.name
+          val i = indicator.name
+
+          val hierarchy = s"$c | $sc | $i"
+
+          pdf.text(hierarchy, x, y)
+        }
+
+        if (indicators.size > 10) {
+          y += Font.LineGap
+          pdf.text(s"(${indicators.size - 10} more...)", x, y)
+        }
       }
 
     }
