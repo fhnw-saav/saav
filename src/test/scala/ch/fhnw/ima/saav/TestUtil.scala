@@ -137,7 +137,7 @@ trait TestUtil {
 object TestUtil {
 
   def createTestRow(project: String, criteria: String, subCriteria: String, indicator: String): Row = {
-    Array(project, s"$criteria:::$subCriteria:::$indicator", "testReviewer", "42")
+    Array(project, s"$criteria:::$subCriteria:::$indicator", "testReviewer", "3")
   }
 
   def createTestRows(rowCount: Int): Seq[Row] = for (i <- 0 until rowCount) yield createTestRow(s"project-$i", s"criteria-$i", s"subCriteria-$i", s"indicator-$i")

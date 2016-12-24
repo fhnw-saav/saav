@@ -19,7 +19,7 @@ class AnalysisDataImporterSpec extends FlatSpec {
 
     val builder = AnalysisBuilder()
 
-    parseRow(builder, row)
+    parseRow(builder, 0, row)
 
     val analysis = builder.build
     assert(analysis.criteria.size == 1)

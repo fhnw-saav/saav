@@ -101,7 +101,7 @@ object AnalysisDataImporter {
     }
   }
 
-  def parseRow(builder: AnalysisBuilder, rowIndex: Int, row: Row): AnalysisBuilder = {
+  def parseRow(builder: AnalysisBuilder, rowIndex: Int, row: Row, allowValuesOutsideRange: Boolean = false): AnalysisBuilder = {
 
     val columnIt = row.iterator
 
@@ -113,7 +113,7 @@ object AnalysisDataImporter {
     val review = ReviewId(columnIt.next())
     val value = columnIt.next().toDouble
 
-    if (value < 1 || value > 5) {
+    if ((value < 1 || value > 5) && !allowValuesOutsideRange) {
       val humanFriendlyRowIndex = rowIndex + 2 // off-by-one, header
       throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [1,5]")
     }
