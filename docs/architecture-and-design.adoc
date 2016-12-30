@@ -6,9 +6,9 @@ Scala.js compiles to JavaScript (JS).
 When deployed, SAAV consists of just a few static HTML, CSS, and JS files.
 There is no application server, just a web server, serving these static files.
 
-## Model-View-Controller
+## Model-View-Update
 
-SAAV's architecture is based on the Model-View-Controller (MVC) pattern.
+SAAV is based on the Model-View-Update architecture (like http://redux.js.org/[Redux] or http://elm-lang.org/[Elm]).
 It uses the following technologies in the individual layers:
 
 ### Model
@@ -30,13 +30,14 @@ footnote:[In contrast to classical MVC frameworks like e.g. Angular, React is re
 http://blog.andrewray.me/reactjs-for-stupid-people["ReactJS For Stupid People"] explains this in detail.]
 
 The view is also responsible for triggering model changes based on user interactions.
-It does never change the model directly, but asks the controller to do so.
+It does never change the model directly, but asks the update function ("the circuit") to do so.
 
-### Controller
+### Update ("The Circuit")
 
-The controller is responsible for managing the model.
-It starts out with an initial application model (the composition of imported data and default UI state) and changes it as requested by the view.
-Whenever the model changes, the controller asks the view to re-render it.
+The circuit holds the central model which it updates in response to actions dispatched by the view.
+SAAV uses the https://github.com/ochrons/diode[diode] library for application model management.
+Starting out with an initial model, it performs a reduce operation (`(Model, Action) => Model`) over the series of all actions (hence the name "Redux").
+Whenever the model changes, the circuit asks the view to re-render it.
 
 ## Principles
 ### Immutability
@@ -50,7 +51,7 @@ SAAV uses the https://github.com/ochrons/diode[diode] library for application mo
 * Triggering action handlers to create a new model with the requested change
 * Notifying listeners to re-render the views based on the new model
 
-In SAAV, the central controller class managing all these aspects is called `SaavCircuit`.
+In SAAV, the central class managing all these aspects is called `SaavCircuit`.
 
 ### Action Handlers
 
