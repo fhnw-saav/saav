@@ -1,9 +1,686 @@
 {
-  "criteria": [
-    {
-      "name": "A valid but useless 'organisations' config",
-      "aggregatable": true,
-      "subCriteria": []
-    }
-  ]
+    "criteria":[
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"normative Verankerung im Forschungsumfeld"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung von ggf. aufgetretenen Konfliktfällen (z.B. zwischen dem/der Forschenden und der Universitätsverwaltung oder zwischen dem/der Forschenden und dem kirchlichen Lehramt)"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung von ggf. aufgetretenen Konfliktfällen (z.B. zwischen dem/der Forschenden und der Universitätsverwaltung oder zwischen dem/der Forschenden und dem kirchlichen Lehramt)"
+                        }
+                    ],
+                    "name":"Freiheit in der Bestimmung der Forschungsinhalte und -methoden",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"Unabhängigkeit"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Aktualität der Lehre gemessen am Forschungsstand"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung eigener Forschungsmaterialien und -ergebnisse in der Lehre"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung aktueller Publikationen in der Lehre"
+                        }
+                    ],
+                    "name":"Impulse der Forschung für die (Hochschul-)Lehre",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Aktualität der Lehre gemessen am Forschungsstand"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung eigener Forschungsmaterialien und -ergebnisse in der Lehre"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung aktueller Publikationen in der Lehre"
+                        }
+                    ],
+                    "name":"Impulse der Forschung für die (Hochschul-)Lehre",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"Wissenstransfer"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Anteil von Open Access Veröffentlichungen"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
+                        }
+                    ],
+                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Anteil von Open Access Veröffentlichungen"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
+                        }
+                    ],
+                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Anteil von Open Access Veröffentlichungen"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
+                        }
+                    ],
+                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"Nachhaltigkeit"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"wissenschaftliche Vernetzung"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der aktiven Teilnahmen an Veranstaltungen und Tagungen in bzw. mit ausseruniversitären Akteuren"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der aktiven Teilnahmen an Veranstaltungen und Tagungen in bzw. mit ausseruniversitären Akteuren"
+                        }
+                    ],
+                    "name":"Austausch mit relevanten ausseruniversitären Einrichtungen und Akteuren (ausserwissenschaftliche Vernetzung)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"ausserwissenschaftliche Vernetzung"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der Dienstleistungen der Forschungseinrichtung an die Forschenden"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Erfolgsquote bei von der Forschungsförderung beratenen Projektgesuchen"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Erfolgsquote bei von der Forschungsförderung beratenen Projektgesuchen"
+                        }
+                    ],
+                    "name":"Unterstützung der Planung und Durchführung von Forschung durch universitäre Stellen wie Büros zur Forschungsförderung, Abteilungen für Rechnungswesen und Öffentlichkeitsarbeit u.a.",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"Infrastruktur"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"Vernetzung(en)"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der Rezeption in der wissenschaftlichen Gemeinschaft (langfristiger impact im Fachbereich) durch Fachgutachter/-innen"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der Rezeption in der wissenschaftlichen Gemeinschaft (langfristiger impact im Fachbereich) durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Relevanz für den wissenschaftlichen Diskurs",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"Relevanz"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
+                        }
+                    ],
+                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
+                        }
+                    ],
+                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
+                        }
+                    ],
+                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
+                        }
+                    ],
+                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"Begünstigende Begleitumstände"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"Zitationshäufigkeit oder Ableitung davon"
+                        }
+                    ],
+                    "name":"Internationale Rezeption (wissenschaftlich)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"Zitationshäufigkeit oder Ableitung davon"
+                        }
+                    ],
+                    "name":"Internationale Rezeption (wissenschaftlich)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"Zitationshäufigkeit oder Ableitung davon"
+                        }
+                    ],
+                    "name":"Internationale Rezeption (wissenschaftlich)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"Zitationshäufigkeit oder Ableitung davon"
+                        }
+                    ],
+                    "name":"Internationale Rezeption (wissenschaftlich)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"Rezeption"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                        }
+                    ],
+                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"Bisherige Forschungsleistung"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung vorhandener strukturierter Doktoratsprogramme"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Angebote für Generic skills und hochschuldidaktische Ausbildungsangebote"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
+                        }
+                    ],
+                    "name":"Karrierefördernde Begleitmassnahmen für den wissenschaftlichen Nachwuchs",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung vorhandener strukturierter Doktoratsprogramme"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Angebote für Generic skills und hochschuldidaktische Ausbildungsangebote"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
+                        }
+                    ],
+                    "name":"Karrierefördernde Begleitmassnahmen für den wissenschaftlichen Nachwuchs",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung vorhandener strukturierter Doktoratsprogramme"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Angebote für Generic skills und hochschuldidaktische Ausbildungsangebote"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
+                        }
+                    ],
+                    "name":"Karrierefördernde Begleitmassnahmen für den wissenschaftlichen Nachwuchs",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"Nachwuchsförderung"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        }
+                    ],
+                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        }
+                    ],
+                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        }
+                    ],
+                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                        }
+                    ],
+                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"Ausrichtung und Relevanz"
+        }
+    ]
 }
