@@ -18,6 +18,7 @@ import org.scalajs.dom.raw.{HTMLImageElement, SVGSVGElement, XMLSerializer}
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
+import scala.scalajs.js.Date
 import scala.util.Success
 import scalacss.ScalaCssReact._
 
@@ -44,7 +45,8 @@ object PdfExportComponent {
     val Name = "arial"
     val TitleSize = 16 // pt
     val DefaultSize = 10 // pt
-    val LineGap = 10
+    val LineGap = 6
+    val LegendLineGap = 10 // must encompass color squares
   }
 
   private object LegendTable {
@@ -59,9 +61,11 @@ object PdfExportComponent {
     val ColorCellOffsetY = 1
   }
 
-  case class Props(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, model: AppModel)
+  case class ReportConfig(title: String, creator: String)
 
-  case class State(showReportForm: Boolean = false, title: String)
+  case class Props(chartSvgRootElementId: String, defaultReportConfig: ReportConfig, activeTab: Tab, model: AppModel)
+
+  case class State(showReportForm: Boolean = false, reportConfig: ReportConfig)
 
   class Backend($: BackendScope[Props, State]) {
 
@@ -74,7 +78,7 @@ object PdfExportComponent {
     // 2. render SVG string onto an HTML canvas
     // 3. export the HTML canvas to PNG
     // 4. add PNG to PDF
-    private def generatePdf(title: String, activeTab: Tab, model: AppModel) = Callback {
+    private def generatePdf(reportConfig: ReportConfig, activeTab: Tab, model: AppModel) = Callback {
 
       // A4 landscape
       val landscape = "l"
@@ -92,31 +96,17 @@ object PdfExportComponent {
         chartImageInfo <- chartImageFuture
         optionalVisualRankingImageInfo <- visualRankingFuture
       } {
+        // Page 1: Cover
+        appendCover(pdf, reportConfig)
 
-        // Page 1: Chart
-        pdf.setFontSize(Font.TitleSize)
-        pdf.text(title, Page.Margin, Chart.TitleY)
+        // Page 2: Chart
+        appendChart(pdf, chartImageInfo)
 
-        {
-          val mmChartImageWidth = Page.ContentWidth
-          val mmChartImageHeight = Page.ContentWidth / chartImageInfo.aspectRatio
-          pdf.addImage(chartImageInfo.dataURL, "png", Page.Margin, Chart.ChartImageY, mmChartImageWidth, mmChartImageHeight)
-        }
-
-        // Page 2: Legend & Visual Ranking
-        pdf.addPage()
-
+        // Page 3: Legend & Visual Ranking
         appendLegend(pdf, activeTab, model)
+        appendVisualRanking(pdf, optionalVisualRankingImageInfo)
 
-        optionalVisualRankingImageInfo.foreach { visualRankingImageInfo =>
-          val mmWidth = (Page.ContentHeight * visualRankingImageInfo.aspectRatio).toInt
-          val mmHeight = Page.ContentHeight
-          val x = Page.Width - Page.Margin - mmWidth
-          val y = Page.Margin
-          pdf.addImage(visualRankingImageInfo.dataURL, "png", x, y, mmWidth, mmHeight)
-        }
-
-        // Page 3: Configuration Mismatch
+        // Page 4: Configuration Mismatch
         appendConfigMismatch(pdf, "Missing Indicator(s)", model.config.missingIndicators)
         appendConfigMismatch(pdf, "Unexpected Indicator(s)", model.config.unexpectedIndicators)
 
@@ -191,6 +181,44 @@ object PdfExportComponent {
       defsElement
     }
 
+    private def appendCover(pdf: jsPDF, reportConfig: ReportConfig) = {
+      val xTabbed = Page.Margin + 7
+      pdf.setFont(Font.Name, "bold")
+      pdf.setFontSize(Font.TitleSize)
+      var y = Chart.TitleY
+      pdf.text(reportConfig.title, Page.Margin, y)
+
+      pdf.setFontSize(Font.DefaultSize)
+      if (!reportConfig.creator.trim.isEmpty) {
+        y += Font.LineGap + Font.LineGap
+        pdf.setFont(Font.Name, "bold")
+        pdf.text("Creator", Page.Margin, y)
+        y += Font.LineGap
+        pdf.setFont(Font.Name, "normal")
+        pdf.text(reportConfig.creator, xTabbed, y)
+      }
+
+      y += Font.LineGap + Font.LineGap
+      pdf.setFont(Font.Name, "bold")
+      pdf.text("Creation Date", Page.Margin, y)
+      y += Font.LineGap
+      pdf.setFont(Font.Name, "normal")
+      val date = new Date()
+      val twoDigits = "%02d"
+      val day = twoDigits.format(date.getDate())
+      val month = twoDigits.format(date.getMonth() + 1)
+      val year = date.getFullYear()
+      val formattedDate = s"$day.$month.$year"
+      pdf.text(formattedDate, xTabbed, y)
+    }
+
+    private def appendChart(pdf: jsPDF, chartImageInfo: Backend.this.ImageInfo) = {
+      pdf.addPage()
+      val mmChartImageWidth = Page.ContentWidth
+      val mmChartImageHeight = Page.ContentWidth / chartImageInfo.aspectRatio
+      pdf.addImage(chartImageInfo.dataURL, "png", Page.Margin, Chart.ChartImageY, mmChartImageWidth, mmChartImageHeight)
+    }
+
     private def appendLegend(pdf: jsPDF, activeTab: Tab, model: AppModel) = {
       import LegendTable._
 
@@ -202,6 +230,7 @@ object PdfExportComponent {
           (model.profileModel.sortedEntities, WithoutRank)
       }
 
+      pdf.addPage()
       pdf.setFontSize(Font.DefaultSize)
 
       var y = LegendTable.Y
@@ -235,9 +264,19 @@ object PdfExportComponent {
         val colorColumnY = y - ColorCellDimension + ColorCellOffsetY // no support for vertical centering
         pdf.rect(columnPositions.colorColumnX, colorColumnY, ColorCellDimension, ColorCellDimension, "F")
 
-        y += Font.LineGap
+        y += Font.LegendLineGap
       }
 
+    }
+
+    private def appendVisualRanking(pdf: jsPDF, optionalVisualRankingImageInfo: Option[Backend.this.ImageInfo]) = {
+      optionalVisualRankingImageInfo.foreach { visualRankingImageInfo =>
+        val mmWidth = (Page.ContentHeight * visualRankingImageInfo.aspectRatio).toInt
+        val mmHeight = Page.ContentHeight
+        val x = Page.Width - Page.Margin - mmWidth
+        val y = Page.Margin
+        pdf.addImage(visualRankingImageInfo.dataURL, "png", x, y, mmWidth, mmHeight)
+      }
     }
 
     // TODO: Improve reporting of config mismatches
@@ -255,6 +294,8 @@ object PdfExportComponent {
 
         pdf.text(s"${indicators.size} $title", x, y)
         pdf.setFontSize(Font.DefaultSize)
+
+        y += Font.LineGap
 
         indicators.take(10).foreach { indicator =>
           y += Font.LineGap
@@ -278,27 +319,39 @@ object PdfExportComponent {
 
     private def onTitleChange(e: ReactEventI) = {
       val newValue = e.target.value
-      $.modState(_.copy(title = newValue))
+      $.modState(s => s.copy(reportConfig = s.reportConfig.copy(title = newValue)))
+    }
+
+    private def onCreatorChange(e: ReactEventI) = {
+      val newValue = e.target.value
+      $.modState(s => s.copy(reportConfig = s.reportConfig.copy(creator = newValue)))
     }
 
     def render(p: Props, s: State): ReactTagOf[Div] = {
       val exportPdfLabel = "Export PDF"
       val button = Button(showReportForm, exportPdfLabel + "...")
       if (s.showReportForm) {
-        val titleInput = <.input(css.form.control, ^.`type` := "text", ^.id := "title", ^.onChange ==> onTitleChange, ^.value := p.defaultTitle)
-        val labelledTitleInput = <.div(
-          <.label(css.form.group, ^.`for` := "title", "Title:"),
-          titleInput
+
+        val title = <.div(css.form.group,
+          <.label(^.`for` := "title", "Title:"),
+          <.input(css.form.control, ^.`type` := "text", ^.id := "title", ^.onChange ==> onTitleChange, ^.value := s.reportConfig.title)
         )
+
+        val creator = <.div(css.form.group,
+          <.label(^.`for` := "creator", "Creator:"),
+          <.input(css.form.control, ^.`type` := "text", ^.id := "creator", ^.onChange ==> onCreatorChange, ^.value := s.reportConfig.creator)
+        )
+
         val modal = Modal(
           Modal.Props(
             header = _ => <.h2(exportPdfLabel),
             footer = hide => <.div(
               Button(hide >> hideReportForm, "Cancel"),
-              Button(generatePdf(s.title, p.activeTab, p.model) >> hide >> hideReportForm, "OK")
+              Button(generatePdf(s.reportConfig, p.activeTab, p.model) >> hide >> hideReportForm, "OK")
             )),
-          labelledTitleInput
+          <.form(title, creator)
         )
+
         <.div(button, modal)
       } else {
         <.div(button)
@@ -309,11 +362,12 @@ object PdfExportComponent {
 
   private val component = ReactComponentB[Props](PdfExportComponent.getClass.getSimpleName)
     .initialState_P { p =>
-      State(title = p.defaultTitle)
+      State(reportConfig = p.defaultReportConfig)
     }
     .renderBackend[Backend]
     .build
 
-  def apply(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, model: AppModel): ReactComponentU[Props, State, Backend, TopNode] = component(Props(chartSvgRootElementId, defaultTitle, activeTab, model))
+  def apply(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, model: AppModel): ReactComponentU[Props, State, Backend, TopNode] =
+    component(Props(chartSvgRootElementId, defaultReportConfig = ReportConfig(title = defaultTitle, creator = ""), activeTab, model))
 
 }
