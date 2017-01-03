@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.component
 
 import ch.fhnw.ima.saav.component.bootstrap.Button
-import ch.fhnw.ima.saav.controller.{AnalysisReadyAction, ImportFailedAction, StartImportAction}
+import ch.fhnw.ima.saav.circuit.{AnalysisReadyAction, ImportFailedAction, StartImportAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.config.AnalysisConfig

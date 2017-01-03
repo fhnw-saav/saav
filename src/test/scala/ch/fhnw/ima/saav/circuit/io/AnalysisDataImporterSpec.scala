@@ -1,7 +1,7 @@
-package ch.fhnw.ima.saav.controller.io
+package ch.fhnw.ima.saav.circuit.io
 
 import ch.fhnw.ima.saav.TestUtil
-import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.{BatchSize, ImportState, Row, parseRow}
+import ch.fhnw.ima.saav.circuit.io.AnalysisDataImporter.{BatchSize, ImportState, Row, parseRow}
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.AnalysisBuilder
 import org.scalatest.FlatSpec

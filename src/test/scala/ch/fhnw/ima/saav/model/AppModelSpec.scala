@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav.model
 
 import ch.fhnw.ima.saav.TestUtil
-import ch.fhnw.ima.saav.controller.logic.AppModelFactory
+import ch.fhnw.ima.saav.circuit.logic.AppModelFactory
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.{AnalysisBuilder, Entity, EntityId, ReviewId}

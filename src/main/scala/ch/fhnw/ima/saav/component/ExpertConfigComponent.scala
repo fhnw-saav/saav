@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav.component
 
 import java.util.UUID
 
-import ch.fhnw.ima.saav.controller._
+import ch.fhnw.ima.saav.circuit._
 import ch.fhnw.ima.saav.model.app.ExpertConfig
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weight, Weights}

@@ -1,4 +1,4 @@
-package ch.fhnw.ima.saav.controller.logic
+package ch.fhnw.ima.saav.circuit.logic
 
 import ch.fhnw.ima.saav.TestUtil
 import ch.fhnw.ima.saav.model.domain.{CriteriaId, SubCriteriaId}

@@ -1,4 +1,4 @@
-package ch.fhnw.ima.saav.controller.logic
+package ch.fhnw.ima.saav.circuit.logic
 
 import ch.fhnw.ima.saav.model.app.AppModel
 import ch.fhnw.ima.saav.model.config.{AnalysisConfig, Config}

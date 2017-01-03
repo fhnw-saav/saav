@@ -1,8 +1,8 @@
-package ch.fhnw.ima.saav.controller
+package ch.fhnw.ima.saav.circuit
 
-import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.ImportState
-import ch.fhnw.ima.saav.controller.io.{AnalysisConfigImporter, AnalysisDataImporter}
-import ch.fhnw.ima.saav.controller.logic.AppModelFactory
+import ch.fhnw.ima.saav.circuit.io.AnalysisDataImporter.ImportState
+import ch.fhnw.ima.saav.circuit.io.{AnalysisConfigImporter, AnalysisDataImporter}
+import ch.fhnw.ima.saav.circuit.logic.AppModelFactory
 import ch.fhnw.ima.saav.model.app.{SaavModel, _}
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.Analysis

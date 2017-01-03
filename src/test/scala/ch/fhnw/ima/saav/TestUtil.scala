@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.Row
+import ch.fhnw.ima.saav.circuit.io.AnalysisDataImporter.Row
 import ch.fhnw.ima.saav.model.config._
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality}

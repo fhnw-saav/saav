@@ -1,4 +1,4 @@
-package ch.fhnw.ima.saav.controller.io
+package ch.fhnw.ima.saav.circuit.io
 
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import org.scalajs.dom._

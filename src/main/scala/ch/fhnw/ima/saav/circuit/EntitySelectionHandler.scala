@@ -1,4 +1,4 @@
-package ch.fhnw.ima.saav.controller
+package ch.fhnw.ima.saav.circuit
 
 import ch.fhnw.ima.saav.model.app.{EntitySelectionModel, SaavModel}
 import ch.fhnw.ima.saav.model.domain.EntityId

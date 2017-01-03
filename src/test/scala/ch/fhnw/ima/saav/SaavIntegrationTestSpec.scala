@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.controller._
-import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter
+import ch.fhnw.ima.saav.circuit._
+import ch.fhnw.ima.saav.circuit.io.AnalysisDataImporter
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.AnalysisBuilder
 import org.scalactic.TolerantNumerics

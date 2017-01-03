@@ -1,7 +1,7 @@
-package ch.fhnw.ima.saav.controller
+package ch.fhnw.ima.saav.circuit
 
 import ch.fhnw.ima.saav.TestUtil
-import ch.fhnw.ima.saav.controller.io.AnalysisDataImporter.ImportState
+import ch.fhnw.ima.saav.circuit.io.AnalysisDataImporter.ImportState
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.color._
 import ch.fhnw.ima.saav.model.config.AnalysisConfig

@@ -1,6 +1,6 @@
 package ch.fhnw.ima.saav.component
 
-import ch.fhnw.ima.saav.controller.UpdateWeightsAction
+import ch.fhnw.ima.saav.circuit.UpdateWeightsAction
 import ch.fhnw.ima.saav.model.app.ExpertConfig
 import ch.fhnw.ima.saav.model.weight.Weights
 import diode.Action
