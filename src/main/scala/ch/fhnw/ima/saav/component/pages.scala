@@ -5,7 +5,7 @@ import ch.fhnw.ima.saav.component.bootstrap.DismissibleWarning
 import ch.fhnw.ima.saav.controller.UpdateVisibility
 import ch.fhnw.ima.saav.model.app._
 import diode.react.ModelProxy
-import japgolly.scalajs.react.vdom.{ReactAttr, ReactTagOf}
+import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactComponentU, TopNode}
 import org.scalajs.dom.html.Div
@@ -64,7 +64,7 @@ object pages {
       .render(_ => {
 
         def createButton(subPage: SubPage) =
-          <.a(css.mainLinkButton, ^.role := "button", ^.href := "#/" + subPage.hashLink, subPage.displayName)
+          <.a(css.mainLinkButton, ^.role := css.button, ^.href := "#/" + subPage.hashLink, subPage.displayName)
 
         <.div(Page.subPages.map(createButton))
       })
