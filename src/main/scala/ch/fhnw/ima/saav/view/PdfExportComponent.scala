@@ -189,13 +189,15 @@ object PdfExportComponent {
       var y = Chart.TitleY
       pdf.text(reportConfig.title, Page.Margin, y)
 
-      def append(label: String, value: Array[String], currentY: Int): Int = {
+      def append(label: String, value: Array[String], currentY: Int, textColor: Color = Color.Black): Int = {
         var y = currentY + Font.LineGap + Font.LineGap
         pdf.setFont(Font.Name, "bold")
         pdf.text(label, Page.Margin, y)
         y += Font.LineGap
         pdf.setFont(Font.Name, "normal")
+        pdf.setTextColor(textColor.r, textColor.g, textColor.b)
         pdf.text(value.toJSArray, xTabbed, y)
+        pdf.setTextColor(0, 0, 0)
         y
       }
 
@@ -213,6 +215,11 @@ object PdfExportComponent {
       val year = date.getFullYear()
       val formattedDate = s"$day.$month.$year"
       y = append("Creation Date", Array(formattedDate), y)
+
+      // Software
+      val url = dom.window.location.href
+      val steelBlue = Color("#4682b4")
+      y = append("Software URL", Array(url), y, steelBlue)
 
       // Notes
       if (!reportConfig.notes.trim.isEmpty) {
