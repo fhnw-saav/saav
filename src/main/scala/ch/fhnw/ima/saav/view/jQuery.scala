@@ -1,5 +1,5 @@
 package ch.fhnw.ima.saav
-package component
+package view
 
 import org.scalajs.dom._
 

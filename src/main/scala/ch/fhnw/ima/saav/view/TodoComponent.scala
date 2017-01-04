@@ -1,5 +1,5 @@
 package ch.fhnw.ima.saav
-package component
+package view
 
 import japgolly.scalajs.react.{ReactComponentB, _}
 import japgolly.scalajs.react.vdom.prefix_<^._

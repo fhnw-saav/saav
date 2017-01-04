@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.component.pages.Page.HomePage
-import ch.fhnw.ima.saav.component.pages._
+import ch.fhnw.ima.saav.view.pages.Page.HomePage
+import ch.fhnw.ima.saav.view.pages._
 import ch.fhnw.ima.saav.circuit.SaavCircuit
 import ch.fhnw.ima.saav.style.GlobalStyles
 import japgolly.scalajs.react.ReactDOM

@@ -1,4 +1,5 @@
-package ch.fhnw.ima.saav.component
+package ch.fhnw.ima.saav
+package view
 
 import ch.fhnw.ima.saav.circuit.UpdateWeightsAction
 import ch.fhnw.ima.saav.model.app.ExpertConfig

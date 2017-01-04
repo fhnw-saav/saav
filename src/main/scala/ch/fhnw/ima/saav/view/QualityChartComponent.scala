@@ -1,4 +1,5 @@
-package ch.fhnw.ima.saav.component
+package ch.fhnw.ima.saav
+package view
 
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.domain.{EntityId, SubCriteriaId}
@@ -489,6 +490,6 @@ object QualityChartComponent extends ChartComponent {
     }
     .build
 
-  def apply(proxy: ModelProxy[AppModel]): ReactComponentU[_root_.ch.fhnw.ima.saav.component.QualityChartComponent.Props, Unit, Backend, TopNode] = component(Props(proxy))
+  def apply(proxy: ModelProxy[AppModel]): ReactComponentU[_root_.ch.fhnw.ima.saav.view.QualityChartComponent.Props, Unit, Backend, TopNode] = component(Props(proxy))
 
 }

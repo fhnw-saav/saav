@@ -1,8 +1,8 @@
 package ch.fhnw.ima.saav
-package component
+package view
 
-import ch.fhnw.ima.saav.component.bootstrap.{Button, Modal}
-import ch.fhnw.ima.saav.component.pages.PageWithDataComponent.{ProfileTab, QualityTab, Tab}
+import ch.fhnw.ima.saav.view.bootstrap.{Button, Modal}
+import ch.fhnw.ima.saav.view.pages.PageWithDataComponent.{ProfileTab, QualityTab, Tab}
 import ch.fhnw.ima.saav.jspdf.jsPDF
 import ch.fhnw.ima.saav.model.app.AppModel
 import ch.fhnw.ima.saav.model.domain.IndicatorId

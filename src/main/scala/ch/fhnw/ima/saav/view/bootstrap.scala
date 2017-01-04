@@ -1,5 +1,5 @@
 package ch.fhnw.ima.saav
-package component
+package view
 
 import japgolly.scalajs.react.ReactComponentC.ReqProps
 import japgolly.scalajs.react.vdom.ReactAttr

@@ -1,6 +1,7 @@
-package ch.fhnw.ima.saav.component
+package ch.fhnw.ima.saav
+package view
 
-import ch.fhnw.ima.saav.component.bootstrap.Button
+import ch.fhnw.ima.saav.view.bootstrap.Button
 import ch.fhnw.ima.saav.circuit.{AnalysisReadyAction, ImportFailedAction, StartImportAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._

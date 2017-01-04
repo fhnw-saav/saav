@@ -1,5 +1,5 @@
 package ch.fhnw.ima.saav
-package component
+package view
 
 import ch.fhnw.ima.saav.circuit.{UpdateEntityColorAction, UpdateEntityHoveringAction, UpdateEntityPinningAction, UpdateEntityVisibilityAction}
 import ch.fhnw.ima.saav.model.app.{AppModel, EntitySelectionModel, GroupedEntity}

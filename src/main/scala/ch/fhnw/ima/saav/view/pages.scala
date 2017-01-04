@@ -1,7 +1,7 @@
 package ch.fhnw.ima.saav
-package component
+package view
 
-import ch.fhnw.ima.saav.component.bootstrap.DismissibleWarning
+import ch.fhnw.ima.saav.view.bootstrap.DismissibleWarning
 import ch.fhnw.ima.saav.circuit.UpdateVisibility
 import ch.fhnw.ima.saav.model.app._
 import diode.react.ModelProxy
