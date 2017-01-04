@@ -21,6 +21,7 @@ import scala.scalajs.js
 import scala.scalajs.js.Date
 import scala.util.Success
 import scalacss.ScalaCssReact._
+import js.JSConverters._
 
 object PdfExportComponent {
 
@@ -61,7 +62,7 @@ object PdfExportComponent {
     val ColorCellOffsetY = 1
   }
 
-  case class ReportConfig(title: String, creator: String)
+  case class ReportConfig(title: String, creator: String, notes: String)
 
   case class Props(chartSvgRootElementId: String, defaultReportConfig: ReportConfig, activeTab: Tab, model: AppModel)
 
@@ -188,28 +189,36 @@ object PdfExportComponent {
       var y = Chart.TitleY
       pdf.text(reportConfig.title, Page.Margin, y)
 
-      pdf.setFontSize(Font.DefaultSize)
-      if (!reportConfig.creator.trim.isEmpty) {
-        y += Font.LineGap + Font.LineGap
+      def append(label: String, value: Array[String], currentY: Int): Int = {
+        var y = currentY + Font.LineGap + Font.LineGap
         pdf.setFont(Font.Name, "bold")
-        pdf.text("Creator", Page.Margin, y)
+        pdf.text(label, Page.Margin, y)
         y += Font.LineGap
         pdf.setFont(Font.Name, "normal")
-        pdf.text(reportConfig.creator, xTabbed, y)
+        pdf.text(value.toJSArray, xTabbed, y)
+        y
       }
 
-      y += Font.LineGap + Font.LineGap
-      pdf.setFont(Font.Name, "bold")
-      pdf.text("Creation Date", Page.Margin, y)
-      y += Font.LineGap
-      pdf.setFont(Font.Name, "normal")
+      // Creator
+      pdf.setFontSize(Font.DefaultSize)
+      if (!reportConfig.creator.trim.isEmpty) {
+        y = append("Creator", Array(reportConfig.creator), y)
+      }
+
+      // Creation Date
       val date = new Date()
       val twoDigits = "%02d"
       val day = twoDigits.format(date.getDate())
       val month = twoDigits.format(date.getMonth() + 1)
       val year = date.getFullYear()
       val formattedDate = s"$day.$month.$year"
-      pdf.text(formattedDate, xTabbed, y)
+      y = append("Creation Date", Array(formattedDate), y)
+
+      // Notes
+      if (!reportConfig.notes.trim.isEmpty) {
+        val notes = pdf.splitTextToSize(reportConfig.notes, Page.ContentWidth - xTabbed, new js.Array[Any]())
+        y = append("Notes", notes.toArray, y)
+      }
     }
 
     private def appendChart(pdf: jsPDF, chartImageInfo: Backend.this.ImageInfo) = {
@@ -327,6 +336,11 @@ object PdfExportComponent {
       $.modState(s => s.copy(reportConfig = s.reportConfig.copy(creator = newValue)))
     }
 
+    private def onNotesChange(e: ReactEventI) = {
+      val newValue = e.target.value
+      $.modState(s => s.copy(reportConfig = s.reportConfig.copy(notes = newValue)))
+    }
+
     def render(p: Props, s: State): ReactTagOf[Div] = {
       val exportPdfLabel = "Export PDF"
       val button = Button(showReportForm, exportPdfLabel + "...")
@@ -334,12 +348,30 @@ object PdfExportComponent {
 
         val title = <.div(css.form.group,
           <.label(^.`for` := "title", "Title:"),
-          <.input(css.form.control, ^.`type` := "text", ^.id := "title", ^.onChange ==> onTitleChange, ^.value := s.reportConfig.title)
+          <.input(css.form.control,
+            ^.`type` := "text",
+            ^.id := "title",
+            ^.onChange ==> onTitleChange,
+            ^.value := s.reportConfig.title)
         )
 
         val creator = <.div(css.form.group,
           <.label(^.`for` := "creator", "Creator:"),
-          <.input(css.form.control, ^.`type` := "text", ^.id := "creator", ^.onChange ==> onCreatorChange, ^.value := s.reportConfig.creator)
+          <.input(css.form.control,
+            ^.`type` := "text",
+            ^.id := "creator",
+            ^.onChange ==> onCreatorChange,
+            ^.value := s.reportConfig.creator)
+        )
+
+        val notes = <.div(css.form.group,
+          <.label(^.`for` := "notes", "Notes:"),
+          <.textarea(css.form.control,
+            ^.id := "notes",
+            ^.maxLength := 1000,
+            ^.rows := 10,
+            ^.onChange ==> onNotesChange,
+            ^.value := s.reportConfig.notes)
         )
 
         val modal = Modal(
@@ -349,7 +381,7 @@ object PdfExportComponent {
               Button(hide >> hideReportForm, "Cancel"),
               Button(generatePdf(s.reportConfig, p.activeTab, p.model) >> hide >> hideReportForm, "OK")
             )),
-          <.form(title, creator)
+          <.form(title, creator, notes)
         )
 
         <.div(button, modal)
@@ -368,6 +400,6 @@ object PdfExportComponent {
     .build
 
   def apply(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, model: AppModel): ReactComponentU[Props, State, Backend, TopNode] =
-    component(Props(chartSvgRootElementId, defaultReportConfig = ReportConfig(title = defaultTitle, creator = ""), activeTab, model))
+    component(Props(chartSvgRootElementId, defaultReportConfig = ReportConfig(title = defaultTitle, creator = "", notes = ""), activeTab, model))
 
 }
