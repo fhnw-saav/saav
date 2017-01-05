@@ -6,69 +6,67 @@
                 {
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                            "enabled":true,
+                            "name":"peer  review"
                         },
                         {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                            "enabled":true,
+                            "name":"peer review (violations)"
                         }
                     ],
-                    "name":"Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche",
+                    "name":"integrity",
                     "weight":{
-                        "Profile":{}
+                        "Quality":{
+                            "weight":1
+                        }
                     }
                 },
                 {
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                            "enabled":true,
+                            "name":"peer review (output)"
                         },
                         {
                             "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                            "name":"number of publications"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"acquired third-party-funds"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"research projects"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"doctoral degrees"
                         }
                     ],
-                    "name":"Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche",
+                    "name":"research quantity",
                     "weight":{
-                        "Profile":{}
+                        "Quality":{
+                            "weight":1
+                        }
                     }
                 },
                 {
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                            "enabled":true,
+                            "name":"peer review (publications)"
                         }
                     ],
-                    "name":"Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche",
+                    "name":"research quality",
                     "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Gutachter aus der Kirchenpraxis (zu Beginn des Projektes)"
+                        "Quality":{
+                            "weight":1
                         }
-                    ],
-                    "name":"Anknüpfung an ein vorhandenes Interesse oder offene Fragen in der Kirche",
-                    "weight":{
-                        "Profile":{}
                     }
                 }
             ],
-            "name":"Aktualität und Anschlussfähigkeit"
+            "name":"achievements"
         },
         {
             "aggregatable":false,
@@ -77,276 +75,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"vollständige Referenzierung des Wissensstandes"
+                            "name":"peer review (work place infrastructure)"
                         }
                     ],
-                    "name":"Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"vollständige Referenzierung des Wissensstandes"
-                        }
-                    ],
-                    "name":"Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"vollständige Referenzierung des Wissensstandes"
-                        }
-                    ],
-                    "name":"Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"vollständige Referenzierung des Wissensstandes"
-                        }
-                    ],
-                    "name":"Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"vollständige Referenzierung des Wissensstandes"
-                        }
-                    ],
-                    "name":"Berücksichtigung der relevanten wissenschaftlichen Kenntnisse und Debatten",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                }
-            ],
-            "name":"Integration in die Wissenschaftsgemeinschaft"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }
-                    ],
-                    "name":"Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }
-                    ],
-                    "name":"Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }
-                    ],
-                    "name":"Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }
-                    ],
-                    "name":"Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }
-                    ],
-                    "name":"Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
-                        }
-                    ],
-                    "name":"Angemessenheit der gewählten Methode(n) zur Beantwortung der Forschungsfrage",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"Angemessene Methodologie"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"Vernetzung(en)"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Arbeitsplatzausstattung und der Verfügbarkeit ggf. benötigter Forschungsapparate und Ausrüstung (inkl. Zugang zu Informationsmedien, Software, informationstechnologische und audiovisuelle Geräte etc.) durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Arbeitsplatzausstattung und der Verfügbarkeit ggf. benötigter Forschungsapparate und Ausrüstung (inkl. Zugang zu Informationsmedien, Software, informationstechnologische und audiovisuelle Geräte etc.) durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Sicherung der praktischen Durchführung des Projekts (Büro, Computer, Forschungsmittel, Reisekosten, Bibliotheken und Archive, Datenbanken usw.)",
+                    "name":"workplace infrastructure",
                     "weight":{
                         "Quality":{
                             "weight":0.75
@@ -354,7 +86,7 @@
                     }
                 }
             ],
-            "name":"Infrastruktur"
+            "name":"infrastructure"
         },
         {
             "aggregatable":false,
@@ -363,20 +95,180 @@
                     "indicators":[
                         {
                             "enabled":false,
-                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                            "name":"peer review (of proposal)"
                         },
                         {
                             "enabled":false,
-                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                            "name":"media presence of topic"
                         }
                     ],
-                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
+                    "name":"relation to social issues",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"disciplinary diversity (beyond theology)"
+                        }
+                    ],
+                    "name":"interdisciplinarity (beyond theology)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"disciplinary diversity (within theology) "
+                        }
+                    ],
+                    "name":"interdisciplinarity (within theology)",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"peer review (of proposal)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"review by church professionals (proposal)"
+                        }
+                    ],
+                    "name":"relation to issues in church",
                     "weight":{
                         "Profile":{}
                     }
                 }
             ],
-            "name":"Begünstigende Begleitumstände"
+            "name":"topicallity"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"peer review (exchange activities, national universities)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"conference participations (national universities)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"organised conferences (national universities)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"co-authorships (national universities)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"memberships (national)"
+                        }
+                    ],
+                    "name":"national exchange",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (scholarly exchange activities)"
+                        }
+                    ],
+                    "name":"scholarly exchange",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"peer review (exchange activities, own university)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"conference participations (own university)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"organised conferences (own university)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":" co-authorships (own university)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"memberships (own university)"
+                        }
+                    ],
+                    "name":"exchange within own university",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"peer review (exchange activities, international)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":" conference participations (international)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"co-authorships (international)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":" memberships (international)"
+                        }
+                    ],
+                    "name":"international exchange",
+                    "weight":{
+                        "Profile":{}
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (non-academic exchange activities)"
+                        }
+                    ],
+                    "name":"non-academic exchange",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"exchange"
         },
         {
             "aggregatable":false,
@@ -385,26 +277,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"eingeworbene Drittmittel"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl betreuter Doktorierender (abgeschlossene)"
+                            "name":"peer review (of proposal)"
                         }
                     ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "name":"feasible research objective",
                     "weight":{
                         "Quality":{
                             "weight":1
@@ -415,29 +291,13 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"eingeworbene Drittmittel"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl betreuter Doktorierender (abgeschlossene)"
+                            "name":"peer review (of proposal)"
                         }
                     ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "name":"financial planning",
                     "weight":{
                         "Quality":{
-                            "weight":1
+                            "weight":0.75
                         }
                     }
                 },
@@ -445,34 +305,18 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"eingeworbene Drittmittel"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl betreuter Doktorierender (abgeschlossene)"
+                            "name":"peer review (of proposal)"
                         }
                     ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "name":"time management",
                     "weight":{
                         "Quality":{
-                            "weight":1
+                            "weight":0.75
                         }
                     }
                 }
             ],
-            "name":"Bisherige Forschungsleistung"
+            "name":"feasibility"
         },
         {
             "aggregatable":false,
@@ -481,10 +325,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                            "name":"peer review (of proposal)"
                         }
                     ],
-                    "name":"Sinnvolle Eingrenzung und Abgrenzung des Forschungsprojektes in Bezug auf Inhalt und Methode(n)",
+                    "name":"intelligibility",
                     "weight":{
                         "Quality":{
                             "weight":1
@@ -495,10 +339,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                            "name":"peer review (of proposal)"
                         }
                     ],
-                    "name":"Sinnvolle Eingrenzung und Abgrenzung des Forschungsprojektes in Bezug auf Inhalt und Methode(n)",
+                    "name":"choice of methods",
                     "weight":{
                         "Quality":{
                             "weight":1
@@ -509,10 +353,56 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen (vor Beginn des Forschungsprojektes)"
+                            "name":"peer review (of proposal)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"review of interdisciplinary ethics committee"
                         }
                     ],
-                    "name":"Sinnvolle Eingrenzung und Abgrenzung des Forschungsprojektes in Bezug auf Inhalt und Methode(n)",
+                    "name":"ethical sensitivity",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        }
+                    ],
+                    "name":"reflexivity",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        }
+                    ],
+                    "name":"research question and objectives",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        }
+                    ],
+                    "name":"openness",
                     "weight":{
                         "Quality":{
                             "weight":1
@@ -520,7 +410,7 @@
                     }
                 }
             ],
-            "name":"Machbarkeit"
+            "name":"methodology"
         },
         {
             "aggregatable":false,
@@ -529,10 +419,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
+                            "name":"review by experts from church (proposal)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"relevance for church",
                     "weight":{
                         "Profile":{}
                     }
@@ -541,10 +431,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
+                            "name":"peer review (proposal)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"applied research",
                     "weight":{
                         "Profile":{}
                     }
@@ -553,10 +443,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
+                            "name":"peer review (proposal)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"basic research",
                     "weight":{
                         "Profile":{}
                     }
@@ -565,10 +455,14 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
+                            "name":"review by experts from societal domains (proposal)"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"media presence of topic"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"societal relevance",
                     "weight":{
                         "Profile":{}
                     }
@@ -577,16 +471,128 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Projektbeschreibung durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis (zu Beginn des Projekts)"
+                            "name":"peer review (proposal)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"scientific relevance",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"relevance"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        }
+                    ],
+                    "name":"scientific context",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        }
+                    ],
+                    "name":"scientific positioning",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"number of publications"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"citations"
+                        }
+                    ],
+                    "name":"production of new knowledge",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"referencing of state of research"
+                        }
+                    ],
+                    "name":"review of relevant research",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (of proposal)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"bibliometric research front analysis"
+                        }
+                    ],
+                    "name":"introducing new areas of research",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.25
+                        }
+                    }
+                }
+            ],
+            "name":"scientific integration"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"peer review (team diversity)"
+                        }
+                    ],
+                    "name":"promotion of diversity",
                     "weight":{
                         "Profile":{}
                     }
                 }
             ],
-            "name":"Ausrichtung und Relevanz"
+            "name":"conditions"
         }
     ]
 }

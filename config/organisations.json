@@ -7,18 +7,42 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"normative Verankerung im Forschungsumfeld"
+                            "name":"peer review"
                         },
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung von ggf. aufgetretenen Konfliktfällen (z.B. zwischen dem/der Forschenden und der Universitätsverwaltung oder zwischen dem/der Forschenden und dem kirchlichen Lehramt)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung von ggf. aufgetretenen Konfliktfällen (z.B. zwischen dem/der Forschenden und der Universitätsverwaltung oder zwischen dem/der Forschenden und dem kirchlichen Lehramt)"
+                            "name":"peer review (violations)"
                         }
                     ],
-                    "name":"Freiheit in der Bestimmung der Forschungsinhalte und -methoden",
+                    "name":"integrity",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (output)"
+                        }
+                    ],
+                    "name":"research quantity",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review of publication output"
+                        }
+                    ],
+                    "name":"research quality",
                     "weight":{
                         "Quality":{
                             "weight":1
@@ -26,7 +50,7 @@
                     }
                 }
             ],
-            "name":"Unabhängigkeit"
+            "name":"achievements"
         },
         {
             "aggregatable":false,
@@ -35,44 +59,22 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Aktualität der Lehre gemessen am Forschungsstand"
+                            "name":"peer review (services)"
                         },
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung eigener Forschungsmaterialien und -ergebnisse in der Lehre"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung aktueller Publikationen in der Lehre"
+                            "name":"success rate of grant applications"
                         }
                     ],
-                    "name":"Impulse der Forschung für die (Hochschul-)Lehre",
+                    "name":"support of university services",
                     "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Aktualität der Lehre gemessen am Forschungsstand"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung eigener Forschungsmaterialien und -ergebnisse in der Lehre"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung aktueller Publikationen in der Lehre"
+                        "Quality":{
+                            "weight":1
                         }
-                    ],
-                    "name":"Impulse der Forschung für die (Hochschul-)Lehre",
-                    "weight":{
-                        "Profile":{}
                     }
                 }
             ],
-            "name":"Wissenstransfer"
+            "name":"infrastructure"
         },
         {
             "aggregatable":false,
@@ -81,18 +83,60 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
+                            "name":"citations"
                         },
                         {
                             "enabled":true,
-                            "name":"Anteil von Open Access Veröffentlichungen"
+                            "name":"reviews in journals"
                         },
                         {
                             "enabled":true,
-                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
+                            "name":"translations"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"editions"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"scientific awards"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"visiting research fellowships"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"review activities"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"invited talks and keynotes"
                         }
                     ],
-                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
+                    "name":"scientific reception",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":false,
+                            "name":"impact of research on church practice"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"church media reports on research"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"church awards"
+                        }
+                    ],
+                    "name":"reception within church",
                     "weight":{
                         "Profile":{}
                     }
@@ -100,19 +144,11 @@
                 {
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Anteil von Open Access Veröffentlichungen"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
+                            "enabled":false,
+                            "name":"citations"
                         }
                     ],
-                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
+                    "name":"international reception",
                     "weight":{
                         "Profile":{}
                     }
@@ -120,99 +156,25 @@
                 {
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
+                            "enabled":false,
+                            "name":"public awards"
                         },
                         {
-                            "enabled":true,
-                            "name":"Anteil von Open Access Veröffentlichungen"
+                            "enabled":false,
+                            "name":"media reports on research"
                         },
                         {
-                            "enabled":true,
-                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
+                            "enabled":false,
+                            "name":"non-academic advisory positions"
                         }
                     ],
-                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
+                    "name":"societal reception",
                     "weight":{
                         "Profile":{}
                     }
                 }
             ],
-            "name":"Nachhaltigkeit"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"wissenschaftliche Vernetzung"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der aktiven Teilnahmen an Veranstaltungen und Tagungen in bzw. mit ausseruniversitären Akteuren"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der aktiven Teilnahmen an Veranstaltungen und Tagungen in bzw. mit ausseruniversitären Akteuren"
-                        }
-                    ],
-                    "name":"Austausch mit relevanten ausseruniversitären Einrichtungen und Akteuren (ausserwissenschaftliche Vernetzung)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"ausserwissenschaftliche Vernetzung"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Dienstleistungen der Forschungseinrichtung an die Forschenden"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Erfolgsquote bei von der Forschungsförderung beratenen Projektgesuchen"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Erfolgsquote bei von der Forschungsförderung beratenen Projektgesuchen"
-                        }
-                    ],
-                    "name":"Unterstützung der Planung und Durchführung von Forschung durch universitäre Stellen wie Büros zur Forschungsförderung, Abteilungen für Rechnungswesen und Öffentlichkeitsarbeit u.a.",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"Infrastruktur"
+            "name":"reception"
         },
         {
             "aggregatable":false,
@@ -221,10 +183,10 @@
                     "indicators":[
                         {
                             "enabled":false,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
+                            "name":"peer review (exchange activities, national universities)"
                         }
                     ],
-                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
+                    "name":"national exchange",
                     "weight":{
                         "Profile":{}
                     }
@@ -233,10 +195,10 @@
                     "indicators":[
                         {
                             "enabled":false,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
+                            "name":"peer review (exchange activities, own university)"
                         }
                     ],
-                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
+                    "name":"exchange within own university",
                     "weight":{
                         "Profile":{}
                     }
@@ -245,16 +207,16 @@
                     "indicators":[
                         {
                             "enabled":false,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
+                            "name":"peer review (exchange activities, international)"
                         }
                     ],
-                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
+                    "name":"international exchange",
                     "weight":{
                         "Profile":{}
                     }
                 }
             ],
-            "name":"Vernetzung(en)"
+            "name":"exchange"
         },
         {
             "aggregatable":false,
@@ -263,18 +225,74 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen"
+                            "name":"review of exchange of young researchers"
                         },
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Rezeption in der wissenschaftlichen Gemeinschaft (langfristiger impact im Fachbereich) durch Fachgutachter/-innen"
+                            "name":"conference organisations"
                         },
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Rezeption in der wissenschaftlichen Gemeinschaft (langfristiger impact im Fachbereich) durch Fachgutachter/-innen"
+                            "name":"teaching involvement"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"third-party funding obtained by young researchers"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"awards obtained by young researchers"
                         }
                     ],
-                    "name":"Relevanz für den wissenschaftlichen Diskurs",
+                    "name":"integration of young researchers in scientific community",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"review of measures to integrate young researchers"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"completed doctoral theses"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"publications by young researchers"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"completed habilitations"
+                        }
+                    ],
+                    "name":"integration of young researchers in project team",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"review of doctoral programmes"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"generic skills courses provided"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"in-house scholarships available"
+                        }
+                    ],
+                    "name":"carreer oportunities",
                     "weight":{
                         "Quality":{
                             "weight":1
@@ -282,7 +300,7 @@
                     }
                 }
             ],
-            "name":"Relevanz"
+            "name":"young researchers"
         },
         {
             "aggregatable":false,
@@ -291,136 +309,18 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
+                            "name":"review (teaching based on research)"
                         },
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
+                            "name":"peer review (teaching based on own research)"
                         },
                         {
-                            "enabled":false,
-                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
+                            "enabled":true,
+                            "name":"peer review (use of recent publications in teaching)"
                         }
                     ],
-                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
-                        }
-                    ],
-                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
-                        }
-                    ],
-                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"Wirksamkeit spezifischer Massnahmen zur Erhöhung von Geschlechtergerechtigkeit und Förderung der Diversität der Forschungsmitarbeiter in Bezug auf Mehrsprachigkeit, Multikulturalität, Nationalität und Alter"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Diversität in der personellen Zusammensetzung von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Bereitstellung wichtiger Informationen durch die Administration für die Forschenden in Englisch; Möglichkeit der englischsprachigen Kommunikation auf allen Gebieten der Administration und Forschung"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anteil von Frauen in der Professorenschaft und im oberen Mittelbau"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Internationalität (i.S.v. Vielfalt der Nationalitäten) der Professorenschaft und des oberen Mittelbaus"
-                        }
-                    ],
-                    "name":"Förderung von Diversität (durch Geschlechtergerechtigkeit, Multikulturalität, Mehrsprachigkeit, ...)",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"Begünstigende Begleitumstände"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"Zitationshäufigkeit oder Ableitung davon"
-                        }
-                    ],
-                    "name":"Internationale Rezeption (wissenschaftlich)",
+                    "name":"influence on teaching",
                     "weight":{
                         "Profile":{}
                     }
@@ -428,41 +328,25 @@
                 {
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"Zitationshäufigkeit oder Ableitung davon"
-                        }
-                    ],
-                    "name":"Internationale Rezeption (wissenschaftlich)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
+                            "enabled":true,
+                            "name":"media contributions"
+                        },
                         {
-                            "enabled":false,
-                            "name":"Zitationshäufigkeit oder Ableitung davon"
-                        }
-                    ],
-                    "name":"Internationale Rezeption (wissenschaftlich)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
+                            "enabled":true,
+                            "name":"review activities"
+                        },
                         {
-                            "enabled":false,
-                            "name":"Zitationshäufigkeit oder Ableitung davon"
+                            "enabled":true,
+                            "name":"trainings for non-academic professionals"
                         }
                     ],
-                    "name":"Internationale Rezeption (wissenschaftlich)",
+                    "name":"communication with the public",
                     "weight":{
                         "Profile":{}
                     }
                 }
             ],
-            "name":"Rezeption"
+            "name":"dissemination"
         },
         {
             "aggregatable":false,
@@ -471,46 +355,52 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                            "name":"textual data mining (publications)"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"recognition of a researcher/research institution"
                         }
                     ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "name":"continuity in research topics",
                     "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
+                        "Profile":{}
                     }
                 },
                 {
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                            "name":"availability of publications in databases"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"open acess publications"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"archival storage of research resources"
                         }
                     ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "name":"public access to research",
                     "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
+                        "Profile":{}
                     }
                 },
                 {
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                            "name":"research centers"
                         }
                     ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "name":"enduring research structures",
                     "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
+                        "Profile":{}
                     }
                 }
             ],
-            "name":"Bisherige Forschungsleistung"
+            "name":"sustainability"
         },
         {
             "aggregatable":false,
@@ -519,74 +409,14 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung vorhandener strukturierter Doktoratsprogramme"
+                            "name":"peer review (output)"
                         },
                         {
                             "enabled":true,
-                            "name":"Angebote für Generic skills und hochschuldidaktische Ausbildungsangebote"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
+                            "name":"peer review (scientific reception)"
                         }
                     ],
-                    "name":"Karrierefördernde Begleitmassnahmen für den wissenschaftlichen Nachwuchs",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung vorhandener strukturierter Doktoratsprogramme"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Angebote für Generic skills und hochschuldidaktische Ausbildungsangebote"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
-                        }
-                    ],
-                    "name":"Karrierefördernde Begleitmassnahmen für den wissenschaftlichen Nachwuchs",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung vorhandener strukturierter Doktoratsprogramme"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Angebote für Generic skills und hochschuldidaktische Ausbildungsangebote"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"Institutionelle Förderprogramme, interne Stipendien, Exzellenzprogramme o.Ä"
-                        }
-                    ],
-                    "name":"Karrierefördernde Begleitmassnahmen für den wissenschaftlichen Nachwuchs",
+                    "name":"scientific relevance",
                     "weight":{
                         "Quality":{
                             "weight":1
@@ -594,7 +424,7 @@
                     }
                 }
             ],
-            "name":"Nachwuchsförderung"
+            "name":"scientific relevance"
         },
         {
             "aggregatable":false,
@@ -603,18 +433,14 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                            "name":"review by peers and reviewers from church (church reception)"
                         },
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                            "name":" review by peers and reviewers from church (impact on church practice)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"relevance for church",
                     "weight":{
                         "Profile":{}
                     }
@@ -623,18 +449,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                            "name":"peer review (output)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"applied research",
                     "weight":{
                         "Profile":{}
                     }
@@ -643,18 +461,10 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                            "name":"peer review (output)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"basic research",
                     "weight":{
                         "Profile":{}
                     }
@@ -663,24 +473,154 @@
                     "indicators":[
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                            "name":"review by peers and reviewers from societal domains (output)"
                         },
                         {
                             "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
+                            "name":"review by peers and reviewers from societal domains (public reception)"
                         }
                     ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"societal relevance",
                     "weight":{
                         "Profile":{}
                     }
                 }
             ],
-            "name":"Ausrichtung und Relevanz"
+            "name":"relevance"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (scholarly exchange activities)"
+                        }
+                    ],
+                    "name":"scholarly exchange",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"scientific exchange"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"review by researchers"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"promotion of diversity"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"peer review (team diversity)"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"information in English"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"female researchers"
+                        },
+                        {
+                            "enabled":false,
+                            "name":"international researchers"
+                        }
+                    ],
+                    "name":"work environment",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"funding instruments for non-mainstream research"
+                        }
+                    ],
+                    "name":"unconventional research",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    }
+                },
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (output)"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"continuation of collaboration"
+                        }
+                    ],
+                    "name":"institutionalisation of research topics",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"conditions"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"existence as normative principle"
+                        },
+                        {
+                            "enabled":true,
+                            "name":"review of past conflicts"
+                        }
+                    ],
+                    "name":"free choice of topics and approach",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    }
+                }
+            ],
+            "name":"independence"
+        },
+        {
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "indicators":[
+                        {
+                            "enabled":true,
+                            "name":"peer review (non-academic exchange activities)"
+                        }
+                    ],
+                    "name":"non-academic exchange",
+                    "weight":{
+                        "Profile":{}
+                    }
+                }
+            ],
+            "name":"non-academic exchange"
         }
     ]
 }
