@@ -8,7 +8,8 @@ lazy val saav = (project in file("."))
     scalaVersion := Settings.versions.scala,
     scalacOptions ++= Settings.scalacOptions,
     ghpages.settings,
-    commands += deployCommand
+    commands += deployCommand,
+    jsEnv := PhantomJSEnv().value
   )
 
 // dependencies needed by Scala.js
