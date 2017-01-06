@@ -6,7 +6,7 @@ import ch.fhnw.ima.saav.view.pages.PageWithDataComponent.{ProfileTab, QualityTab
 import ch.fhnw.ima.saav.jspdf.jsPDF
 import ch.fhnw.ima.saav.model.app.AppModel
 import ch.fhnw.ima.saav.model.domain.IndicatorId
-import ch.fhnw.ima.saav.model.weight.Weight
+import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weight}
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
@@ -306,39 +306,63 @@ object PdfExportComponent {
     private def appendExpertConfig(pdf: jsPDF, model: AppModel) = {
       pdf.addPage()
       val xTab = 7
-      val xWeightColumn = Page.Width - Page.Margin - 50
+      val xWeightColumn = Page.Width - Page.Margin - 80
+      val xDefaultWeightColumn = xWeightColumn + 30
       val actualWeights = model.expertConfig.actualWeights
+      val defaultWeights = model.expertConfig.defaultWeights
+
+      def formatted(w: Weight) = w match {
+        case Quality(weight) => f"Quality $weight%.1f"
+        case Profile => "Profile"
+      }
 
       pdf.setFont(Font.Name, "bold")
       pdf.setFontSize(Font.TitleSize)
       var y = Page.TitleY
       pdf.text("Expert Configuration", Page.Margin, y)
 
-      pdf.setFont(Font.Name, "normal")
+      y += Font.LineGap
       pdf.setFontSize(Font.DefaultSize)
       for (criteria <- model.analysis.criteria) {
+        pdf.line(Page.Margin, y, Page.Margin + Page.ContentWidth, y)
+        pdf.setFont(Font.Name, "normal")
         y += Font.LineGap
         pdf.text(criteria.displayName, Page.Margin, y)
         for (subCriteria <- criteria.subCriteria) {
+          pdf.setFont(Font.Name, "normal")
           y += Font.LineGap
+          val weight = actualWeights.subCriteriaWeights(subCriteria.id)
+          val defaultWeight = defaultWeights.subCriteriaWeights(subCriteria.id)
+          if (weight != defaultWeight) {
+            pdf.setFont(Font.Name, "bold")
+            pdf.text("Default: " + formatted(defaultWeight), xDefaultWeightColumn, y)
+          }
           pdf.text(subCriteria.displayName, Page.Margin + xTab, y)
-          val weight: Weight = actualWeights.subCriteriaWeights(subCriteria.id)
-          pdf.text(weight.toString, xWeightColumn, y)
+          pdf.text(formatted(weight), xWeightColumn, y)
+
           for (indicator <- subCriteria.indicators) {
+            pdf.setFont(Font.Name, "normal")
             y += Font.LineGap
             if (y > Page.Margin + Page.ContentHeight) {
               pdf.addPage()
               y = Page.Margin + Font.LineGap
             }
-            if (model.expertConfig.actualWeights.enabledIndicators.contains(indicator.id)) {
+            val isIndicatorEnabled = actualWeights.enabledIndicators.contains(indicator.id)
+            val isIndicatorEnabledByDefault = defaultWeights.enabledIndicators.contains(indicator.id)
+
+            if (isIndicatorEnabled != isIndicatorEnabledByDefault) {
+              pdf.setFont(Font.Name, "bold")
+            } else {
+              pdf.setFont(Font.Name, "normal")
+            }
+
+            if (isIndicatorEnabled) {
               // TODO: Replace with base64 encoded checkbox image (no UTF-8 support in jsPDF)
               pdf.text("[x]", Page.Margin + xTab, y)
-            } else {
-              pdf.setTextColor(TextColor.grey.r, TextColor.grey.g, TextColor.grey.b)
             }
             pdf.text(indicator.displayName, Page.Margin + 2 * xTab, y)
-            pdf.setTextColor(Color.Black.r, Color.Black.g, Color.Black.b)
           }
+          y += Font.LineGap
         }
       }
     }
