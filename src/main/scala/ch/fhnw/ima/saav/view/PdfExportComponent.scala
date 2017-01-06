@@ -6,6 +6,7 @@ import ch.fhnw.ima.saav.view.pages.PageWithDataComponent.{ProfileTab, QualityTab
 import ch.fhnw.ima.saav.jspdf.jsPDF
 import ch.fhnw.ima.saav.model.app.AppModel
 import ch.fhnw.ima.saav.model.domain.IndicatorId
+import ch.fhnw.ima.saav.model.weight.Weight
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
@@ -33,12 +34,12 @@ object PdfExportComponent {
     val Width = 297
     val Height = 210
     val Margin = 10
+    val TitleY = 20
     val ContentWidth: Int = Width - 2 * Margin
     val ContentHeight: Int = Height - 2 * Margin
   }
 
   private object Chart {
-    val TitleY = 20
     val ChartImageY = 30
   }
 
@@ -48,6 +49,11 @@ object PdfExportComponent {
     val DefaultSize = 10 // pt
     val LineGap = 6
     val LegendLineGap = 10 // must encompass color squares
+  }
+
+  private object TextColor {
+    val steelBlue = Color("#4682b4")
+    val grey = Color("#999999")
   }
 
   private object LegendTable {
@@ -107,7 +113,10 @@ object PdfExportComponent {
         appendLegend(pdf, activeTab, model)
         appendVisualRanking(pdf, optionalVisualRankingImageInfo)
 
-        // Page 4: Configuration Mismatch
+        // Page 4: Expert Configuration
+        appendExpertConfig(pdf, model)
+
+        // Page 5: Configuration Mismatch
         appendConfigMismatch(pdf, "Missing Indicator(s)", model.config.missingIndicators)
         appendConfigMismatch(pdf, "Unexpected Indicator(s)", model.config.unexpectedIndicators)
 
@@ -186,7 +195,7 @@ object PdfExportComponent {
       val xTabbed = Page.Margin + 7
       pdf.setFont(Font.Name, "bold")
       pdf.setFontSize(Font.TitleSize)
-      var y = Chart.TitleY
+      var y = Page.TitleY
       pdf.text(reportConfig.title, Page.Margin, y)
 
       def append(label: String, value: Array[String], currentY: Int, textColor: Color = Color.Black): Int = {
@@ -218,8 +227,7 @@ object PdfExportComponent {
 
       // Software
       val url = dom.window.location.href
-      val steelBlue = Color("#4682b4")
-      y = append("Software URL", Array(url), y, steelBlue)
+      y = append("Software URL", Array(url), y, TextColor.steelBlue)
 
       // Notes
       if (!reportConfig.notes.trim.isEmpty) {
@@ -295,6 +303,46 @@ object PdfExportComponent {
       }
     }
 
+    private def appendExpertConfig(pdf: jsPDF, model: AppModel) = {
+      pdf.addPage()
+      val xTab = 7
+      val xWeightColumn = Page.Width - Page.Margin - 50
+      val actualWeights = model.expertConfig.actualWeights
+
+      pdf.setFont(Font.Name, "bold")
+      pdf.setFontSize(Font.TitleSize)
+      var y = Page.TitleY
+      pdf.text("Expert Configuration", Page.Margin, y)
+
+      pdf.setFont(Font.Name, "normal")
+      pdf.setFontSize(Font.DefaultSize)
+      for (criteria <- model.analysis.criteria) {
+        y += Font.LineGap
+        pdf.text(criteria.displayName, Page.Margin, y)
+        for (subCriteria <- criteria.subCriteria) {
+          y += Font.LineGap
+          pdf.text(subCriteria.displayName, Page.Margin + xTab, y)
+          val weight: Weight = actualWeights.subCriteriaWeights(subCriteria.id)
+          pdf.text(weight.toString, xWeightColumn, y)
+          for (indicator <- subCriteria.indicators) {
+            y += Font.LineGap
+            if (y > Page.Margin + Page.ContentHeight) {
+              pdf.addPage()
+              y = Page.Margin + Font.LineGap
+            }
+            if (model.expertConfig.actualWeights.enabledIndicators.contains(indicator.id)) {
+              // TODO: Replace with base64 encoded checkbox image (no UTF-8 support in jsPDF)
+              pdf.text("[x]", Page.Margin + xTab, y)
+            } else {
+              pdf.setTextColor(TextColor.grey.r, TextColor.grey.g, TextColor.grey.b)
+            }
+            pdf.text(indicator.displayName, Page.Margin + 2 * xTab, y)
+            pdf.setTextColor(Color.Black.r, Color.Black.g, Color.Black.b)
+          }
+        }
+      }
+    }
+
     // TODO: Improve reporting of config mismatches
     // Once we include expert configuration options in the PDF, missing/unexpected indicators
     // can be reported directly as part of the expert configuration hierarchy (marked in color/bold)
@@ -302,7 +350,7 @@ object PdfExportComponent {
     private def appendConfigMismatch(pdf: jsPDF, title: String, indicators: Seq[IndicatorId]) = {
 
       val x = Page.Margin
-      var y = Chart.TitleY
+      var y = Page.TitleY
 
       if (indicators.nonEmpty) {
         pdf.addPage()
