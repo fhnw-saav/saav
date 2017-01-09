@@ -1,626 +1,626 @@
 {
     "criteria":[
         {
+            "name":"achievements",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (violations)"
-                        }
-                    ],
                     "name":"integrity",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (output)"
+                            "name":"peer review",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (violations)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"research quantity",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review of publication output"
+                            "name":"peer review (output)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"research quality",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review of publication output",
+                            "enabled":true
+                        }
+                    ]
                 }
-            ],
-            "name":"achievements"
+            ]
         },
         {
+            "name":"exchange",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (services)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"success rate of grant applications"
-                        }
-                    ],
-                    "name":"support of university services",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"infrastructure"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"citations"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"reviews in journals"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"translations"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"editions"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"scientific awards"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"visiting research fellowships"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"review activities"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"invited talks and keynotes"
-                        }
-                    ],
-                    "name":"scientific reception",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"impact of research on church practice"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"church media reports on research"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"church awards"
-                        }
-                    ],
-                    "name":"reception within church",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"citations"
-                        }
-                    ],
-                    "name":"international reception",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"public awards"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"media reports on research"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"non-academic advisory positions"
-                        }
-                    ],
-                    "name":"societal reception",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"reception"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, national universities)"
-                        }
-                    ],
                     "name":"national exchange",
                     "weight":{
                         "Profile":{}
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, own university)"
+                            "name":"peer review (exchange activities, national universities)",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"exchange within own university",
                     "weight":{
                         "Profile":{}
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, international)"
+                            "name":"peer review (exchange activities, own university)",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"international exchange",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, international)",
+                            "enabled":false
+                        }
+                    ]
                 }
-            ],
-            "name":"exchange"
+            ]
         },
         {
+            "name":"scientific exchange",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review of exchange of young researchers"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"conference organisations"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"teaching involvement"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"third-party funding obtained by young researchers"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"awards obtained by young researchers"
-                        }
-                    ],
-                    "name":"integration of young researchers in scientific community",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review of measures to integrate young researchers"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"completed doctoral theses"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"publications by young researchers"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"completed habilitations"
-                        }
-                    ],
-                    "name":"integration of young researchers in project team",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review of doctoral programmes"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"generic skills courses provided"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"in-house scholarships available"
-                        }
-                    ],
-                    "name":"carreer oportunities",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"young researchers"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review (teaching based on research)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (teaching based on own research)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (use of recent publications in teaching)"
-                        }
-                    ],
-                    "name":"influence on teaching",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"media contributions"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"review activities"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"trainings for non-academic professionals"
-                        }
-                    ],
-                    "name":"communication with the public",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"dissemination"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"textual data mining (publications)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"recognition of a researcher/research institution"
-                        }
-                    ],
-                    "name":"continuity in research topics",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"availability of publications in databases"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"open acess publications"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"archival storage of research resources"
-                        }
-                    ],
-                    "name":"public access to research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"research centers"
-                        }
-                    ],
-                    "name":"enduring research structures",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"sustainability"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (scientific reception)"
-                        }
-                    ],
-                    "name":"scientific relevance",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"scientific relevance"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review by peers and reviewers from church (church reception)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":" review by peers and reviewers from church (impact on church practice)"
-                        }
-                    ],
-                    "name":"relevance for church",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        }
-                    ],
-                    "name":"applied research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        }
-                    ],
-                    "name":"basic research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review by peers and reviewers from societal domains (output)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"review by peers and reviewers from societal domains (public reception)"
-                        }
-                    ],
-                    "name":"societal relevance",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"relevance"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (scholarly exchange activities)"
-                        }
-                    ],
                     "name":"scholarly exchange",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (scholarly exchange activities)",
+                            "enabled":true
+                        }
+                    ]
                 }
-            ],
-            "name":"scientific exchange"
+            ]
         },
         {
+            "name":"non-academic exchange",
             "aggregatable":false,
             "subCriteria":[
                 {
+                    "name":"non-academic exchange",
+                    "weight":{
+                        "Profile":{}
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"review by researchers"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"promotion of diversity"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (team diversity)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"information in English"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"female researchers"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"international researchers"
+                            "name":"peer review (non-academic exchange activities)",
+                            "enabled":true
                         }
-                    ],
-                    "name":"work environment",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"funding instruments for non-mainstream research"
-                        }
-                    ],
-                    "name":"unconventional research",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.5
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"continuation of collaboration"
-                        }
-                    ],
-                    "name":"institutionalisation of research topics",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
+                    ]
                 }
-            ],
-            "name":"conditions"
+            ]
         },
         {
+            "name":"independence",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"existence as normative principle"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"review of past conflicts"
-                        }
-                    ],
                     "name":"free choice of topics and approach",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"existence as normative principle",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review of past conflicts",
+                            "enabled":true
+                        }
+                    ]
                 }
-            ],
-            "name":"independence"
+            ]
         },
         {
+            "name":"infrastructure",
             "aggregatable":false,
             "subCriteria":[
                 {
+                    "name":"support of university services",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (non-academic exchange activities)"
+                            "name":"peer review (services)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"success rate of grant applications",
+                            "enabled":true
                         }
-                    ],
-                    "name":"non-academic exchange",
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"conditions",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"work environment",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by researchers",
+                            "enabled":true
+                        },
+                        {
+                            "name":"promotion of diversity",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (team diversity)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"information in English",
+                            "enabled":false
+                        },
+                        {
+                            "name":"female researchers",
+                            "enabled":false
+                        },
+                        {
+                            "name":"international researchers",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"unconventional research",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"funding instruments for non-mainstream research",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"institutionalisation of research topics",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"continuation of collaboration",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"young researchers",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"integration of young researchers in scientific community",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.5
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review of exchange of young researchers",
+                            "enabled":true
+                        },
+                        {
+                            "name":"conference organisations",
+                            "enabled":true
+                        },
+                        {
+                            "name":"teaching involvement",
+                            "enabled":true
+                        },
+                        {
+                            "name":"third-party funding obtained by young researchers",
+                            "enabled":false
+                        },
+                        {
+                            "name":"awards obtained by young researchers",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"integration of young researchers in project team",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review of measures to integrate young researchers",
+                            "enabled":true
+                        },
+                        {
+                            "name":"completed doctoral theses",
+                            "enabled":true
+                        },
+                        {
+                            "name":"publications by young researchers",
+                            "enabled":false
+                        },
+                        {
+                            "name":"completed habilitations",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"carreer oportunities",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review of doctoral programmes",
+                            "enabled":true
+                        },
+                        {
+                            "name":"generic skills courses provided",
+                            "enabled":true
+                        },
+                        {
+                            "name":"in-house scholarships available",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"relevance",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"relevance for church",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by peers and reviewers from church (church reception)",
+                            "enabled":true
+                        },
+                        {
+                            "name":" review by peers and reviewers from church (impact on church practice)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"applied research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"basic research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"societal relevance",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by peers and reviewers from societal domains (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review by peers and reviewers from societal domains (public reception)",
+                            "enabled":true
+                        }
+                    ]
                 }
-            ],
-            "name":"non-academic exchange"
+            ]
+        },
+        {
+            "name":"scientific relevance",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"scientific relevance",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (scientific reception)",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"dissemination",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"influence on teaching",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review (teaching based on research)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (teaching based on own research)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (use of recent publications in teaching)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"communication with the public",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"media contributions",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review activities",
+                            "enabled":true
+                        },
+                        {
+                            "name":"trainings for non-academic professionals",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"sustainability",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"continuity in research topics",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"textual data mining (publications)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"recognition of a researcher/research institution",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"public access to research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"availability of publications in databases",
+                            "enabled":true
+                        },
+                        {
+                            "name":"open acess publications",
+                            "enabled":true
+                        },
+                        {
+                            "name":"archival storage of research resources",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"enduring research structures",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"research centers",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"reception",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"scientific reception",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"citations",
+                            "enabled":true
+                        },
+                        {
+                            "name":"reviews in journals",
+                            "enabled":true
+                        },
+                        {
+                            "name":"translations",
+                            "enabled":true
+                        },
+                        {
+                            "name":"editions",
+                            "enabled":true
+                        },
+                        {
+                            "name":"scientific awards",
+                            "enabled":true
+                        },
+                        {
+                            "name":"visiting research fellowships",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review activities",
+                            "enabled":true
+                        },
+                        {
+                            "name":"invited talks and keynotes",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"reception within church",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"impact of research on church practice",
+                            "enabled":false
+                        },
+                        {
+                            "name":"church media reports on research",
+                            "enabled":false
+                        },
+                        {
+                            "name":"church awards",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"international reception",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"citations",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"societal reception",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"public awards",
+                            "enabled":false
+                        },
+                        {
+                            "name":"media reports on research",
+                            "enabled":false
+                        },
+                        {
+                            "name":"non-academic advisory positions",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

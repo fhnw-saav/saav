@@ -1,552 +1,552 @@
 {
     "criteria":[
         {
+            "name":"achievements",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (violations)"
-                        }
-                    ],
                     "name":"integrity",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (output)"
+                            "name":"peer review",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"number of publications"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"acquired third-party-funds"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"research projects"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"doctoral degrees"
+                            "name":"peer review (violations)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"research quantity",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (publications)"
+                            "name":"peer review (output)",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"citations"
+                            "name":"number of publications",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"awards"
+                            "name":"acquired third-party-funds",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"success rate of grant applications"
+                            "name":"research projects",
+                            "enabled":false
+                        },
+                        {
+                            "name":"doctoral degrees",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"research quality",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (publications)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"citations",
+                            "enabled":false
+                        },
+                        {
+                            "name":"awards",
+                            "enabled":false
+                        },
+                        {
+                            "name":"success rate of grant applications",
+                            "enabled":false
+                        }
+                    ]
                 }
-            ],
-            "name":"achievements"
+            ]
         },
         {
+            "name":"exchange",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"assessment by experts and assistants"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review (references)"
-                        }
-                    ],
-                    "name":"capacity of constructive criticism",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"review (average duration of engagement)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review (references)"
-                        }
-                    ],
-                    "name":"leadership",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"team products"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review (references)"
-                        }
-                    ],
-                    "name":"teamwork",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review by students"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"analysis of intelligibility"
-                        }
-                    ],
-                    "name":"communication skills",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"generic skills"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (motivation letter)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review by students"
-                        }
-                    ],
-                    "name":"identification with research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (motivation letter)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review by collaborators"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"participation in scientific networks"
-                        }
-                    ],
-                    "name":"intrinsic motivation",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"motivation"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"citations"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"reviews in journals"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"translations"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"editions"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"scientific awards"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"visiting research fellowships"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review activities"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"invited talks and keynotes"
-                        }
-                    ],
-                    "name":"scientific reception",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"reception"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"conference participations (national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"organised conferences (national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"co-authorships (national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"memberships (national)"
-                        }
-                    ],
                     "name":"national exchange",
                     "weight":{
                         "Profile":{}
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, own university)"
+                            "name":"peer review (exchange activities, national universities)",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"conference participations (own university)"
+                            "name":"conference participations (national universities)",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":" organised conferences (own university)"
+                            "name":"organised conferences (national universities)",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"co-authorships (own university)"
+                            "name":"co-authorships (national universities)",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"memberships (own university)"
+                            "name":"memberships (national)",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"exchange within own university",
                     "weight":{
                         "Profile":{}
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, international)"
+                            "name":"peer review (exchange activities, own university)",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"conference participations (international)"
+                            "name":"conference participations (own university)",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"co-authorships (international)"
+                            "name":" organised conferences (own university)",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"memberships (international)"
+                            "name":"co-authorships (own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"memberships (own university)",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"international exchange",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"conference participations (international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"co-authorships (international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"memberships (international)",
+                            "enabled":false
+                        }
+                    ]
                 }
-            ],
-            "name":"exchange"
+            ]
         },
         {
+            "name":"scientific exchange",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review (teaching based on research)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (teaching based on own research)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (use of recent publications in teaching)"
-                        }
-                    ],
-                    "name":"influence on teaching",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"media contributions"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"review activities"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"trainings for non-academic professionals"
-                        }
-                    ],
-                    "name":"communication with the public",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"dissemination"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"textual data mining (publications)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"recognition of a researcher/research institution"
-                        }
-                    ],
-                    "name":"continuity in research topics",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"availability of publications in databases"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"open acess publications"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"archival storage of research resources"
-                        }
-                    ],
-                    "name":"public access to research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"sustainability"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (scientific reception)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"citations"
-                        }
-                    ],
-                    "name":"scientific relevance",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"scientific relevance"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review by peers and reviewers from church (church reception)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":" review by peers and reviewers from church (impact on church practice)"
-                        }
-                    ],
-                    "name":"relevance for church",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        }
-                    ],
-                    "name":"applied research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        }
-                    ],
-                    "name":"basic research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review by peers and reviewers from societal domains (output)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"review by peers and reviewers from societal domains (public reception)"
-                        }
-                    ],
-                    "name":"societal relevance",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"relevance"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (scholarly exchange activities)"
-                        }
-                    ],
                     "name":"scholarly exchange",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (scholarly exchange activities)",
+                            "enabled":true
+                        }
+                    ]
                 }
-            ],
-            "name":"scientific exchange"
+            ]
         },
         {
+            "name":"non-academic exchange",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (non-academic exchange activities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"non-academic review activities"
-                        }
-                    ],
                     "name":"non-academic exchange",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (non-academic exchange activities)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"non-academic review activities",
+                            "enabled":false
+                        }
+                    ]
                 }
-            ],
-            "name":"non-academic exchange"
+            ]
+        },
+        {
+            "name":"generic skills",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"capacity of constructive criticism",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"assessment by experts and assistants",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review (references)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"leadership",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review (average duration of engagement)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review (references)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"teamwork",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"team products",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review (references)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"communication skills",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review by students",
+                            "enabled":false
+                        },
+                        {
+                            "name":"analysis of intelligibility",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"motivation",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"identification with research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (motivation letter)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review by students",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"intrinsic motivation",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (motivation letter)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review by collaborators",
+                            "enabled":false
+                        },
+                        {
+                            "name":"participation in scientific networks",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"scientific relevance",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"scientific relevance",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (scientific reception)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"citations",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"relevance",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"relevance for church",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by peers and reviewers from church (church reception)",
+                            "enabled":true
+                        },
+                        {
+                            "name":" review by peers and reviewers from church (impact on church practice)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"applied research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"basic research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"societal relevance",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by peers and reviewers from societal domains (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review by peers and reviewers from societal domains (public reception)",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"dissemination",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"influence on teaching",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review (teaching based on research)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (teaching based on own research)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (use of recent publications in teaching)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"communication with the public",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"media contributions",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review activities",
+                            "enabled":true
+                        },
+                        {
+                            "name":"trainings for non-academic professionals",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"sustainability",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"continuity in research topics",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"textual data mining (publications)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"recognition of a researcher/research institution",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"public access to research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"availability of publications in databases",
+                            "enabled":false
+                        },
+                        {
+                            "name":"open acess publications",
+                            "enabled":false
+                        },
+                        {
+                            "name":"archival storage of research resources",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"reception",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"scientific reception",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"citations",
+                            "enabled":false
+                        },
+                        {
+                            "name":"reviews in journals",
+                            "enabled":false
+                        },
+                        {
+                            "name":"translations",
+                            "enabled":false
+                        },
+                        {
+                            "name":"editions",
+                            "enabled":false
+                        },
+                        {
+                            "name":"scientific awards",
+                            "enabled":false
+                        },
+                        {
+                            "name":"visiting research fellowships",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review activities",
+                            "enabled":false
+                        },
+                        {
+                            "name":"invited talks and keynotes",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

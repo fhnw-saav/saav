@@ -1,598 +1,598 @@
 {
     "criteria":[
         {
+            "name":"methodology",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer  review"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"peer review (violations)"
-                        }
-                    ],
-                    "name":"integrity",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (output)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"number of publications"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"acquired third-party-funds"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"research projects"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"doctoral degrees"
-                        }
-                    ],
-                    "name":"research quantity",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (publications)"
-                        }
-                    ],
-                    "name":"research quality",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"achievements"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (work place infrastructure)"
-                        }
-                    ],
-                    "name":"workplace infrastructure",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.75
-                        }
-                    }
-                }
-            ],
-            "name":"infrastructure"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (of proposal)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"media presence of topic"
-                        }
-                    ],
-                    "name":"relation to social issues",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"disciplinary diversity (beyond theology)"
-                        }
-                    ],
-                    "name":"interdisciplinarity (beyond theology)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"disciplinary diversity (within theology) "
-                        }
-                    ],
-                    "name":"interdisciplinarity (within theology)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (of proposal)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review by church professionals (proposal)"
-                        }
-                    ],
-                    "name":"relation to issues in church",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"topicallity"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"conference participations (national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"organised conferences (national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"co-authorships (national universities)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"memberships (national)"
-                        }
-                    ],
-                    "name":"national exchange",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (scholarly exchange activities)"
-                        }
-                    ],
-                    "name":"scholarly exchange",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, own university)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"conference participations (own university)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"organised conferences (own university)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":" co-authorships (own university)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"memberships (own university)"
-                        }
-                    ],
-                    "name":"exchange within own university",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"peer review (exchange activities, international)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":" conference participations (international)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"co-authorships (international)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":" memberships (international)"
-                        }
-                    ],
-                    "name":"international exchange",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (non-academic exchange activities)"
-                        }
-                    ],
-                    "name":"non-academic exchange",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"exchange"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        }
-                    ],
-                    "name":"feasible research objective",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        }
-                    ],
-                    "name":"financial planning",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.75
-                        }
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        }
-                    ],
-                    "name":"time management",
-                    "weight":{
-                        "Quality":{
-                            "weight":0.75
-                        }
-                    }
-                }
-            ],
-            "name":"feasibility"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        }
-                    ],
                     "name":"intelligibility",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"choice of methods",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"review of interdisciplinary ethics committee"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"ethical sensitivity",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review of interdisciplinary ethics committee",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"reflexivity",
                     "weight":{
                         "Quality":{
                             "weight":0.5
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"research question and objectives",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"openness",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        }
+                    ]
                 }
-            ],
-            "name":"methodology"
+            ]
         },
         {
+            "name":"scientific integration",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review by experts from church (proposal)"
-                        }
-                    ],
-                    "name":"relevance for church",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (proposal)"
-                        }
-                    ],
-                    "name":"applied research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (proposal)"
-                        }
-                    ],
-                    "name":"basic research",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"review by experts from societal domains (proposal)"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"media presence of topic"
-                        }
-                    ],
-                    "name":"societal relevance",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (proposal)"
-                        }
-                    ],
-                    "name":"scientific relevance",
-                    "weight":{
-                        "Quality":{
-                            "weight":1
-                        }
-                    }
-                }
-            ],
-            "name":"relevance"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        }
-                    ],
                     "name":"scientific context",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"scientific positioning",
                     "weight":{
                         "Quality":{
                             "weight":0.5
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"number of publications"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"citations"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"production of new knowledge",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"referencing of state of research"
+                            "name":"number of publications",
+                            "enabled":false
+                        },
+                        {
+                            "name":"citations",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"review of relevant research",
                     "weight":{
                         "Quality":{
                             "weight":0.5
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"peer review (of proposal)"
+                            "name":"peer review (of proposal)",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"bibliometric research front analysis"
+                            "name":"referencing of state of research",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
                     "name":"introducing new areas of research",
                     "weight":{
                         "Quality":{
                             "weight":0.25
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"bibliometric research front analysis",
+                            "enabled":false
+                        }
+                    ]
                 }
-            ],
-            "name":"scientific integration"
+            ]
         },
         {
+            "name":"topicallity",
             "aggregatable":false,
             "subCriteria":[
                 {
+                    "name":"relation to social issues",
+                    "weight":{
+                        "Profile":{}
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"peer review (team diversity)"
+                            "name":"peer review (of proposal)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"media presence of topic",
+                            "enabled":false
                         }
-                    ],
+                    ]
+                },
+                {
+                    "name":"interdisciplinarity (beyond theology)",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"disciplinary diversity (beyond theology)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"interdisciplinarity (within theology)",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"disciplinary diversity (within theology) ",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"relation to issues in church",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review by church professionals (proposal)",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"feasibility",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"feasible research objective",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"financial planning",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.75
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"time management",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.75
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (of proposal)",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"achievements",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"integrity",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer  review",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (violations)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"research quantity",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"number of publications",
+                            "enabled":false
+                        },
+                        {
+                            "name":"acquired third-party-funds",
+                            "enabled":false
+                        },
+                        {
+                            "name":"research projects",
+                            "enabled":false
+                        },
+                        {
+                            "name":"doctoral degrees",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"research quality",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (publications)",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"exchange",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"national exchange",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"conference participations (national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"organised conferences (national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"co-authorships (national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"memberships (national)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"scholarly exchange",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (scholarly exchange activities)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"exchange within own university",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"conference participations (own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"organised conferences (own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":" co-authorships (own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"memberships (own university)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"international exchange",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":" conference participations (international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"co-authorships (international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":" memberships (international)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"non-academic exchange",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (non-academic exchange activities)",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"infrastructure",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"workplace infrastructure",
+                    "weight":{
+                        "Quality":{
+                            "weight":0.75
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (work place infrastructure)",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"conditions",
+            "aggregatable":false,
+            "subCriteria":[
+                {
                     "name":"promotion of diversity",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (team diversity)",
+                            "enabled":false
+                        }
+                    ]
                 }
-            ],
-            "name":"conditions"
+            ]
+        },
+        {
+            "name":"relevance",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"relevance for church",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by experts from church (proposal)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"applied research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (proposal)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"basic research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (proposal)",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"societal relevance",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by experts from societal domains (proposal)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"media presence of topic",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"scientific relevance",
+                    "weight":{
+                        "Quality":{
+                            "weight":1
+                        }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (proposal)",
+                            "enabled":true
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
