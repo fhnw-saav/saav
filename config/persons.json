@@ -1,644 +1,552 @@
 {
     "criteria":[
         {
+            "name":"achievements",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Aktualität der Lehre gemessen am Forschungsstand"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung eigener Forschungsmaterialien und -ergebnisse in der Lehre"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung aktueller Publikationen in der Lehre"
-                        }
-                    ],
-                    "name":"Impulse der Forschung für die (Hochschul-)Lehre",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Aktualität der Lehre gemessen am Forschungsstand"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung eigener Forschungsmaterialien und -ergebnisse in der Lehre"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung durch Fachgutachter/-innen hinsichtlich der Verwendung aktueller Publikationen in der Lehre"
-                        }
-                    ],
-                    "name":"Impulse der Forschung für die (Hochschul-)Lehre",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"Wissenstransfer"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung des Motivationsschreibens durch Fachgutachter"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung durch (ehemalige) Mitarbeiter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Umfang der Beteiligung in Forschungsnetzwerken"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Umfang der Beteiligung in Forschungsnetzwerken"
-                        }
-                    ],
-                    "name":"Engagement und Begeisterung für die Forschung",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung des Motivationsschreibens durch Fachgutachter"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung durch (ehemalige) Mitarbeiter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Umfang der Beteiligung in Forschungsnetzwerken"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Umfang der Beteiligung in Forschungsnetzwerken"
-                        }
-                    ],
-                    "name":"Engagement und Begeisterung für die Forschung",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"Motivation"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen und Publikationen in Mitautorenschaft mit Kollegen an tertiären Hochschulen im In- und Ausland durch Fachgutachter/-innen"
-                        }
-                    ],
-                    "name":"Vernetzung innerhalb der Wissenschaftsgemeinschaft",
+                    "name":"integrity",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                }
-            ],
-            "name":"wissenschaftliche Vernetzung"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
+                            "name":"peer review",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"Anteil von Open Access Veröffentlichungen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
+                            "name":"peer review (violations)",
+                            "enabled":true
                         }
-                    ],
-                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
-                    "weight":{
-                        "Profile":{}
-                    }
+                    ]
                 },
                 {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"Verfügbarkeit der Publikationen über Fachdatenbanken"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anteil von Open Access Veröffentlichungen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Archivierung der forschungsrelevanten Quellen, Primärdaten, Auswertungen usw. und Möglichkeit der öffentlichen Einsichtnahme"
-                        }
-                    ],
-                    "name":"nachhaltige Zugänglichkeit der Forschungsergebnisse",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"Nachhaltigkeit"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der aktiven Teilnahmen an Veranstaltungen und Tagungen in bzw. mit ausseruniversitären Akteuren"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl der Beratungstätigkeiten für ausseruniversitäre Einrichtungen und Akteure"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl der Beratungstätigkeiten für ausseruniversitäre Einrichtungen und Akteure"
-                        }
-                    ],
-                    "name":"Austausch mit relevanten ausseruniversitären Einrichtungen und Akteuren (ausserwissenschaftliche Vernetzung)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"ausserwissenschaftliche Vernetzung"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung der Rezeption in der wissenschaftlichen Gemeinschaft (langfristiger impact im Fachbereich) durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Zitationshäufigkeit oder Ableitung davon"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Zitationshäufigkeit oder Ableitung davon"
-                        }
-                    ],
-                    "name":"Relevanz für den wissenschaftlichen Diskurs",
+                    "name":"research quantity",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                }
-            ],
-            "name":"Relevanz"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
+                            "name":"peer review (output)",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"Anzahl von aktiven Tagungsteilnahmen an der Universität"
+                            "name":"number of publications",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"Anzahl der von dem/der Forschenden organisierten Tagungen an der Universität"
+                            "name":"acquired third-party-funds",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"Anzahl von Publikationen in Mitautorenschaft mit Kollegen der Universität"
+                            "name":"research projects",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"Anzahl von Mitgliedschaften in universitären Gremien und Arbeitsgruppen"
+                            "name":"doctoral degrees",
+                            "enabled":false
                         }
-                    ],
-                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
-                    "weight":{
-                        "Profile":{}
-                    }
+                    ]
                 },
                 {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von aktiven Tagungsteilnahmen an der Universität"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl der von dem/der Forschenden organisierten Tagungen an der Universität"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Publikationen in Mitautorenschaft mit Kollegen der Universität"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Mitgliedschaften in universitären Gremien und Arbeitsgruppen"
-                        }
-                    ],
-                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"qualitative Beurteilung gemeinsamer Aktivitäten wie aktiver Tagungsteilnahmen, organisierter Tagungen und Publikationen in Mitautorenschaft mit Kollegen der Universität durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von aktiven Tagungsteilnahmen an der Universität"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl der von dem/der Forschenden organisierten Tagungen an der Universität"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Publikationen in Mitautorenschaft mit Kollegen der Universität"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Mitgliedschaften in universitären Gremien und Arbeitsgruppen"
-                        }
-                    ],
-                    "name":"Universitäre Vernetzung (inner- und interfakultär)",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"Vernetzung(en)"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"Zitationshäufigkeit oder Ableitung davon"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Rezensionen in Fachzeitschriften"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Übersetzungen der Publikationen in andere Sprachen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Erscheinen einer Publikation in mehreren Auflagen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"von dem/der Forschenden erhaltene wissenschaftliche Preise und Auszeichnungen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"finanzierte Gastprofessuren und Einladungen zu Forschungsaufenthalten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Gutachtertätigkeiten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl eingeladener Vorträge und Keynotes an wissenschaftlichen Tagungen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl eingeladener Vorträge und Keynotes an wissenschaftlichen Tagungen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl eingeladener Vorträge und Keynotes an wissenschaftlichen Tagungen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl eingeladener Vorträge und Keynotes an wissenschaftlichen Tagungen"
-                        }
-                    ],
-                    "name":"Rezeption der Ergebnisse durch die Wissenschaft",
-                    "weight":{
-                        "Profile":{}
-                    }
-                }
-            ],
-            "name":"Rezeption"
-        },
-        {
-            "aggregatable":false,
-            "subCriteria":[
-                {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"eingeworbene Drittmittel"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl betreuter Doktorierender (abgeschlossene)"
-                        }
-                    ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    "name":"research quality",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
+                            "name":"peer review (publications)",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
+                            "name":"citations",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"eingeworbene Drittmittel"
+                            "name":"awards",
+                            "enabled":false
                         },
                         {
-                            "enabled":false,
-                            "name":"Anzahl von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl betreuter Doktorierender (abgeschlossene)"
+                            "name":"success rate of grant applications",
+                            "enabled":false
                         }
-                    ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"exchange",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"national exchange",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"conference participations (national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"organised conferences (national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"co-authorships (national universities)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"memberships (national)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"exchange within own university",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"conference participations (own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":" organised conferences (own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"co-authorships (own university)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"memberships (own university)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"international exchange",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (exchange activities, international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"conference participations (international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"co-authorships (international)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"memberships (international)",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"scientific exchange",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"scholarly exchange",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung aufgelisteter Forschungsprojekte, aktiver Tagungsteilnahmen, organisierter Tagungen, Patente oder anderer fachspezifischer Forschungsprodukte durch Fachgutachter/-innen"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Veröffentlichungen (nach Publikationsformat unterschieden)"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"eingeworbene Drittmittel"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl von Forschungsprojekten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Anzahl betreuter Doktorierender (abgeschlossene)"
+                            "name":"peer review (scholarly exchange activities)",
+                            "enabled":true
                         }
-                    ],
-                    "name":"Produktivität im Bereich der Forschung (Publikationen, Forschungsprojekte, Doktoratsprojekte, wissenschaftliche Tagungen, etc.)",
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"non-academic exchange",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"non-academic exchange",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (non-academic exchange activities)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"non-academic review activities",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"generic skills",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"capacity of constructive criticism",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"assessment by experts and assistants",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review (references)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"leadership",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"review (average duration of engagement)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review (references)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"teamwork",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"team products",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review (references)",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"communication skills",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review by students",
+                            "enabled":false
+                        },
+                        {
+                            "name":"analysis of intelligibility",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"motivation",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"identification with research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (motivation letter)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review by students",
+                            "enabled":false
+                        }
+                    ]
+                },
+                {
+                    "name":"intrinsic motivation",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (motivation letter)",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review by collaborators",
+                            "enabled":false
+                        },
+                        {
+                            "name":"participation in scientific networks",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"scientific relevance",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"scientific relevance",
                     "weight":{
                         "Quality":{
                             "weight":1
                         }
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (scientific reception)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"citations",
+                            "enabled":false
+                        }
+                    ]
                 }
-            ],
-            "name":"Bisherige Forschungsleistung"
+            ]
         },
         {
+            "name":"relevance",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        }
-                    ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"relevance for church",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by peers and reviewers from church (church reception)",
+                            "enabled":true
+                        },
+                        {
+                            "name":" review by peers and reviewers from church (impact on church practice)",
+                            "enabled":true
+                        }
+                    ]
                 },
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        }
-                    ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"applied research",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        }
+                    ]
                 },
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        }
-                    ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"basic research",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"peer review (output)",
+                            "enabled":true
+                        }
+                    ]
                 },
                 {
-                    "indicators":[
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung von Projektpublikationen und anderem Forschungsoutput durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        },
-                        {
-                            "enabled":true,
-                            "name":"qualitative Beurteilung hinsichtlich des langfristigen impacts der Forschung auf die Kirchenpraxis (z.B. Anpassung der Liturgie, neues Verständnis religiöser Quellentexte, Formulierung neuer Kirchenpositionen) durch Fachgutachter/-innen und Gutachter aus der Kirchenpraxis"
-                        }
-                    ],
-                    "name":"Relevanz für den kirchlichen Diskurs",
+                    "name":"societal relevance",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review by peers and reviewers from societal domains (output)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"review by peers and reviewers from societal domains (public reception)",
+                            "enabled":true
+                        }
+                    ]
                 }
-            ],
-            "name":"Ausrichtung und Relevanz"
+            ]
         },
         {
+            "name":"dissemination",
             "aggregatable":false,
             "subCriteria":[
                 {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"Umfang und Qualität von tatsächlich in Teamarbeit entstandenen Forschungsprodukten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Beurteilung auf Grundlage von Arbeitszeugnissen der Führungsperson"
-                        }
-                    ],
-                    "name":"Fähigkeit zur Zusammenarbeit im (Forschungs-)Team",
+                    "name":"influence on teaching",
                     "weight":{
                         "Profile":{}
-                    }
+                    },
+                    "indicators":[
+                        {
+                            "name":"review (teaching based on research)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (teaching based on own research)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"peer review (use of recent publications in teaching)",
+                            "enabled":true
+                        }
+                    ]
                 },
                 {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"Umfang und Qualität von tatsächlich in Teamarbeit entstandenen Forschungsprodukten"
-                        },
-                        {
-                            "enabled":false,
-                            "name":"Beurteilung auf Grundlage von Arbeitszeugnissen der Führungsperson"
-                        }
-                    ],
-                    "name":"Fähigkeit zur Zusammenarbeit im (Forschungs-)Team",
+                    "name":"communication with the public",
                     "weight":{
                         "Profile":{}
-                    }
-                },
-                {
+                    },
                     "indicators":[
                         {
-                            "enabled":false,
-                            "name":"Umfang und Qualität von tatsächlich in Teamarbeit entstandenen Forschungsprodukten"
+                            "name":"media contributions",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"Beurteilung auf Grundlage von Arbeitszeugnissen der Führungsperson"
-                        }
-                    ],
-                    "name":"Fähigkeit zur Zusammenarbeit im (Forschungs-)Team",
-                    "weight":{
-                        "Profile":{}
-                    }
-                },
-                {
-                    "indicators":[
-                        {
-                            "enabled":false,
-                            "name":"Umfang und Qualität von tatsächlich in Teamarbeit entstandenen Forschungsprodukten"
+                            "name":"review activities",
+                            "enabled":true
                         },
                         {
-                            "enabled":false,
-                            "name":"Beurteilung auf Grundlage von Arbeitszeugnissen der Führungsperson"
+                            "name":"trainings for non-academic professionals",
+                            "enabled":true
                         }
-                    ],
-                    "name":"Fähigkeit zur Zusammenarbeit im (Forschungs-)Team",
-                    "weight":{
-                        "Profile":{}
-                    }
+                    ]
                 }
-            ],
-            "name":"Überfachliche Kompetenzen"
+            ]
+        },
+        {
+            "name":"sustainability",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"continuity in research topics",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"textual data mining (publications)",
+                            "enabled":true
+                        },
+                        {
+                            "name":"recognition of a researcher/research institution",
+                            "enabled":true
+                        }
+                    ]
+                },
+                {
+                    "name":"public access to research",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"availability of publications in databases",
+                            "enabled":false
+                        },
+                        {
+                            "name":"open acess publications",
+                            "enabled":false
+                        },
+                        {
+                            "name":"archival storage of research resources",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"reception",
+            "aggregatable":false,
+            "subCriteria":[
+                {
+                    "name":"scientific reception",
+                    "weight":{
+                        "Profile":{}
+                    },
+                    "indicators":[
+                        {
+                            "name":"citations",
+                            "enabled":false
+                        },
+                        {
+                            "name":"reviews in journals",
+                            "enabled":false
+                        },
+                        {
+                            "name":"translations",
+                            "enabled":false
+                        },
+                        {
+                            "name":"editions",
+                            "enabled":false
+                        },
+                        {
+                            "name":"scientific awards",
+                            "enabled":false
+                        },
+                        {
+                            "name":"visiting research fellowships",
+                            "enabled":false
+                        },
+                        {
+                            "name":"review activities",
+                            "enabled":false
+                        },
+                        {
+                            "name":"invited talks and keynotes",
+                            "enabled":false
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
