@@ -232,6 +232,10 @@ object PdfExportComponent {
       val url = dom.window.location.href
       y = append("Software URL", Array(url), y, TextColor.steelBlue)
 
+      // GitHub
+      val gitHub = "https://github.com/fhnw-saav/saav"
+      y = append("GitHub URL", Array(gitHub), y, TextColor.steelBlue)
+
       // Notes
       if (!reportConfig.notes.trim.isEmpty) {
         val notes = pdf.splitTextToSize(reportConfig.notes, Page.ContentWidth - xTabbed, new js.Array[Any]())
