@@ -9,8 +9,6 @@ package object view {
   val jQuery = JQueryStatic
   val css = GlobalStyles
 
-  def alertComingSoon: Callback = Callback.alert("Coming Soon")
-
   def formatValue(value: Option[Double]): String =
     value.map(v => "%.2f".format(v)).getOrElse("-")
 
