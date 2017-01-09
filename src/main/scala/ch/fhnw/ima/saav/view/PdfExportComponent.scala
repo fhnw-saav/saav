@@ -461,6 +461,7 @@ object PdfExportComponent {
           <.input(css.form.control,
             ^.`type` := "text",
             ^.id := "creator",
+            ^.maxLength := 50,
             ^.onChange ==> onCreatorChange,
             ^.value := s.reportConfig.creator)
         )
