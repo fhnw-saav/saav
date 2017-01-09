@@ -1,12 +1,12 @@
 package ch.fhnw.ima.saav
 package view
 
-import ch.fhnw.ima.saav.view.bootstrap.{Button, Modal}
-import ch.fhnw.ima.saav.view.pages.PageWithDataComponent.{ProfileTab, QualityTab, Tab}
 import ch.fhnw.ima.saav.jspdf.jsPDF
 import ch.fhnw.ima.saav.model.app.AppModel
 import ch.fhnw.ima.saav.model.domain.IndicatorId
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weight}
+import ch.fhnw.ima.saav.view.bootstrap.{Button, Modal}
+import ch.fhnw.ima.saav.view.pages.PageWithDataComponent.{ProfileTab, QualityTab, Tab}
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, _}
@@ -20,9 +20,9 @@ import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.Date
+import scala.scalajs.js.JSConverters._
 import scala.util.Success
 import scalacss.ScalaCssReact._
-import js.JSConverters._
 
 object PdfExportComponent {
 
@@ -66,6 +66,10 @@ object PdfExportComponent {
 
     val ColorCellDimension = 6
     val ColorCellOffsetY = 1
+  }
+
+  implicit class RichJSPdf(pdf: jsPDF) {
+    def setTextColor(color: Color): jsPDF = pdf.setTextColor(color.r, color.g, color.b)
   }
 
   case class ReportConfig(title: String, creator: String, notes: String)
@@ -116,9 +120,8 @@ object PdfExportComponent {
         // Page 4: Expert Configuration
         appendExpertConfig(pdf, model)
 
-        // Page 5: Configuration Mismatch
-        appendConfigMismatch(pdf, "Missing Indicator(s)", model.config.missingIndicators)
-        appendConfigMismatch(pdf, "Unexpected Indicator(s)", model.config.unexpectedIndicators)
+        // Page 5: Missing
+        appendMissing(pdf, model.config.missingIndicators)
 
         // Done!
         pdf.save("Report.pdf")
@@ -204,9 +207,9 @@ object PdfExportComponent {
         pdf.text(label, Page.Margin, y)
         y += Font.LineGap
         pdf.setFont(Font.Name, "normal")
-        pdf.setTextColor(textColor.r, textColor.g, textColor.b)
+        pdf.setTextColor(textColor)
         pdf.text(value.toJSArray, xTabbed, y)
-        pdf.setTextColor(0, 0, 0)
+        pdf.setTextColor(Color.Black)
         y
       }
 
@@ -310,6 +313,7 @@ object PdfExportComponent {
       val xDefaultWeightColumn = xWeightColumn + 30
       val actualWeights = model.expertConfig.actualWeights
       val defaultWeights = model.expertConfig.defaultWeights
+      val unexpectedIndicators = model.config.unexpectedIndicators
 
       def formatted(w: Weight) = w match {
         case Quality(weight) => f"Quality $weight%.1f"
@@ -320,17 +324,30 @@ object PdfExportComponent {
       pdf.setFontSize(Font.TitleSize)
       var y = Page.TitleY
       pdf.text("Expert Configuration", Page.Margin, y)
-
       y += Font.LineGap
       pdf.setFontSize(Font.DefaultSize)
-      for (criteria <- model.analysis.criteria) {
-        pdf.line(Page.Margin, y, Page.Margin + Page.ContentWidth, y)
-        pdf.setFont(Font.Name, "normal")
+
+      if (unexpectedIndicators.nonEmpty) {
+        pdf.setFont(Font.Name, "italic")
+        pdf.setTextColor(Color.Red)
+        pdf.text("Unexpected indicators are reported in red", Page.Margin, y)
         y += Font.LineGap
+      }
+
+      for (criteria <- model.analysis.criteria) {
+        val (newY, isNewPage) = advanceToNewLineAddingNewPageIfNeeded(y, pdf)
+        y = newY
+        if (!isNewPage) {
+          pdf.line(Page.Margin, y, Page.Margin + Page.ContentWidth, y)
+          y += Font.LineGap
+        }
+        pdf.setFont(Font.Name, "normal")
+        pdf.setTextColor(Color.Black)
         pdf.text(criteria.displayName, Page.Margin, y)
         for (subCriteria <- criteria.subCriteria) {
+          y = advanceToNewLineAddingNewPageIfNeeded(y, pdf)._1
+          pdf.setTextColor(Color.Black)
           pdf.setFont(Font.Name, "normal")
-          y += Font.LineGap
           val weight = actualWeights.subCriteriaWeights(subCriteria.id)
           val defaultWeight = defaultWeights.subCriteriaWeights(subCriteria.id)
           if (weight != defaultWeight) {
@@ -341,12 +358,13 @@ object PdfExportComponent {
           pdf.text(formatted(weight), xWeightColumn, y)
 
           for (indicator <- subCriteria.indicators) {
-            pdf.setFont(Font.Name, "normal")
-            y += Font.LineGap
-            if (y > Page.Margin + Page.ContentHeight) {
-              pdf.addPage()
-              y = Page.Margin + Font.LineGap
+            y = advanceToNewLineAddingNewPageIfNeeded(y, pdf)._1
+            if (unexpectedIndicators.contains(indicator.id)) {
+              pdf.setTextColor(Color.Red)
+            } else {
+              pdf.setTextColor(Color.Black)
             }
+            pdf.setFont(Font.Name, "normal")
             val isIndicatorEnabled = actualWeights.enabledIndicators.contains(indicator.id)
             val isIndicatorEnabledByDefault = defaultWeights.enabledIndicators.contains(indicator.id)
 
@@ -362,16 +380,11 @@ object PdfExportComponent {
             }
             pdf.text(indicator.displayName, Page.Margin + 2 * xTab, y)
           }
-          y += Font.LineGap
         }
       }
     }
 
-    // TODO: Improve reporting of config mismatches
-    // Once we include expert configuration options in the PDF, missing/unexpected indicators
-    // can be reported directly as part of the expert configuration hierarchy (marked in color/bold)
-    // Until then we just dump the first 10 for illustration purposes...
-    private def appendConfigMismatch(pdf: jsPDF, title: String, indicators: Seq[IndicatorId]) = {
+    private def appendMissing(pdf: jsPDF, indicators: Seq[IndicatorId]) = {
 
       val x = Page.Margin
       var y = Page.TitleY
@@ -380,13 +393,14 @@ object PdfExportComponent {
         pdf.addPage()
         pdf.setFontSize(Font.TitleSize)
 
+        val title = "Missing Indicator" + (if (indicators.size > 1) "s" else "")
         pdf.text(s"${indicators.size} $title", x, y)
         pdf.setFontSize(Font.DefaultSize)
 
         y += Font.LineGap
 
-        indicators.take(10).foreach { indicator =>
-          y += Font.LineGap
+        indicators.foreach { indicator =>
+          y = advanceToNewLineAddingNewPageIfNeeded(y, pdf)._1
 
           val c = indicator.subCriteriaId.criteriaId.name
           val sc = indicator.subCriteriaId.name
@@ -396,13 +410,17 @@ object PdfExportComponent {
 
           pdf.text(hierarchy, x, y)
         }
-
-        if (indicators.size > 10) {
-          y += Font.LineGap
-          pdf.text(s"(${indicators.size - 10} more...)", x, y)
-        }
       }
+    }
 
+    private def advanceToNewLineAddingNewPageIfNeeded(y: Int, pdf: jsPDF): (Int, Boolean) = {
+      val newY = y + Font.LineGap
+      if (newY > Page.Margin + Page.ContentHeight) {
+        pdf.addPage()
+        (Page.Margin + Font.LineGap, true)
+      } else {
+        (newY, false)
+      }
     }
 
     private def onTitleChange(e: ReactEventI) = {
