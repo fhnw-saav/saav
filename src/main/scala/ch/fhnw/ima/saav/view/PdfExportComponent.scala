@@ -342,8 +342,14 @@ object PdfExportComponent {
       y += Font.LineGap
       pdf.setFontSize(Font.DefaultSize)
 
+      if (actualWeights != defaultWeights) {
+        pdf.setFont(Font.Name, "bold")
+        pdf.text("Deviations from defaults are reported in bold", Page.Margin, y)
+        y += Font.LineGap
+      }
+
       if (unexpectedIndicators.nonEmpty) {
-        pdf.setFont(Font.Name, "italic")
+        pdf.setFont(Font.Name, "normal")
         pdf.setTextColor(Color.Red)
         pdf.text("Unexpected indicators are reported in red", Page.Margin, y)
         y += Font.LineGap
