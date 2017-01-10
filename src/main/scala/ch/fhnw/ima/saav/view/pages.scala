@@ -142,7 +142,7 @@ object pages {
           <.div(css.pullRight,
             ExpertConfigResetComponent(p.proxy.zoom(_.expertConfig)), {
               val defaultTitle = p.title + " | " + s.activeTab.name
-              <.div(css.hSpaced, ^.display.`inline-block`, PdfExportComponent(ChartComponent.ElementId, defaultTitle, s.activeTab, p.proxy.value))
+              <.div(css.hSpaced, ^.display.`inline-block`, PdfExportComponent(ChartComponent.ElementId, defaultTitle, s.activeTab, p.proxy))
             }
           ),
           <.div(

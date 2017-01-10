@@ -1,15 +1,18 @@
 package ch.fhnw.ima.saav
 package view
 
+import ch.fhnw.ima.saav.circuit.UpdatePdfExport
 import ch.fhnw.ima.saav.jspdf.jsPDF
-import ch.fhnw.ima.saav.model.app.AppModel
+import ch.fhnw.ima.saav.model.app.{AppModel, PdfExportDialogHidden, PdfExportDialogVisible, PdfExportInProgress}
 import ch.fhnw.ima.saav.model.domain.IndicatorId
 import ch.fhnw.ima.saav.model.weight.{Profile, Quality, Weight}
 import ch.fhnw.ima.saav.view.bootstrap.{Button, Modal}
 import ch.fhnw.ima.saav.view.pages.PageWithDataComponent.{ProfileTab, QualityTab, Tab}
+import diode.Action
+import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{Callback, ReactComponentB, _}
+import japgolly.scalajs.react.{Callback, _}
 import org.scalajs.dom
 import org.scalajs.dom._
 import org.scalajs.dom.ext.Color
@@ -74,15 +77,23 @@ object PdfExportComponent {
 
   case class ReportConfig(title: String, creator: String, notes: String)
 
-  case class Props(chartSvgRootElementId: String, defaultReportConfig: ReportConfig, activeTab: Tab, model: AppModel)
+  case class Props(chartSvgRootElementId: String, defaultReportConfig: ReportConfig, activeTab: Tab, model: AppModel, dispatchCB: Action => Callback)
 
-  case class State(showReportForm: Boolean = false, reportConfig: ReportConfig)
+  case class State(reportConfig: ReportConfig)
 
   class Backend($: BackendScope[Props, State]) {
 
-    private def showReportForm = $.modState(_.copy(showReportForm = true))
+    private def showDialog = $.props >>= { p =>
+      p.dispatchCB(UpdatePdfExport(PdfExportDialogVisible))
+    }
 
-    private def hideReportForm = $.modState(_.copy(showReportForm = false))
+    private def inProgress = $.props >>= { p =>
+      p.dispatchCB(UpdatePdfExport(PdfExportInProgress))
+    }
+
+    private def hideDialog = $.props >>= { p =>
+      p.dispatchCB(UpdatePdfExport(PdfExportDialogHidden))
+    }
 
     // Exporting an SVG tree to a PNG is pretty cumbersome:
     // 1. build an SVG/XML string representation (including CSS)
@@ -443,55 +454,73 @@ object PdfExportComponent {
     }
 
     def render(p: Props, s: State): ReactTagOf[Div] = {
+
       val exportPdfLabel = "Export PDF"
-      val button = Button(showReportForm, exportPdfLabel + "...")
-      if (s.showReportForm) {
+      val button = Button(showDialog, exportPdfLabel + "...")
 
-        val title = <.div(css.form.group,
-          <.label(^.`for` := "title", "Title:"),
-          <.input(css.form.control,
-            ^.`type` := "text",
-            ^.id := "title",
-            ^.onChange ==> onTitleChange,
-            ^.value := s.reportConfig.title)
-        )
+      p.model.pdfExport match {
 
-        val creator = <.div(css.form.group,
-          <.label(^.`for` := "creator", "Creator:"),
-          <.input(css.form.control,
-            ^.`type` := "text",
-            ^.id := "creator",
-            ^.maxLength := 50,
-            ^.onChange ==> onCreatorChange,
-            ^.value := s.reportConfig.creator)
-        )
+        case PdfExportDialogHidden => <.div(button)
 
-        val notes = <.div(css.form.group,
-          <.label(^.`for` := "notes", "Notes:"),
-          <.textarea(css.form.control,
-            ^.id := "notes",
-            ^.maxLength := 1000,
-            ^.rows := 10,
-            ^.onChange ==> onNotesChange,
-            ^.value := s.reportConfig.notes)
-        )
+        case PdfExportInProgress =>
+          val modal = Modal(
+            Modal.Props(
+              footer = _ => <.div(""),
+              header = _ => <.div("")
+            ),
+            <.div("Export In Progress...")
+          )
+          <.div(button, modal)
 
-        val modal = Modal(
-          Modal.Props(
-            header = _ => <.h2(exportPdfLabel),
-            footer = hide => <.div(
-              Button(hide >> hideReportForm, "Cancel"),
-              Button(generatePdf(s.reportConfig, p.activeTab, p.model) >> hide >> hideReportForm, "OK")
-            )),
-          <.form(title, creator, notes)
-        )
+        case PdfExportDialogVisible =>
+          val title = <.div(css.form.group,
+            <.label(^.`for` := "title", "Title:"),
+            <.input(css.form.control,
+              ^.`type` := "text",
+              ^.id := "title",
+              ^.onChange ==> onTitleChange,
+              ^.value := s.reportConfig.title)
+          )
 
-        <.div(button, modal)
-      } else {
-        <.div(button)
+          val creator = <.div(css.form.group,
+            <.label(^.`for` := "creator", "Creator:"),
+            <.input(css.form.control,
+              ^.`type` := "text",
+              ^.id := "creator",
+              ^.maxLength := 50,
+              ^.onChange ==> onCreatorChange,
+              ^.value := s.reportConfig.creator)
+          )
+
+          val notes = <.div(css.form.group,
+            <.label(^.`for` := "notes", "Notes:"),
+            <.textarea(css.form.control,
+              ^.id := "notes",
+              ^.maxLength := 1000,
+              ^.rows := 10,
+              ^.onChange ==> onNotesChange,
+              ^.value := s.reportConfig.notes)
+          )
+
+          def onClick(hide: Callback): Callback =
+            inProgress >> generatePdf(s.reportConfig, p.activeTab, p.model).thenRun {
+              // 'hide' is a bootstrap/jQuery handle to hide the modal, 'hideDialog' is our own state management
+              (hide >> hideDialog).async.runNow()
+            }.void
+
+          val modal = Modal(
+            Modal.Props(
+              header = _ => <.h2(exportPdfLabel),
+              footer = hide => <.div(
+                Button(hide >> hideDialog, "Cancel"),
+                Button(onClick(hide), exportPdfLabel)
+              )
+            ),
+            <.form(title, creator, notes)
+          )
+          <.div(button, modal)
+        }
       }
-    }
-
   }
 
   private val component = ReactComponentB[Props](PdfExportComponent.getClass.getSimpleName)
@@ -501,7 +530,9 @@ object PdfExportComponent {
     .renderBackend[Backend]
     .build
 
-  def apply(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, model: AppModel): ReactComponentU[Props, State, Backend, TopNode] =
-    component(Props(chartSvgRootElementId, defaultReportConfig = ReportConfig(title = defaultTitle, creator = "", notes = ""), activeTab, model))
+  def apply(chartSvgRootElementId: String, defaultTitle: String, activeTab: Tab, proxy: ModelProxy[AppModel]): ReactComponentU[Props, State, Backend, TopNode] = {
+    val dispatchCB = proxy.dispatchCB[Action] _
+    component(Props(chartSvgRootElementId, defaultReportConfig = ReportConfig(title = defaultTitle, creator = "", notes = ""), activeTab, proxy.value, dispatchCB))
+  }
 
 }
