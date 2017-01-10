@@ -18,6 +18,10 @@ import scalacss.ScalaCssReact._
 
 object MainApp extends js.JSApp {
 
+  // allows provision of custom catalogs
+  // e.g. http://fhnw-saav.github.io/saav?configFileUrl=http://127.0.0.1:3000/config/projects.json#/projects
+  val configFileUrlParam = "configFileUrl"
+
   // the part of the URL that comes before the # separator
   val baseUrl = BaseUrl(dom.window.location.href.takeWhile(_ != '#'))
 
@@ -31,7 +35,9 @@ object MainApp extends js.JSApp {
     // defines how hash-prefixed locations are mapped to a rendered component
     def routeSubPage(subPage: SubPage): Rule = staticRoute("#/" + subPage.hashLink, subPage) ~> renderR(_ => {
       subPage match {
-        case _ => modelConnection(proxy => AnalysisPageComponent(subPage.displayName, subPage.configFileUrl, proxy))
+        case _ =>
+          val configFileUrl = getUrlParameter(configFileUrlParam).getOrElse(subPage.configFileUrl)
+          modelConnection(proxy => AnalysisPageComponent(subPage.displayName, configFileUrl, proxy))
       }
     })
 

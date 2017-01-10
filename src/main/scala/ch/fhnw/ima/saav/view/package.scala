@@ -1,7 +1,6 @@
 package ch.fhnw.ima.saav
 
 import ch.fhnw.ima.saav.style.GlobalStyles
-import japgolly.scalajs.react.Callback
 
 package object view {
 
