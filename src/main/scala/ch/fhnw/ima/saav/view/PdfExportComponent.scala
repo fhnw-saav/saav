@@ -509,10 +509,14 @@ object PdfExportComponent {
           )
 
           def onClick(hide: Callback): Callback =
-            inProgress >> generatePdf(s.reportConfig, p.activeTab, p.model).thenRun {
-              // 'hide' is a bootstrap/jQuery handle to hide the modal, 'hideDialog' is our own state management
-              (hide >> hideDialog).async.runNow()
-            }.void
+            inProgress >> generatePdf(s.reportConfig, p.activeTab, p.model).async >>= { (f: Future[Unit]) =>
+              Callback {
+                f.onComplete{ _ =>
+                  // 'hide' is a bootstrap/jQuery handle to hide the modal, 'hideDialog' is our own state management
+                  (hide >> hideDialog).async.runNow()
+                }
+              }
+            }
 
           val modal = Modal(
             Modal.Props(
