@@ -1,4 +1,5 @@
-package ch.fhnw.ima.saav.circuit.io
+package ch.fhnw.ima.saav
+package circuit.io
 
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain._
@@ -113,7 +114,7 @@ object AnalysisDataImporter {
     val review = ReviewId(columnIt.next())
     val value = columnIt.next().toDouble
 
-    if ((value < 1 || value > 5) && !allowValuesOutsideRange) {
+    if ((value < 1 || value > 5) && !allowValuesOutsideRange && getCustomConfigUrl.isEmpty) {
       val humanFriendlyRowIndex = rowIndex + 2 // off-by-one, header
       throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [1,5]")
     }

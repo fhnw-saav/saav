@@ -15,11 +15,16 @@ package object saav {
     params.flatMap(p => {
       val s = p.split('=')
       if (s.length == 2) {
-        Some(s(0), s(1))
+        Some((s(0), s(1)))
       } else {
         None
       }
     }).find((kv: (String, String)) => kv._1 == param).map(_._2)
   }
+
+
+  // allows provision of custom catalogs
+  // e.g. http://fhnw-saav.github.io/saav?configFileUrl=http://127.0.0.1:3000/config/projects.json#/projects
+  def getCustomConfigUrl: Option[String] = getUrlParameter("configFileUrl")
 
 }
