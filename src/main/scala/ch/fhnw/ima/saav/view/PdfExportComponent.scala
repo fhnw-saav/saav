@@ -152,12 +152,6 @@ object PdfExportComponent {
       val height = svgElement.height.baseVal.value
       val aspectRatio = width / height
 
-      // 1. build an SVG/XML string representation (including CSS)
-      val svg = svgElement.cloneNode(true).asInstanceOf[SVGSVGElement]
-      svg.setAttribute("width", "100%")
-      svg.insertBefore(createDefsWithInlinedCss(), svg.firstChild)
-      val svgString = new XMLSerializer().serializeToString(svg)
-
       val pageContentWidthPx = Page.ContentWidth * PixelsPerMillimeter
       val pageContentHeightPx = Page.ContentHeight * PixelsPerMillimeter
       val (canvasWidth, canvasHeight) = maximization match {
@@ -171,27 +165,33 @@ object PdfExportComponent {
           val h = pageContentHeightPx.toInt
           (w, h)
       }
+
+      // 1. build an SVG/XML string representation (including CSS)
+      val svg = svgElement.cloneNode(true).asInstanceOf[SVGSVGElement]
+      svg.setAttribute("width", s"${canvasWidth}px")
+      svg.setAttribute("height", s"${canvasHeight}px")
+      svg.insertBefore(createDefsWithInlinedCss(), svg.firstChild)
+      val svgString = new XMLSerializer().serializeToString(svg)
+      val svgStringBase64 = dom.window.btoa(svgString)
+
       val canvas = document.createElement("canvas").asInstanceOf[Canvas]
       canvas.width = canvasWidth
       canvas.height = canvasHeight
 
       // 2. render SVG string onto an HTML canvas
       val image = document.createElement("img").asInstanceOf[HTMLImageElement]
-      image.src = "data:image/svg+xml," + svgString
-
       val ctx = canvas.getContext("2d")
 
       val resultPromise = Promise[ImageInfo]()
-
       image.onload = (_: dom.Event) => {
         ctx.drawImage(image, 0, 0)
         // 3. export the HTML canvas to PNG
         val dataURL = canvas.toDataURL("image/png", 1.0)
         resultPromise.complete(Success(ImageInfo(dataURL, aspectRatio)))
       }
+      image.src = "data:image/svg+xml;base64," + svgStringBase64
 
       resultPromise.future
-
     }
 
     private def createDefsWithInlinedCss(): Element = {
