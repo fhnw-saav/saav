@@ -23,6 +23,16 @@ final case class ImportFailedAction(throwable: Throwable, logToConsole: Boolean 
 
 final case class AnalysisReadyAction(analysisConfig: AnalysisConfig, analysis: Analysis) extends Action
 
+/**
+ * Analysis import is a 3 step process:
+ * (1) a configuration (i.e. the catalog representing the analysis structure) is imported from a URL
+ * (2) Second, the actual data is imported from file
+ * (3) Third, config and data are combined into an [[Analysis]] model
+ *
+ * Step (2), the data import, can take a long time, and we thus want to display progress in the UI.
+ * Due to the non-concurrent nature of JavaScript in the browser, we have to import data in batches in
+ * order to give the UI a chance to update in between batches.
+ */
 class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
