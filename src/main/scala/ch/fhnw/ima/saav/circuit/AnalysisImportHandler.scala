@@ -7,15 +7,15 @@ import ch.fhnw.ima.saav.model.app.{SaavModel, _}
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.Analysis
 import diode._
-import org.scalajs.dom.File
+import org.scalajs.dom.Blob
 
 import scala.language.postfixOps
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.util.{Failure, Success}
 
-final case class StartImportAction(configFileUrl: String, dataFile: File) extends Action
+final case class StartImportAction(configFileUrl: String, dataBlob: Blob) extends Action
 
-final case class AnalysisConfigReadyAction(analysisConfig: AnalysisConfig, dataFile: File) extends Action
+final case class AnalysisConfigReadyAction(analysisConfig: AnalysisConfig, dataBlob: Blob) extends Action
 
 final case class AnalysisDataImportInProgressAction(importState: ImportState) extends Action
 
@@ -46,8 +46,8 @@ class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppMod
       }
       effectOnly(Effect(nextAction))
 
-    case AnalysisConfigReadyAction(analysisConfig, dataFile) =>
-      val importDataFuture = AnalysisDataImporter.importDataAsync(analysisConfig, dataFile)
+    case AnalysisConfigReadyAction(analysisConfig, dataBlob) =>
+      val importDataFuture = AnalysisDataImporter.importDataAsync(analysisConfig, dataBlob)
       val nextAction = importDataFuture.transform {
         case Success(importState) => Success(AnalysisDataImportInProgressAction(importState))
         // error handling is a first class citizen which our UI can handle --> map to Success

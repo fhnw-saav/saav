@@ -23,9 +23,8 @@ object AnalysisDataImporter {
   final case class ImportState(analysisConfig: AnalysisConfig, analysisBuilder: AnalysisBuilder, allRows: Seq[Row], nextBatchIndex: Int)
 
   /** Reads all rows from the given data file and prepares the necessary data structures for subsequent, batched import. */
-  def importDataAsync(analysisConfig: AnalysisConfig, dataFile: File): Future[ImportState] = {
+  def importDataAsync(analysisConfig: AnalysisConfig, dataBlob: Blob): Future[ImportState] = {
     val reader = new dom.FileReader()
-    reader.readAsText(dataFile)
     val resultPromise = Promise[ImportState]()
     reader.onload = (_: UIEvent) => {
       // Cast is OK since we are calling readAsText
@@ -35,6 +34,7 @@ object AnalysisDataImporter {
       val firstBatch = ImportState(analysisConfig, builder, rows, 0)
       resultPromise.success(firstBatch)
     }
+    reader.readAsText(dataBlob)
     resultPromise.future
   }
 
@@ -114,7 +114,7 @@ object AnalysisDataImporter {
     val review = ReviewId(columnIt.next())
     val value = columnIt.next().toDouble
 
-    if ((value < 1 || value > 5) && !allowValuesOutsideRange && getCustomConfigUrl.isEmpty) {
+    if ((value < 1 || value > 5) && !allowValuesOutsideRange && getCustomConfigUrl.isEmpty && getCustomDataUrl.isEmpty) {
       val humanFriendlyRowIndex = rowIndex + 2 // off-by-one, header
       throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [1,5]")
     }

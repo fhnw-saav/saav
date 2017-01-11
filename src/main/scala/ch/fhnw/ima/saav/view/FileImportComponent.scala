@@ -1,15 +1,16 @@
 package ch.fhnw.ima.saav
 package view
 
-import ch.fhnw.ima.saav.view.bootstrap.Button
 import ch.fhnw.ima.saav.circuit.{AnalysisReadyAction, ImportFailedAction, StartImportAction}
 import ch.fhnw.ima.saav.model._
 import ch.fhnw.ima.saav.model.app._
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
+import ch.fhnw.ima.saav.view.bootstrap.Button
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}
-import org.scalajs.dom.DragEvent
+import org.scalajs.dom.{DragEvent, Event, XMLHttpRequest}
+import org.scalajs.dom.raw.Blob
 
 import scalacss.ScalaCssReact._
 
@@ -51,6 +52,24 @@ object FileImportComponent {
     .render_P(p => {
       p.proxy.value.importState match {
         case ImportNotStarted() =>
+
+          // trigger auto-import if a customDataUrl param is specified
+          getCustomDataUrl.foreach { customDataUrl =>
+            val xhr = new XMLHttpRequest()
+            xhr.open("GET", customDataUrl, async = true)
+            xhr.responseType = "blob"
+            xhr.onload = (_: Event) => {
+              if (xhr.status == 200) {
+                val dataBlob = xhr.response.asInstanceOf[Blob]
+                p.proxy.dispatchCB(StartImportAction(p.configFileUrl, dataBlob)).runNow()
+              } else {
+                val t = new IllegalArgumentException(s"Could not load custom data from '$customDataUrl'")
+                p.proxy.dispatchCB(ImportFailedAction(t)).runNow()
+              }
+            }
+            xhr.send()
+          }
+
           <.div(
             <.div(css.fileDropZone,
               ^.onDragOver ==> handleDragOver,
