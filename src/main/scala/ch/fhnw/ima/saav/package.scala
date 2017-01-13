@@ -23,12 +23,10 @@ package object saav {
   }
 
 
-  // allows provision of custom catalogs
-  // e.g. http://fhnw-saav.github.io/saav?configFileUrl=http://127.0.0.1:3000/config/projects.json#/projects
-  def getCustomConfigUrl: Option[String] = getUrlParameter("configFileUrl")
+  // Mandatory URL parameter referencing analysis configuration (aka catalog)
+  def getConfigFileUrl: Option[String] = getUrlParameter("configFileUrl")
 
-  // allows provision of custom data
-  // e.g. http://fhnw-saav.github.io/saav?dataFileUrl=http://127.0.0.1:3000/data.csv#/projects
-  def getCustomDataUrl: Option[String] = getUrlParameter("dataFileUrl")
+  // Optional URL parameter to auto-load data
+  def getDataFileUrl: Option[String] = getUrlParameter("dataFileUrl")
 
 }

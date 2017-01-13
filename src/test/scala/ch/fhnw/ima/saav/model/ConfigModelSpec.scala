@@ -8,6 +8,8 @@ class ConfigModelSpec extends FunSpec with Matchers with TestUtil {
 
   val json =
     """{
+        "title" : "Title",
+        "allowedValueRange": [-1000, 1000],
         "criteria" : [
           {
             "name" : "C_1",

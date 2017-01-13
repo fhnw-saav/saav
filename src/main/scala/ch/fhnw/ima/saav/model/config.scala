@@ -10,6 +10,8 @@ import io.circe.parser._
 object config {
 
   trait Config {
+    def title: String
+    def allowedValueRange: (Double, Double)
     def defaultWeights: Weights
     def nonAggregatableCriteria: Set[CriteriaId] // blacklist semantics until our configs are complete
     def missingIndicators: Seq[IndicatorId]
@@ -17,11 +19,11 @@ object config {
   }
 
   object AnalysisConfig {
-    val empty = AnalysisConfig(Seq())
+    val empty = AnalysisConfig("", (Double.NegativeInfinity, Double.PositiveInfinity), Seq())
     def fromJson(json: String): Either[Error, AnalysisConfig] = decode[AnalysisConfig](json)
   }
 
-  final case class AnalysisConfig(criteria: Seq[CriteriaConfig])
+  final case class AnalysisConfig(title: String, allowedValueRange: (Double, Double), criteria: Seq[CriteriaConfig])
 
   final case class CriteriaConfig(name: String, aggregatable: Boolean, subCriteria: Seq[SubCriteriaConfig])
 

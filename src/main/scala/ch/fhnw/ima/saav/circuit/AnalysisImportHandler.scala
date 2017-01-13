@@ -37,10 +37,10 @@ class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppMod
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
 
-    case StartImportAction(configFileUrl, dataFile) =>
+    case StartImportAction(configFileUrl, dataBlob) =>
       val importConfigFuture = AnalysisConfigImporter.importConfigAsync(configFileUrl)
       val nextAction = importConfigFuture.transform {
-        case Success(analysisConfig) => Success(AnalysisConfigReadyAction(analysisConfig, dataFile))
+        case Success(analysisConfig) => Success(AnalysisConfigReadyAction(analysisConfig, dataBlob))
         // error handling is a first class citizen which our UI can handle --> map to Success
         case Failure(t) => Success(ImportFailedAction(t))
       }

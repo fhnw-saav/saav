@@ -90,7 +90,7 @@ object AnalysisDataImporter {
       if rowIndex < rows.length
     ) {
       val row = rows(rowIndex)
-      parseRow(builder, rowIndex, row)
+      parseRow(builder, rowIndex, row, analysisConfig.allowedValueRange)
     }
     val parsedRowCount = (batchIndex * BatchSize) + BatchSize
     val isLastBatch = parsedRowCount >= rows.length
@@ -102,7 +102,7 @@ object AnalysisDataImporter {
     }
   }
 
-  def parseRow(builder: AnalysisBuilder, rowIndex: Int, row: Row, allowValuesOutsideRange: Boolean = false): AnalysisBuilder = {
+  def parseRow(builder: AnalysisBuilder, rowIndex: Int, row: Row, allowedValueRange: (Double, Double) = (Double.NegativeInfinity, Double.PositiveInfinity)): AnalysisBuilder = {
 
     val columnIt = row.iterator
 
@@ -114,9 +114,11 @@ object AnalysisDataImporter {
     val review = ReviewId(columnIt.next())
     val value = columnIt.next().toDouble
 
-    if ((value < 1 || value > 5) && !allowValuesOutsideRange && getCustomConfigUrl.isEmpty && getCustomDataUrl.isEmpty) {
+    val min = allowedValueRange._1
+    val max = allowedValueRange._2
+    if ((value < min) || (value > max)) {
       val humanFriendlyRowIndex = rowIndex + 2 // off-by-one, header
-      throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [1,5]")
+      throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [$min,$max]")
     }
 
     builder

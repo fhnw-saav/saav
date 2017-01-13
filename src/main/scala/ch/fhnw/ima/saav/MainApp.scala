@@ -1,16 +1,12 @@
 package ch.fhnw.ima.saav
 
-import ch.fhnw.ima.saav.view.pages.Page.HomePage
-import ch.fhnw.ima.saav.view.pages._
 import ch.fhnw.ima.saav.circuit.SaavCircuit
 import ch.fhnw.ima.saav.style.GlobalStyles
-import japgolly.scalajs.react.ReactDOM
-import japgolly.scalajs.react.extra.router.{Resolution, Router, _}
-import japgolly.scalajs.react.vdom.ReactTagOf
+import ch.fhnw.ima.saav.view.css
+import ch.fhnw.ima.saav.view.pages._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import org.scalajs.dom
+import japgolly.scalajs.react.{ReactDOM, ReactElement}
 import org.scalajs.dom._
-import org.scalajs.dom.html.Div
 
 import scala.scalajs.js
 import scalacss.Defaults._
@@ -18,51 +14,27 @@ import scalacss.ScalaCssReact._
 
 object MainApp extends js.JSApp {
 
-  // the part of the URL that comes before the # separator
-  val baseUrl = BaseUrl(dom.window.location.href.takeWhile(_ != '#'))
-
-  // configures how URLs map to components
-  val routerConfig: RouterConfig[Page] = RouterConfigDsl[Page].buildConfig { dsl =>
-    import dsl._
-
-    // re-usable connections to controller
-    val modelConnection = new SaavCircuit().connect(m => m)
-
-    // defines how hash-prefixed locations are mapped to a rendered component
-    def routeSubPage(subPage: SubPage): Rule = staticRoute("#/" + subPage.hashLink, subPage) ~> renderR(_ => {
-      subPage match {
-        case _ =>
-          val defaultConfigFileUrl = subPage.configFileUrl
-          val configFileUrl = getCustomConfigUrl.getOrElse(defaultConfigFileUrl)
-          modelConnection(proxy => AnalysisPageComponent(subPage.displayName, configFileUrl, proxy))
-      }
-    })
-
-    val homePageRoute = staticRoute(root, HomePage) ~> renderR(_ => HomePageComponent())
-    val subPageRoutes = Page.subPages.map(routeSubPage).reduce(_ | _)
-
-    val defaultRedirect = redirectToPage(Page.HomePage)(Redirect.Replace)
-    (homePageRoute | subPageRoutes).notFound(defaultRedirect)
-
-  }.renderWith(layout)
-
-  // base layout for all pages
-  private def layout(ctl: RouterCtl[Page], r: Resolution[Page]): ReactTagOf[Div] = {
-
-    // globally defined CSS styles
-    val css = GlobalStyles
-
-    // our main container
-    <.div(css.saavContainer, r.render())
-  }
-
   def main(): Unit = {
-    // create stylesheet
+
+    // add CSS
     GlobalStyles.addToDocument()
-    // create the router component (which knows what to render based on defined rules > see routerConfig above)
-    val router = Router(baseUrl, routerConfig.logToConsole)()
-    // actually render the router component
-    ReactDOM.render(router, document.getElementById("root"))
+
+    // create actual page
+    val page: ReactElement = getConfigFileUrl match {
+      case Some(configFileUrl) =>
+        val modelConnection = new SaavCircuit().connect(m => m)
+        modelConnection(proxy => AnalysisPageComponent("Example", configFileUrl, proxy))
+      case None =>
+        val css = GlobalStyles
+        <.div(css.warningBox, "Missing mandatory URL parameter `configFileUrl`")
+    }
+
+    // embed page in bootstrap container
+    val container = <.div(css.saavContainer, page)
+
+    // render into DOM
+    ReactDOM.render(container, document.getElementById("root"))
+
   }
 
 }

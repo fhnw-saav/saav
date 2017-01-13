@@ -53,8 +53,8 @@ object FileImportComponent {
       p.proxy.value.importState match {
         case ImportNotStarted() =>
 
-          // trigger auto-import if a customDataUrl param is specified
-          getCustomDataUrl.foreach { customDataUrl =>
+          // trigger auto-import if a URL param is specified
+          getDataFileUrl.foreach { customDataUrl =>
             val xhr = new XMLHttpRequest()
             xhr.open("GET", customDataUrl, async = true)
             xhr.responseType = "blob"
@@ -86,8 +86,8 @@ object FileImportComponent {
             <.h1("Import In Progress"),
             <.p((progress * 100).toInt + "%")
           )
-        case ImportFailed(_) =>
-          <.div(css.fileDropZone, <.h1("Import Failed"), <.p("See console log for details"))
+        case ImportFailed(e) =>
+          <.div(css.fileDropZone, <.h1("Import Failed"), <.p(e.getMessage, <.br, "See console log for details"))
         case _ => <.div()
       }
     })

@@ -37,6 +37,11 @@ object AppModelFactory {
 
 
     val config = new Config {
+
+      override val title: String = analysisConfig.title
+
+      override val allowedValueRange: (Double, Double) = analysisConfig.allowedValueRange
+
       val defaultWeights: Weights = Weights(subCriteriaWeights, enabledIndicators.toSet)
 
       val nonAggregatableCriteria: Set[CriteriaId] = analysisConfig.criteria.filterNot(_.aggregatable).map(c => CriteriaId(c.name)).toSet
