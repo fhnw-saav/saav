@@ -1,6 +1,9 @@
 {
     "title":"Organisations",
-    "allowedValueRange":[1, 5],
+    "allowedValueRange":[
+        1,
+        5
+    ],
     "criteria":[
         {
             "name":"achievements",
