@@ -91,7 +91,7 @@ class SaavIntegrationTestSpec extends FunSpec with Matchers {
       val rows = AnalysisDataImporter.splitContentsIntoRows(csv)
       val builder = AnalysisBuilder()
       for ((row, rowIndex) <- rows.zipWithIndex) {
-        AnalysisDataImporter.parseRow(builder, rowIndex, row, allowValuesOutsideRange = true)
+        AnalysisDataImporter.parseRow(builder, rowIndex, row)
       }
       val analysis = builder.build
 

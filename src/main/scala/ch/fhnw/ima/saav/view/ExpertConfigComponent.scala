@@ -77,9 +77,7 @@ object ExpertConfigComponent {
       <.div(css.boxed,
         <.h3(^.display.`inline-block`, Title),
         <.div(css.expertConfigToolbar,
-          ExpertConfigResetComponent(p.expertConfig.isModified, p.expertConfig.defaultWeights, p.dispatchCB),
-          <.div(css.defaultButton, css.hSpaced, "Import...", ^.onClick --> alertComingSoon),
-          <.div(css.defaultButton, css.hSpaced, "Export...", ^.onClick --> alertComingSoon)
+          ExpertConfigResetComponent(p.expertConfig.isModified, p.expertConfig.defaultWeights, p.dispatchCB)
         ),
         CriteriaTable(CriteriaTableProps(p.analysis.criteria, s.criteriaToggleStates, s.subCriteriaToggleStates, p.expertConfig.actualWeights))
       )

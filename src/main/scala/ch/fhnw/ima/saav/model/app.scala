@@ -29,6 +29,15 @@ object app {
   final case class ImportFailed(throwable: Throwable) extends ImportState
 
   // --------------------------------------------------------------------------
+  // Algebraic data types expressing PDF export flow
+  // --------------------------------------------------------------------------
+
+  sealed trait PdfExport
+  final case object PdfExportDialogHidden extends PdfExport
+  final case object PdfExportDialogVisible extends PdfExport
+  final case object PdfExportInProgress extends PdfExport
+
+  // --------------------------------------------------------------------------
   // Actual application model (available once import is complete)
   // --------------------------------------------------------------------------
 
@@ -40,7 +49,8 @@ object app {
     expertConfig: ExpertConfig,
     entitySelectionModel: EntitySelectionModel,
     subCriteriaSelectionModel: SubCriteriaSelectionModel,
-    colorMap: Map[EntityId, WebColor]
+    colorMap: Map[EntityId, WebColor],
+    pdfExport: PdfExport = PdfExportDialogHidden
   )
 
   object AppModel {

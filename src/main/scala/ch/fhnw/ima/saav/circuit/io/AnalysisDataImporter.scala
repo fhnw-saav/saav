@@ -1,4 +1,5 @@
-package ch.fhnw.ima.saav.circuit.io
+package ch.fhnw.ima.saav
+package circuit.io
 
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain._
@@ -22,9 +23,8 @@ object AnalysisDataImporter {
   final case class ImportState(analysisConfig: AnalysisConfig, analysisBuilder: AnalysisBuilder, allRows: Seq[Row], nextBatchIndex: Int)
 
   /** Reads all rows from the given data file and prepares the necessary data structures for subsequent, batched import. */
-  def importDataAsync(analysisConfig: AnalysisConfig, dataFile: File): Future[ImportState] = {
+  def importDataAsync(analysisConfig: AnalysisConfig, dataBlob: Blob): Future[ImportState] = {
     val reader = new dom.FileReader()
-    reader.readAsText(dataFile)
     val resultPromise = Promise[ImportState]()
     reader.onload = (_: UIEvent) => {
       // Cast is OK since we are calling readAsText
@@ -34,6 +34,7 @@ object AnalysisDataImporter {
       val firstBatch = ImportState(analysisConfig, builder, rows, 0)
       resultPromise.success(firstBatch)
     }
+    reader.readAsText(dataBlob)
     resultPromise.future
   }
 
@@ -89,7 +90,7 @@ object AnalysisDataImporter {
       if rowIndex < rows.length
     ) {
       val row = rows(rowIndex)
-      parseRow(builder, rowIndex, row)
+      parseRow(builder, rowIndex, row, analysisConfig.allowedValueRange)
     }
     val parsedRowCount = (batchIndex * BatchSize) + BatchSize
     val isLastBatch = parsedRowCount >= rows.length
@@ -101,7 +102,7 @@ object AnalysisDataImporter {
     }
   }
 
-  def parseRow(builder: AnalysisBuilder, rowIndex: Int, row: Row, allowValuesOutsideRange: Boolean = false): AnalysisBuilder = {
+  def parseRow(builder: AnalysisBuilder, rowIndex: Int, row: Row, allowedValueRange: (Double, Double) = (Double.NegativeInfinity, Double.PositiveInfinity)): AnalysisBuilder = {
 
     val columnIt = row.iterator
 
@@ -113,9 +114,11 @@ object AnalysisDataImporter {
     val review = ReviewId(columnIt.next())
     val value = columnIt.next().toDouble
 
-    if ((value < 1 || value > 5) && !allowValuesOutsideRange) {
+    val min = allowedValueRange._1
+    val max = allowedValueRange._2
+    if ((value < min) || (value > max)) {
       val humanFriendlyRowIndex = rowIndex + 2 // off-by-one, header
-      throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [1,5]")
+      throw new IllegalStateException(s"Line #$humanFriendlyRowIndex: Value '$value' outside of allowed range [$min,$max]")
     }
 
     builder

@@ -18,7 +18,9 @@ trait TestUtil {
   val reviewThree = ReviewId("Review3")
 
   val analysisConfig = AnalysisConfig(
-    Seq(
+    title = "Title",
+    allowedValueRange = (-1000, 1000),
+    criteria = Seq(
       CriteriaConfig(
         "C_1",
         aggregatable = true,

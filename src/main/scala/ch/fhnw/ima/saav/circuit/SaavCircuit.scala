@@ -26,6 +26,9 @@ class SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
   private val chartLayoutHandler =
     new ChartLayoutHandler(zoomRW(ChartLayoutHandler.modelGet)(ChartLayoutHandler.modelSet))
 
+  private val pdfExportHandler =
+    new PdfExportHandler(zoomRW(PdfExportHandler.modelGet)(PdfExportHandler.modelSet))
+
   override protected val actionHandler: HandlerFunction =
     composeHandlers(
       analysisImportHandler,
@@ -33,7 +36,8 @@ class SaavCircuit extends Circuit[SaavModel] with ReactConnector[SaavModel] {
       entitySelectionHandler,
       subCriteriaSelectionHandler,
       expertConfigHandler,
-      chartLayoutHandler
+      chartLayoutHandler,
+      pdfExportHandler
     )
 
   override def handleError(msg: String): Unit = {

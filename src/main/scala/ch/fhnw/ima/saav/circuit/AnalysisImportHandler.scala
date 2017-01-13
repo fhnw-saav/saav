@@ -7,15 +7,15 @@ import ch.fhnw.ima.saav.model.app.{SaavModel, _}
 import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.model.domain.Analysis
 import diode._
-import org.scalajs.dom.File
+import org.scalajs.dom.Blob
 
 import scala.language.postfixOps
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.util.{Failure, Success}
 
-final case class StartImportAction(configFileUrl: String, dataFile: File) extends Action
+final case class StartImportAction(configFileUrl: String, dataBlob: Blob) extends Action
 
-final case class AnalysisConfigReadyAction(analysisConfig: AnalysisConfig, dataFile: File) extends Action
+final case class AnalysisConfigReadyAction(analysisConfig: AnalysisConfig, dataBlob: Blob) extends Action
 
 final case class AnalysisDataImportInProgressAction(importState: ImportState) extends Action
 
@@ -23,21 +23,31 @@ final case class ImportFailedAction(throwable: Throwable, logToConsole: Boolean 
 
 final case class AnalysisReadyAction(analysisConfig: AnalysisConfig, analysis: Analysis) extends Action
 
+/**
+ * Analysis import is a 3 step process:
+ * (1) a configuration (i.e. the catalog representing the analysis structure) is imported from a URL
+ * (2) Second, the actual data is imported from file
+ * (3) Third, config and data are combined into an [[Analysis]] model
+ *
+ * Step (2), the data import, can take a long time, and we thus want to display progress in the UI.
+ * Due to the non-concurrent nature of JavaScript in the browser, we have to import data in batches in
+ * order to give the UI a chance to update in between batches.
+ */
 class AnalysisImportHandler[M](modelRW: ModelRW[M, Either[NoDataAppModel, AppModel]]) extends ActionHandler(modelRW) {
 
   override def handle: PartialFunction[Any, ActionResult[M]] = {
 
-    case StartImportAction(configFileUrl, dataFile) =>
+    case StartImportAction(configFileUrl, dataBlob) =>
       val importConfigFuture = AnalysisConfigImporter.importConfigAsync(configFileUrl)
       val nextAction = importConfigFuture.transform {
-        case Success(analysisConfig) => Success(AnalysisConfigReadyAction(analysisConfig, dataFile))
+        case Success(analysisConfig) => Success(AnalysisConfigReadyAction(analysisConfig, dataBlob))
         // error handling is a first class citizen which our UI can handle --> map to Success
         case Failure(t) => Success(ImportFailedAction(t))
       }
       effectOnly(Effect(nextAction))
 
-    case AnalysisConfigReadyAction(analysisConfig, dataFile) =>
-      val importDataFuture = AnalysisDataImporter.importDataAsync(analysisConfig, dataFile)
+    case AnalysisConfigReadyAction(analysisConfig, dataBlob) =>
+      val importDataFuture = AnalysisDataImporter.importDataAsync(analysisConfig, dataBlob)
       val nextAction = importDataFuture.transform {
         case Success(importState) => Success(AnalysisDataImportInProgressAction(importState))
         // error handling is a first class citizen which our UI can handle --> map to Success

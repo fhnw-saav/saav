@@ -1,4 +1,6 @@
 {
+    "title":"Projects",
+    "allowedValueRange":[1, 5],
     "criteria":[
         {
             "name":"methodology",
