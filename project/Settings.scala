@@ -32,8 +32,7 @@ object Settings {
 
   val libraryDependencies = Def.setting(Seq(
 
-    // using 'extra' instead of 'core' to get routing functionality
-    "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalaJsReact,
+    "com.github.japgolly.scalajs-react" %%% "core" % versions.scalaJsReact,
     "com.github.japgolly.scalacss" %%% "ext-react" % versions.scalaCSS,
     "me.chrons" %%% "diode" % versions.diode,
     "me.chrons" %%% "diode-react" % versions.diode,
