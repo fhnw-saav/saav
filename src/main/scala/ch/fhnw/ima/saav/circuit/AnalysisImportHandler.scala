@@ -13,7 +13,7 @@ import scala.language.postfixOps
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.util.{Failure, Success}
 
-final case class StartImportAction(configFileUrl: String, dataBlob: Blob) extends Action
+final case class StartImportAction(configFileUrl: Option[String], dataBlob: Blob) extends Action
 
 final case class AnalysisConfigReadyAction(analysisConfig: AnalysisConfig, dataBlob: Blob) extends Action
 

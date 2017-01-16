@@ -107,7 +107,7 @@ class AppModelSpec extends FunSpec with Matchers with TestUtil {
 
         .build.build.build.build
 
-      val model = AppModelFactory.createAppModel(AnalysisConfig.empty, analysis)
+      val model = AppModelFactory.createAppModel(AnalysisConfig.default, analysis)
       val indicator = model.qualityModel.criteria(0).subCriteria(0).indicators(0)
 
       // mean of 1,1,2

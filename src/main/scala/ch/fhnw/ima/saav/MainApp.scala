@@ -4,8 +4,8 @@ import ch.fhnw.ima.saav.circuit.SaavCircuit
 import ch.fhnw.ima.saav.style.GlobalStyles
 import ch.fhnw.ima.saav.view.css
 import ch.fhnw.ima.saav.view.pages._
+import japgolly.scalajs.react.ReactDOM
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{ReactDOM, ReactElement}
 import org.scalajs.dom._
 
 import scala.scalajs.js
@@ -19,15 +19,9 @@ object MainApp extends js.JSApp {
     // add CSS
     GlobalStyles.addToDocument()
 
-    // create actual page
-    val page: ReactElement = getConfigFileUrl match {
-      case Some(configFileUrl) =>
-        val modelConnection = new SaavCircuit().connect(m => m)
-        modelConnection(proxy => AnalysisPageComponent("Example", configFileUrl, proxy))
-      case None =>
-        val css = GlobalStyles
-        <.div(css.warningBox, "Missing mandatory URL parameter `configFileUrl`")
-    }
+    // create page
+    val modelConnection = new SaavCircuit().connect(m => m)
+    val page = modelConnection(proxy => AnalysisPageComponent("Example", getConfigFileUrl, proxy))
 
     // embed page in bootstrap container
     val container = <.div(css.saavContainer, page)

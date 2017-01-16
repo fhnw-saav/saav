@@ -16,7 +16,7 @@ object pages {
 
   object AnalysisPageComponent {
 
-    case class Props(configFileUrl: String, proxy: ModelProxy[SaavModel])
+    case class Props(configFileUrl: Option[String], proxy: ModelProxy[SaavModel])
 
     private val component = ReactComponentB[Props](AnalysisPageComponent.getClass.getSimpleName)
       .render_P(p => {
@@ -44,7 +44,7 @@ object pages {
       })
       .build
 
-    def apply(title: String, configFileUrl: String, proxy: ModelProxy[SaavModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(configFileUrl, proxy))
+    def apply(title: String, configFileUrl: Option[String], proxy: ModelProxy[SaavModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(configFileUrl, proxy))
 
   }
 

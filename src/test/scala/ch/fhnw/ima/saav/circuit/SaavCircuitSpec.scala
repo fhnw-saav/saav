@@ -13,7 +13,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with TestUtil {
 
   private def circuitWithAnalysis() = {
     val circuit = new SaavCircuit()
-    circuit.dispatch(AnalysisReadyAction(analysisConfig = AnalysisConfig.empty, analysis = analysis))
+    circuit.dispatch(AnalysisReadyAction(analysisConfig = AnalysisConfig.default, analysis = analysis))
     circuit
   }
 
@@ -24,7 +24,7 @@ class SaavCircuitSpec extends FunSpec with Matchers with TestUtil {
     it("should calculate a progress value") {
       val circuit = new SaavCircuit()
       val rows = TestUtil.createTestRows(20)
-      circuit.dispatch(AnalysisDataImportInProgressAction(ImportState(AnalysisConfig.empty, AnalysisBuilder(), rows, 1)))
+      circuit.dispatch(AnalysisDataImportInProgressAction(ImportState(AnalysisConfig.default, AnalysisBuilder(), rows, 1)))
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {
         case Left(NoDataAppModel(ImportInProgress(progress))) =>

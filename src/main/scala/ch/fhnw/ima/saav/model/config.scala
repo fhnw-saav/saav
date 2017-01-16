@@ -13,13 +13,14 @@ object config {
     def title: String
     def allowedValueRange: (Double, Double)
     def defaultWeights: Weights
-    def nonAggregatableCriteria: Set[CriteriaId] // blacklist semantics until our configs are complete
+    def nonAggregatableCriteria: Set[CriteriaId]
     def missingIndicators: Seq[IndicatorId]
     def unexpectedIndicators: Seq[IndicatorId]
   }
 
+  /** Entry point to JSON config (aka catalog) */
   object AnalysisConfig {
-    val empty = AnalysisConfig("", (Double.NegativeInfinity, Double.PositiveInfinity), Seq())
+    val default = AnalysisConfig("", (Double.NegativeInfinity, Double.PositiveInfinity), Seq())
     def fromJson(json: String): Either[Error, AnalysisConfig] = decode[AnalysisConfig](json)
   }
 

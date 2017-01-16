@@ -96,7 +96,7 @@ class SaavIntegrationTestSpec extends FunSpec with Matchers {
       val analysis = builder.build
 
       val circuit = new SaavCircuit()
-      circuit.dispatch(AnalysisReadyAction(AnalysisConfig.empty, analysis))
+      circuit.dispatch(AnalysisReadyAction(AnalysisConfig.default, analysis))
 
       val model = circuit.zoom(AnalysisImportHandler.modelGet).value
       model match {

@@ -38,7 +38,7 @@ class AnalysisDataImporterSpec extends FlatSpec {
 
     val builder = AnalysisBuilder()
 
-    val stateAfterFirstBatch = AnalysisDataImporter.parseRowBatch(ImportState(AnalysisConfig.empty, builder, rows, 0))
+    val stateAfterFirstBatch = AnalysisDataImporter.parseRowBatch(ImportState(AnalysisConfig.default, builder, rows, 0))
     stateAfterFirstBatch match {
       case Right(ImportState(_, _, _, batchIndex)) =>
         assert(batchIndex === 1)
@@ -46,7 +46,7 @@ class AnalysisDataImporterSpec extends FlatSpec {
       case a@_ => fail(s"Unexpected parsing result $a")
     }
 
-    val stateAfterSecondBatch = AnalysisDataImporter.parseRowBatch(ImportState(AnalysisConfig.empty, builder, rows, 1))
+    val stateAfterSecondBatch = AnalysisDataImporter.parseRowBatch(ImportState(AnalysisConfig.default, builder, rows, 1))
     stateAfterSecondBatch match {
       case Left(analysis) =>
         assert(analysis.entities.size === rowCount)

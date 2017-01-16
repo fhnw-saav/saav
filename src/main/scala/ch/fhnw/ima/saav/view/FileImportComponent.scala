@@ -19,7 +19,7 @@ import scalacss.ScalaCssReact._
   */
 object FileImportComponent {
 
-  case class Props(configFileUrl: String, proxy: ModelProxy[NoDataAppModel])
+  case class Props(configFileUrl: Option[String], proxy: ModelProxy[NoDataAppModel])
 
   private def handleDragOver(e: DragEvent) = Callback {
     e.stopPropagation()
@@ -27,7 +27,7 @@ object FileImportComponent {
     e.dataTransfer.dropEffect = "copy"
   }
 
-  private def handleFileDropped(proxy: ModelProxy[NoDataAppModel], configFileUrl: String)(e: DragEvent): Callback = {
+  private def handleFileDropped(proxy: ModelProxy[NoDataAppModel], configFileUrl: Option[String])(e: DragEvent): Callback = {
     e.stopPropagation()
     e.preventDefault()
     try {
@@ -43,10 +43,10 @@ object FileImportComponent {
   }
 
   private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.empty, analysis = mockAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.default, analysis = mockAnalysis))
 
   private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.empty, analysis = alphabetSoupAnalysis))
+    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.default, analysis = alphabetSoupAnalysis))
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {
@@ -93,6 +93,6 @@ object FileImportComponent {
     })
     .build
 
-  def apply(configFileUrl: String, proxy: ModelProxy[NoDataAppModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(configFileUrl, proxy))
+  def apply(configFileUrl: Option[String], proxy: ModelProxy[NoDataAppModel]): ReactComponentU[Props, Unit, Unit, TopNode] = component(Props(configFileUrl, proxy))
 
 }
