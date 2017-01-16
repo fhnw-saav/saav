@@ -81,7 +81,7 @@ The latest milestone is deployed via GitHub Pages:
 
 # Background Information
 
-SAAV was originally developed to analyse and visualise research output in the humanities and social sciences (SAAV) http://bit.ly/1sMCxW4.
+SAAV was originally developed to http://www.performances-recherche.ch/projects/software-application-to-analyse-and-visualise-research-output-in-the-humanities-and-social-sciences[analyse and visualise research output in the humanities and social sciences] (SAAV).
 Development was a joint effort between the https://www.unilu.ch[University of Lucerne] and the http://www.fhnw.ch/[University of Applied Sciences and Arts Northwestern Switzerland FHNW].
 The software was presented at the final SUK P3 Conference (November 2016; link:docs/poster-saav-2016.pdf[Poster]).
 
