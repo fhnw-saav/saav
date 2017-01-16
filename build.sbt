@@ -61,6 +61,7 @@ siteMappings ++=
   ) ++
     directory(saav.base / "css") ++
     directory(saav.base / "js") ++
+    directory(saav.base / "demo") ++
     directory(saav.base / "config") ++
     directory(saav.base / "fonts")
 
