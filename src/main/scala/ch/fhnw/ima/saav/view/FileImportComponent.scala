@@ -1,17 +1,18 @@
 package ch.fhnw.ima.saav
 package view
 
-import ch.fhnw.ima.saav.circuit.{AnalysisReadyAction, ImportFailedAction, StartImportAction}
-import ch.fhnw.ima.saav.model._
+import ch.fhnw.ima.saav.circuit.{ImportFailedAction, StartImportAction}
 import ch.fhnw.ima.saav.model.app._
-import ch.fhnw.ima.saav.model.config.AnalysisConfig
 import ch.fhnw.ima.saav.view.bootstrap.Button
+import diode.Action
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB, ReactComponentU, TopNode}
-import org.scalajs.dom.{DragEvent, Event, XMLHttpRequest}
 import org.scalajs.dom.raw.Blob
+import org.scalajs.dom.{DragEvent, Event, XMLHttpRequest}
 
+import scala.concurrent.Promise
+import scala.concurrent.ExecutionContext.Implicits.global
 import scalacss.ScalaCssReact._
 
 /**
@@ -42,11 +43,29 @@ object FileImportComponent {
     }
   }
 
-  private def importMockAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.default, analysis = mockAnalysis))
+  private def importDemoData(proxy: ModelProxy[NoDataAppModel]) = {
+    val futureAction = createImportDataAction(Some("demo/config.json"), "demo/data.csv")
+    val f = futureAction.map(action => proxy.dispatchCB(action))
+    Callback.future(f)
+  }
 
-  private def importAlphabetSoupAnalysis(proxy: ModelProxy[NoDataAppModel]) =
-    proxy.dispatchCB(AnalysisReadyAction(analysisConfig = AnalysisConfig.default, analysis = alphabetSoupAnalysis))
+  private def createImportDataAction(configFileUrl: Option[String], dataFileUrl: String) = {
+    val xhr = new XMLHttpRequest()
+    xhr.open("GET", dataFileUrl, async = true)
+    xhr.responseType = "blob"
+    val promise = Promise[Action]()
+    xhr.onload = (_: Event) => {
+      if (xhr.status == 200) {
+        val dataBlob = xhr.response.asInstanceOf[Blob]
+        promise.success(StartImportAction(configFileUrl, dataBlob))
+      } else {
+        val t = new IllegalArgumentException(s"Could not load data from '$dataFileUrl'")
+        promise.success(ImportFailedAction(t))
+      }
+    }
+    xhr.send()
+    promise.future
+  }
 
   private val component = ReactComponentB[Props](FileImportComponent.getClass.getSimpleName)
     .render_P(p => {
@@ -55,19 +74,8 @@ object FileImportComponent {
 
           // trigger auto-import if a URL param is specified
           getDataFileUrl.foreach { customDataUrl =>
-            val xhr = new XMLHttpRequest()
-            xhr.open("GET", customDataUrl, async = true)
-            xhr.responseType = "blob"
-            xhr.onload = (_: Event) => {
-              if (xhr.status == 200) {
-                val dataBlob = xhr.response.asInstanceOf[Blob]
-                p.proxy.dispatchCB(StartImportAction(p.configFileUrl, dataBlob)).runNow()
-              } else {
-                val t = new IllegalArgumentException(s"Could not load custom data from '$customDataUrl'")
-                p.proxy.dispatchCB(ImportFailedAction(t)).runNow()
-              }
-            }
-            xhr.send()
+            val futureAction = createImportDataAction(p.configFileUrl, customDataUrl)
+            futureAction.map(p.proxy.dispatchCB(_).runNow())
           }
 
           <.div(
@@ -78,8 +86,9 @@ object FileImportComponent {
                 <.h1("Drag & Drop"),
                 <.p("To import data from CSV file")
               )),
-            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importMockAnalysis(p.proxy), "Quick, some mock data, please!")),
-            <.p(^.textAlign.center, css.vSpaced, Button(onClick = importAlphabetSoupAnalysis(p.proxy), "Quick, some alphabet soup, please!"))
+            <.p(^.textAlign.center, css.vSpaced,
+              Button(onClick = importDemoData(p.proxy), "Have a look around by loading demo data!")
+            )
           )
         case ImportInProgress(progress) =>
           <.div(css.fileDropZone,

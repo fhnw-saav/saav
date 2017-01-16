@@ -29,7 +29,7 @@ object pages {
             FileImportComponent(p.configFileUrl, p.proxy.zoom(_ => noData))
           )
           case Right(data) => (
-            ConfigMismatch.none != data.config.mismatch,
+            data.config.mismatch.missingIndicators.nonEmpty || data.config.mismatch.unexpectedIndicators.nonEmpty,
             data.config.title,
             PageWithDataComponent(data.config.title, p.proxy.zoom(_ => data))
           )

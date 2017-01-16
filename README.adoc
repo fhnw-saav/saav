@@ -22,7 +22,7 @@ Using a *bubble visualization*, this view allows to explore data dimensions with
 
 If you just want to get a feel for SAAV, use it with demo data http://fhnw-saav.github.io/saav/[right here and now].
 
-If you would like to load your own data, here's how it must be formatted:
+If you would like to load your own data, read on to learn about supported input data.
 
 # Input Data
 

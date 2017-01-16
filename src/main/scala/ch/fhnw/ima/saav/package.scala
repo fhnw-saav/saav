@@ -23,7 +23,7 @@ package object saav {
   }
 
 
-  // Mandatory URL parameter referencing analysis configuration (aka catalog)
+  // Optional URL parameter referencing analysis configuration (aka catalog)
   def getConfigFileUrl: Option[String] = getUrlParameter("configFileUrl")
 
   // Optional URL parameter to auto-load data
