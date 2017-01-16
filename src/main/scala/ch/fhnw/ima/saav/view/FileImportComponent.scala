@@ -87,7 +87,7 @@ object FileImportComponent {
                 <.p("To import data from CSV file")
               )),
             <.p(^.textAlign.center, css.vSpaced,
-              Button(onClick = importDemoData(p.proxy), "Have a look around by loading demo data!")
+              Button(onClick = importDemoData(p.proxy), "I just want to have a look around with demo data")
             )
           )
         case ImportInProgress(progress) =>
