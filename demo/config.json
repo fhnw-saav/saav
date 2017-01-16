@@ -1,0 +1,40 @@
+{
+  "title": "Demo",
+  "allowedValueRange": [1, 10],
+  "criteria": [
+    {
+      "name": "Software Quality",
+      "aggregatable": true,
+      "subCriteria": [
+        {
+          "name": "Usability",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Grade",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "name": "Code Quality",
+          "weight": {
+            "Quality": {
+              "weight": 0.5
+            }
+          },
+          "indicators": [
+            {
+              "name": "Grade",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
