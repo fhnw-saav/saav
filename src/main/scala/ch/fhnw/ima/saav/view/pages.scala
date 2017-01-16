@@ -4,6 +4,7 @@ package view
 import ch.fhnw.ima.saav.view.bootstrap.DismissibleWarning
 import ch.fhnw.ima.saav.circuit.UpdateVisibility
 import ch.fhnw.ima.saav.model.app._
+import ch.fhnw.ima.saav.model.config.ConfigMismatch
 import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.ReactTagOf
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -28,7 +29,7 @@ object pages {
             FileImportComponent(p.configFileUrl, p.proxy.zoom(_ => noData))
           )
           case Right(data) => (
-            data.config.missingIndicators.nonEmpty || data.config.unexpectedIndicators.nonEmpty,
+            ConfigMismatch.none != data.config.mismatch,
             data.config.title,
             PageWithDataComponent(data.config.title, p.proxy.zoom(_ => data))
           )

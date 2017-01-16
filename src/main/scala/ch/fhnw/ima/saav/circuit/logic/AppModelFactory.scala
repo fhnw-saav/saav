@@ -2,7 +2,7 @@ package ch.fhnw.ima.saav.circuit.logic
 
 import ch.fhnw.ima.saav.Seq
 import ch.fhnw.ima.saav.model.app.AppModel
-import ch.fhnw.ima.saav.model.config.{AnalysisConfig, Config}
+import ch.fhnw.ima.saav.model.config.{AnalysisConfig, Config, ConfigMismatch}
 import ch.fhnw.ima.saav.model.domain._
 import ch.fhnw.ima.saav.model.weight.{Quality, Weight, Weights}
 
@@ -12,7 +12,7 @@ object AppModelFactory {
 
   def createAppModel(analysisConfig: AnalysisConfig, analysis: Analysis): AppModel = {
     val config = createConfig(analysisConfig, analysis)
-    logConfigMismatch(config)
+    logConfigMismatch(config.mismatch)
     AppModel(analysis, config)
   }
 
@@ -50,8 +50,10 @@ object AppModelFactory {
         val defaultWeights: Weights = Weights(subCriteriaWeights, enabledIndicators.toSet)
         val nonAggregatableCriteria: Set[CriteriaId] = analysisConfig.criteria.filterNot(_.aggregatable).map(c => CriteriaId(c.name)).toSet
         private val (expectedIndicators, actualIndicators) = gatherExpectedVsActualIndicators(analysis, analysisConfig)
-        val missingIndicators: Seq[IndicatorId] = expectedIndicators.diff(actualIndicators)
-        val unexpectedIndicators: Seq[IndicatorId] = actualIndicators.diff(expectedIndicators)
+        val mismatch = new ConfigMismatch {
+          val missingIndicators: Seq[IndicatorId] = expectedIndicators.diff(actualIndicators)
+          val unexpectedIndicators: Seq[IndicatorId] = actualIndicators.diff(expectedIndicators)
+        }
       }
       config
     }
@@ -66,16 +68,15 @@ object AppModelFactory {
     val indicators = subCriteria.flatMap(_.indicators.map(_.id)).toSet
 
     new Config {
-      def title: String = analysisConfig.title
-      def allowedValueRange: (Double, Double) = analysisConfig.allowedValueRange
-      def defaultWeights: Weights = Weights(subCriteriaWeights, indicators)
-      def nonAggregatableCriteria: Set[CriteriaId] = Set.empty
-      def missingIndicators: Seq[IndicatorId] = Seq.empty
-      def unexpectedIndicators: Seq[IndicatorId] = Seq.empty
+      val title: String = analysisConfig.title
+      val allowedValueRange: (Double, Double) = analysisConfig.allowedValueRange
+      val defaultWeights: Weights = Weights(subCriteriaWeights, indicators)
+      val nonAggregatableCriteria: Set[CriteriaId] = Set.empty
+      val mismatch: ConfigMismatch = ConfigMismatch.none
     }
   }
 
-  private def logConfigMismatch(config: Config) = {
+  private def logConfigMismatch(configMismatch: ConfigMismatch) = {
 
     def log(indicatorId: IndicatorId) = {
       val c = indicatorId.subCriteriaId.criteriaId.name
@@ -85,14 +86,14 @@ object AppModelFactory {
       println(s"- $c | $sc | $i")
     }
 
-    if (config.missingIndicators.nonEmpty) {
-      println(s"[WARN] ${config.missingIndicators.size} Missing Indicator(s):")
-      config.missingIndicators.foreach(log)
+    if (configMismatch.missingIndicators.nonEmpty) {
+      println(s"[WARN] ${configMismatch.missingIndicators.size} Missing Indicator(s):")
+      configMismatch.missingIndicators.foreach(log)
     }
 
-    if (config.unexpectedIndicators.nonEmpty) {
-      println(s"[WARN] ${config.unexpectedIndicators.size} Unexpected Indicator(s):")
-      config.unexpectedIndicators.foreach(log)
+    if (configMismatch.unexpectedIndicators.nonEmpty) {
+      println(s"[WARN] ${configMismatch.unexpectedIndicators.size} Unexpected Indicator(s):")
+      configMismatch.unexpectedIndicators.foreach(log)
     }
 
   }

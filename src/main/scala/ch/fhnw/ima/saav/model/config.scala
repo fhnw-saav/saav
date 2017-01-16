@@ -9,13 +9,25 @@ import io.circe.parser._
 
 object config {
 
+  /** Application defaults and potential mismatches between config and data. */
   trait Config {
     def title: String
     def allowedValueRange: (Double, Double)
     def defaultWeights: Weights
     def nonAggregatableCriteria: Set[CriteriaId]
+    def mismatch: ConfigMismatch
+  }
+
+  trait ConfigMismatch {
     def missingIndicators: Seq[IndicatorId]
     def unexpectedIndicators: Seq[IndicatorId]
+  }
+
+  object ConfigMismatch {
+    val none = new ConfigMismatch {
+      val missingIndicators: Seq[IndicatorId] = Seq.empty
+      val unexpectedIndicators: Seq[IndicatorId] = Seq.empty
+    }
   }
 
   /** Entry point to JSON config (aka catalog) */

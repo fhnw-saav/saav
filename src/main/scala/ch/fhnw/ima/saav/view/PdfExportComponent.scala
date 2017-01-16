@@ -132,7 +132,7 @@ object PdfExportComponent {
         appendExpertConfig(pdf, model)
 
         // Page 5: Missing
-        appendMissing(pdf, model.config.missingIndicators)
+        appendMissing(pdf, model.config.mismatch.missingIndicators)
 
         // Done!
         pdf.save("Report.pdf")
@@ -328,7 +328,7 @@ object PdfExportComponent {
       val xDefaultWeightColumn = xWeightColumn + 30
       val actualWeights = model.expertConfig.actualWeights
       val defaultWeights = model.expertConfig.defaultWeights
-      val unexpectedIndicators = model.config.unexpectedIndicators
+      val unexpectedIndicators = model.config.mismatch.unexpectedIndicators
 
       def formatted(w: Weight) = w match {
         case Quality(weight) => f"Quality $weight%.1f"
