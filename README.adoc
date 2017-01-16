@@ -1,8 +1,73 @@
 # SAAV image:https://travis-ci.org/fhnw-saav/saav.svg?branch=master["Build Status", link="https://travis-ci.org/fhnw-saav/saav"]
 
-Software application to analyse and visualise research output in the humanities and social sciences
+Visualize, explore, and compare multi-dimensional data on the web.
 
-# Documentation
+TODO: Screenshot
+
+SAAV offers:
+
+* A *Quality* view, which visualizes quantitative, comparable dimensions of your data.
+It uses nested *parallel coordinate* visualizations to explore data dimensions across hierarchical levels.
+Mean values are calculated ("aggregated") for each hierarchical level, eventually producing an overall *ranking* of your data entities.
+Customizable weights control how dimensions contribute to the ranking.
+
+* A *Profile* view, which visualizes dimensions of your data for which a mathematical comparison does _not_ make sense.
+Using a *bubble visualization*, this view allows to explore data dimensions with respect to similarity.
+
+* An *Expert Configuration* panel to assign data dimensions to views (Quality vs. Profile) and control aggregation weights.
+
+* An exportable *PDF* report of your analysis
+
+# Getting Started
+
+If you just want to get a feel for SAAV, use it with demo data http://fhnw-saav.github.io/saav/[right here and now].
+
+If you would like to load your own data, here's how it must be formatted:
+
+# Input Data
+
+## Format
+
+SAAV expects a CSV data matrix with the following columns (order matters):
+
+`"Entity","Hierarchy","Reviewer","Value"`
+
+* *Entity*: The names of the things you are comparing (e.g. "Project 1", "John Doe", "Age Group < 20")
+* *Hierarchy*: The hierarchical path; three levels, separated by ":::" (e.g. "Language:::French:::Grade")
+* *Reviewer*: An identifier of an individual measurement (e.g. "Reviewer 1")
+* *Value*: The actual value (parsed as http://www.scala-lang.org/api/2.12.x/scala/Double.html[`Double`])
+
+TODO: Example Input Data
+
+## Auto-Loading From URL
+
+In addition to loading data from file via "drag & drop", SAAV supports auto-loading data from any URL:
+
+`http://fhnw-saav.github.io/saav/?dataFileUrl=http://example-domain.com/data.csv`
+
+TIP: This is particularly convenient if you want to embed SAAV on your website (e.g. in an `iframe`), with all data already loaded.
+
+# Config Data
+
+SAAV optionally supports a file-based configuration to provide application defaults and control input data validation.
+Specifically, it allows to
+
+* Customize an analysis *title*
+* Constrain the range of *allowed values* (aborting the import process upon violations)
+* Specify default *weights* ("Quality" vs "Profile" view; aggregation weights)
+* Specify an expected *hierarchy* (detection of input data mismatches)
+
+## Format
+
+TODO: Document JSON format
+
+## Loading From URL
+
+A SAAV config file can be loaded from any URL:
+
+`http://fhnw-saav.github.io/saav/?configFileUrl=http://example-domain.com/config.json`
+
+# I am a developer, where can I learn more about the code?
 
 * link:CONTRIBUTING.adoc[Development Setup]
 * link:docs/architecture-and-design.adoc[Architecture & Design]
@@ -13,3 +78,13 @@ Software application to analyse and visualise research output in the humanities 
 The latest milestone is deployed via GitHub Pages:
 
 * http://fhnw-saav.github.io/saav/[Live Site] (http://fhnw-saav.github.io/saav/version.txt[inspect current version])
+
+# Background Information
+
+SAAV was originally developed to analyse and visualise research output in the humanities and social sciences (SAAV) http://bit.ly/1sMCxW4.
+Development was a joint effort between the https://www.unilu.ch[University of Lucerne] and the http://www.fhnw.ch/[University of Applied Sciences and Arts Northwestern Switzerland FHNW].
+The software was presented at the final SUK P3 Conference (November 2016; link:docs/poster-saav-2016.pdf[Poster]).
+
+# License
+
+All source code is available under the link:LICENSE[MIT License].
