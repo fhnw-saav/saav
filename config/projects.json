@@ -1,6 +1,9 @@
 {
     "title":"Projects",
-    "allowedValueRange":[1, 5],
+    "allowedValueRange":[
+        1,
+        5
+    ],
     "criteria":[
         {
             "name":"methodology",
@@ -189,7 +192,7 @@
             ]
         },
         {
-            "name":"topicallity",
+            "name":"topicality",
             "aggregatable":false,
             "subCriteria":[
                 {
