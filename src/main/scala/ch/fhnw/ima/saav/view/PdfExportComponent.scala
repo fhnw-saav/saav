@@ -27,6 +27,13 @@ import scala.scalajs.js.JSConverters._
 import scala.util.Success
 import scalacss.ScalaCssReact._
 
+/**
+  * Exports a summary of the current application state to PDF.
+  *
+  * WARNING: This class contains ugly spaghetti code and dirty canvas hacks.
+  * Ideally, it should be replaced with a proper typesetting solution (e.g. asciidoc).
+  * Unfortunately, this cannot be done in the browser.
+  */
 object PdfExportComponent {
 
   // all PDF metrics in mm unless indicated
