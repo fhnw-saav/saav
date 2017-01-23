@@ -1,3 +1,288 @@
-"Entity","Hierarchy","Reviewer","Value"
-"SAAV","Software Quality:::Usability:::Grade",1,10
-"SAAV","Software Quality:::Code Quality:::Grade",1,5
+Entity,Hierarchy,Reviewer,Value
+ba01,"Konzept:::Stand der Technik, Literatur:::Note",1,6
+ba01,Konzept:::Erfassung der Aufgabe:::Note,1,6
+ba01,Konzept:::Planung:::Note,1,6
+ba01,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,6
+ba01,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,6
+ba01,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,6
+ba01,Fachwissen:::Fachliches Können:::Note,1,5.5
+ba01,Fachwissen:::Kreativität:::Note,1,5.5
+ba01,Dokumentation:::Bericht:::Note,1,5.5
+ba01,Dokumentation:::Präsentation:::Note,1,5
+ba01,"Dokumentation:::Poster, Flyer:::Note",1,5.5
+ba01,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5.5
+ba01,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+ba01,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+ba01,Verhalten:::Sozialkompetenz:::Note,1,6
+ba01,Profil:::Jahrgang:::Jahr,1,2.428571429
+ba01,Profil:::Ausprägung:::Anteil,1,3.5
+ba01,Profil:::Typ:::Arbeit,1,6
+ba02,"Konzept:::Stand der Technik, Literatur:::Note",1,5.5
+ba02,Konzept:::Erfassung der Aufgabe:::Note,1,5
+ba02,Konzept:::Planung:::Note,1,5.5
+ba02,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5.5
+ba02,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,6
+ba02,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5.5
+ba02,Fachwissen:::Fachliches Können:::Note,1,5.5
+ba02,Fachwissen:::Kreativität:::Note,1,5
+ba02,Dokumentation:::Bericht:::Note,1,5.5
+ba02,Dokumentation:::Präsentation:::Note,1,5
+ba02,"Dokumentation:::Poster, Flyer:::Note",1,5.5
+ba02,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,6
+ba02,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+ba02,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+ba02,Profil:::Jahrgang:::Jahr,1,6
+ba02,Profil:::Ausprägung:::Anteil,1,3.5
+ba02,Profil:::Typ:::Arbeit,1,6
+ba03,"Konzept:::Stand der Technik, Literatur:::Note",1,6
+ba03,Konzept:::Erfassung der Aufgabe:::Note,1,6
+ba03,Konzept:::Planung:::Note,1,6
+ba03,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,6
+ba03,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,6
+ba03,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,6
+ba03,Fachwissen:::Fachliches Können:::Note,1,5.5
+ba03,Fachwissen:::Kreativität:::Note,1,5.5
+ba03,Dokumentation:::Bericht:::Note,1,5.5
+ba03,Dokumentation:::Präsentation:::Note,1,5
+ba03,"Dokumentation:::Poster, Flyer:::Note",1,5.5
+ba03,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5.5
+ba03,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+ba03,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+ba03,Verhalten:::Sozialkompetenz:::Note,1,6
+ba03,Profil:::Jahrgang:::Jahr,1,2.428571429
+ba03,Profil:::Ausprägung:::Anteil,1,6
+ba03,Profil:::Typ:::Arbeit,1,6
+ba04,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+ba04,Konzept:::Erfassung der Aufgabe:::Note,1,4.5
+ba04,Konzept:::Planung:::Note,1,5
+ba04,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5
+ba04,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,5.5
+ba04,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5.5
+ba04,Fachwissen:::Fachliches Können:::Note,1,5
+ba04,Fachwissen:::Kreativität:::Note,1,5
+ba04,Dokumentation:::Bericht:::Note,1,4.5
+ba04,Dokumentation:::Präsentation:::Note,1,5.5
+ba04,"Dokumentation:::Poster, Flyer:::Note",1,5
+ba04,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5
+ba04,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,5
+ba04,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,5
+ba04,Profil:::Jahrgang:::Jahr,1,6
+ba04,Profil:::Ausprägung:::Anteil,1,3.5
+ba04,Profil:::Typ:::Arbeit,1,6
+ba05,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+ba05,Konzept:::Erfassung der Aufgabe:::Note,1,5.5
+ba05,Konzept:::Planung:::Note,1,5
+ba05,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5
+ba05,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,5.5
+ba05,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5.5
+ba05,Fachwissen:::Fachliches Können:::Note,1,5
+ba05,Fachwissen:::Kreativität:::Note,1,5
+ba05,Dokumentation:::Bericht:::Note,1,5
+ba05,Dokumentation:::Präsentation:::Note,1,4.5
+ba05,"Dokumentation:::Poster, Flyer:::Note",1,5
+ba05,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5
+ba05,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,5
+ba05,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,4.5
+ba05,Profil:::Jahrgang:::Jahr,1,6
+ba05,Profil:::Ausprägung:::Anteil,1,6
+ba05,Profil:::Typ:::Arbeit,1,6
+ba06,"Konzept:::Stand der Technik, Literatur:::Note",1,6
+ba06,Konzept:::Erfassung der Aufgabe:::Note,1,6
+ba06,Konzept:::Planung:::Note,1,6
+ba06,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,6
+ba06,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,5.5
+ba06,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,6
+ba06,Fachwissen:::Fachliches Können:::Note,1,6
+ba06,Fachwissen:::Kreativität:::Note,1,6
+ba06,Dokumentation:::Bericht:::Note,1,5.5
+ba06,Dokumentation:::Präsentation:::Note,1,5.5
+ba06,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+ba06,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+ba06,Verhalten:::Sozialkompetenz:::Note,1,6
+ba06,Profil:::Jahrgang:::Jahr,1,1.714285714
+ba06,Profil:::Ausprägung:::Anteil,1,6
+ba06,Profil:::Typ:::Arbeit,1,6
+ba07,"Konzept:::Stand der Technik, Literatur:::Note",1,3
+ba07,Konzept:::Erfassung der Aufgabe:::Note,1,4
+ba07,Konzept:::Planung:::Note,1,4
+ba07,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,4
+ba07,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,3
+ba07,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,4
+ba07,Fachwissen:::Fachliches Können:::Note,1,3
+ba07,Fachwissen:::Kreativität:::Note,1,3
+ba07,Dokumentation:::Bericht:::Note,1,5
+ba07,Dokumentation:::Präsentation:::Note,1,5
+ba07,"Dokumentation:::Poster, Flyer:::Note",1,5
+ba07,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,3
+ba07,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,3
+ba07,Profil:::Jahrgang:::Jahr,1,1.714285714
+ba07,Profil:::Ausprägung:::Anteil,1,3.5
+ba07,Profil:::Typ:::Arbeit,1,6
+ba08,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+ba08,Konzept:::Erfassung der Aufgabe:::Note,1,6
+ba08,Konzept:::Planung:::Note,1,5
+ba08,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5.5
+ba08,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,6
+ba08,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,6
+ba08,Fachwissen:::Fachliches Können:::Note,1,6
+ba08,Fachwissen:::Kreativität:::Note,1,5
+ba08,Dokumentation:::Bericht:::Note,1,5
+ba08,Dokumentation:::Präsentation:::Note,1,5
+ba08,"Dokumentation:::Poster, Flyer:::Note",1,5
+ba08,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,5.5
+ba08,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,5
+ba08,Verhalten:::Sozialkompetenz:::Note,1,6
+ba08,Profil:::Jahrgang:::Jahr,1,1.714285714
+ba08,Profil:::Ausprägung:::Anteil,1,3.5
+ba08,Profil:::Typ:::Arbeit,1,6
+ba09,"Konzept:::Stand der Technik, Literatur:::Note",1,6
+ba09,Konzept:::Erfassung der Aufgabe:::Note,1,6
+ba09,Konzept:::Planung:::Note,1,6
+ba09,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,6
+ba09,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,6
+ba09,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,6
+ba09,Fachwissen:::Fachliches Können:::Note,1,6
+ba09,Fachwissen:::Kreativität:::Note,1,6
+ba09,Dokumentation:::Bericht:::Note,1,5
+ba09,Dokumentation:::Präsentation:::Note,1,5
+ba09,"Dokumentation:::Poster, Flyer:::Note",1,5
+ba09,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+ba09,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+ba09,Profil:::Jahrgang:::Jahr,1,1
+ba09,Profil:::Ausprägung:::Anteil,1,1
+ba09,Profil:::Typ:::Arbeit,1,6
+ba10,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+ba10,Konzept:::Erfassung der Aufgabe:::Note,1,5
+ba10,Konzept:::Planung:::Note,1,4
+ba10,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5
+ba10,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,3
+ba10,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,4
+ba10,Fachwissen:::Fachliches Können:::Note,1,4
+ba10,Fachwissen:::Kreativität:::Note,1,5
+ba10,Dokumentation:::Bericht:::Note,1,3
+ba10,Dokumentation:::Präsentation:::Note,1,3
+ba10,"Dokumentation:::Poster, Flyer:::Note",1,3
+ba10,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,4
+ba10,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,5
+ba10,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,4
+ba10,Profil:::Jahrgang:::Jahr,1,3.857142857
+ba10,Profil:::Ausprägung:::Anteil,1,6
+ba10,Profil:::Typ:::Arbeit,1,6
+ba11,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+ba11,Konzept:::Erfassung der Aufgabe:::Note,1,5
+ba11,Konzept:::Planung:::Note,1,4
+ba11,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,4
+ba11,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,4
+ba11,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,4
+ba11,Fachwissen:::Fachliches Können:::Note,1,5
+ba11,Fachwissen:::Kreativität:::Note,1,4
+ba11,Dokumentation:::Bericht:::Note,1,4
+ba11,Dokumentation:::Präsentation:::Note,1,5
+ba11,"Dokumentation:::Poster, Flyer:::Note",1,5
+ba11,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5
+ba11,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,3
+ba11,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,3
+ba11,Profil:::Jahrgang:::Jahr,1,3.857142857
+ba11,Profil:::Ausprägung:::Anteil,1,6
+ba11,Profil:::Typ:::Arbeit,1,6
+ba12,"Konzept:::Stand der Technik, Literatur:::Note",1,6
+ba12,Konzept:::Erfassung der Aufgabe:::Note,1,6
+ba12,Konzept:::Planung:::Note,1,5
+ba12,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5
+ba12,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,6
+ba12,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,6
+ba12,Fachwissen:::Fachliches Können:::Note,1,6
+ba12,Fachwissen:::Kreativität:::Note,1,5
+ba12,Dokumentation:::Bericht:::Note,1,5
+ba12,Dokumentation:::Präsentation:::Note,1,5
+ba12,"Dokumentation:::Poster, Flyer:::Note",1,5
+ba12,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5
+ba12,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+ba12,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,5.5
+ba12,Verhalten:::Sozialkompetenz:::Note,1,6
+ba12,Profil:::Jahrgang:::Jahr,1,4.571428571
+ba12,Profil:::Ausprägung:::Anteil,1,6
+ba12,Profil:::Typ:::Arbeit,1,6
+ba13,"Konzept:::Stand der Technik, Literatur:::Note",1,6
+ba13,Konzept:::Erfassung der Aufgabe:::Note,1,5
+ba13,Konzept:::Planung:::Note,1,6
+ba13,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5.5
+ba13,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,5
+ba13,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5
+ba13,Fachwissen:::Fachliches Können:::Note,1,5
+ba13,Fachwissen:::Kreativität:::Note,1,5
+ba13,Dokumentation:::Bericht:::Note,1,5
+ba13,Dokumentation:::Präsentation:::Note,1,5
+ba13,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5
+ba13,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,5
+ba13,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+ba13,Verhalten:::Sozialkompetenz:::Note,1,6
+ba13,Profil:::Jahrgang:::Jahr,1,5.285714286
+ba13,Profil:::Ausprägung:::Anteil,1,1
+ba13,Profil:::Typ:::Arbeit,1,6
+sp01,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+sp01,Konzept:::Erfassung der Aufgabe:::Note,1,5
+sp01,Konzept:::Planung:::Note,1,4
+sp01,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5
+sp01,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,4
+sp01,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5
+sp01,Fachwissen:::Fachliches Können:::Note,1,6
+sp01,Fachwissen:::Kreativität:::Note,1,6
+sp01,Dokumentation:::Bericht:::Note,1,5
+sp01,Dokumentation:::Präsentation:::Note,1,5
+sp01,"Dokumentation:::Poster, Flyer:::Note",1,5
+sp01,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,5
+sp01,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,5
+sp01,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,5
+sp01,Verhalten:::Sozialkompetenz:::Note,1,5
+sp01,Profil:::Jahrgang:::Jahr,1,3.142857143
+sp01,Profil:::Ausprägung:::Anteil,1,6
+sp01,Profil:::Typ:::Arbeit,1,1
+sp02,"Konzept:::Stand der Technik, Literatur:::Note",1,5.5
+sp02,Konzept:::Erfassung der Aufgabe:::Note,1,5
+sp02,Konzept:::Planung:::Note,1,5.5
+sp02,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,5
+sp02,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,5.25
+sp02,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5.75
+sp02,Fachwissen:::Fachliches Können:::Note,1,6
+sp02,Fachwissen:::Kreativität:::Note,1,5.5
+sp02,Dokumentation:::Bericht:::Note,1,5.5
+sp02,Dokumentation:::Präsentation:::Note,1,5.5
+sp02,"Dokumentation:::Poster, Flyer:::Note",1,4.5
+sp02,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+sp02,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+sp02,Verhalten:::Sozialkompetenz:::Note,1,6
+sp02,Profil:::Jahrgang:::Jahr,1,3.857142857
+sp02,Profil:::Ausprägung:::Anteil,1,6
+sp02,Profil:::Typ:::Arbeit,1,1
+sp03,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+sp03,Konzept:::Erfassung der Aufgabe:::Note,1,5
+sp03,Konzept:::Planung:::Note,1,4
+sp03,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,4
+sp03,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,5
+sp03,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5
+sp03,Fachwissen:::Fachliches Können:::Note,1,4
+sp03,Fachwissen:::Kreativität:::Note,1,5
+sp03,Dokumentation:::Bericht:::Note,1,5
+sp03,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,4
+sp03,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,6
+sp03,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,6
+sp03,Verhalten:::Sozialkompetenz:::Note,1,6
+sp03,Profil:::Jahrgang:::Jahr,1,6
+sp03,Profil:::Ausprägung:::Anteil,1,3.5
+sp03,Profil:::Typ:::Arbeit,1,1
+sp04,"Konzept:::Stand der Technik, Literatur:::Note",1,5
+sp04,Konzept:::Erfassung der Aufgabe:::Note,1,5
+sp04,Konzept:::Planung:::Note,1,4
+sp04,"Praktische Arbeit:::Arbeitstechnik, Methodik, Systematik:::Note",1,4
+sp04,"Praktische Arbeit:::Resultate, Qualität der Ergebnisse:::Note",1,5
+sp04,Praktische Arbeit:::Ergebnisse und deren Interpretation:::Note,1,5
+sp04,Fachwissen:::Fachliches Können:::Note,1,5
+sp04,Fachwissen:::Kreativität:::Note,1,4.5
+sp04,Dokumentation:::Bericht:::Note,1,4.5
+sp04,Dokumentation:::Sonstige Arbeitsdokumentation:::Note,1,4.5
+sp04,"Verhalten:::Engagement, Effizienz, Effektivität:::Note",1,5
+sp04,"Verhalten:::Selbstständigkeit, Information, Kommunikation:::Note",1,4
+sp04,Profil:::Jahrgang:::Jahr,1,5.285714286
+sp04,Profil:::Ausprägung:::Anteil,1,3.5
+sp04,Profil:::Typ:::Arbeit,1,1

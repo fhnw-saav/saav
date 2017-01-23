@@ -1,13 +1,14 @@
 {
-  "title": "Demo",
-  "allowedValueRange": [1, 10],
+  "title": "Student Projects",
+  "allowedValueRange": [1, 6],
+
   "criteria": [
     {
-      "name": "Software Quality",
+      "name": "Konzept",
       "aggregatable": true,
       "subCriteria": [
         {
-          "name": "Usability",
+          "name": "Erfassung der Aufgabe",
           "weight": {
             "Quality": {
               "weight": 1
@@ -15,26 +16,298 @@
           },
           "indicators": [
             {
-              "name": "Grade",
+              "name": "Note",
               "enabled": true
             }
           ]
         },
+
         {
-          "name": "Code Quality",
+          "name": "Stand der Technik, Literatur",
           "weight": {
             "Quality": {
-              "weight": 0.5
+              "weight": 1
             }
           },
           "indicators": [
             {
-              "name": "Grade",
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Planung",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
               "enabled": true
             }
           ]
         }
       ]
+    },
+
+    {
+      "name": "Praktische Arbeit",
+      "aggregatable": true,
+      "subCriteria": [
+        {
+          "name": "Arbeitstechnik, Methodik, Systematik",
+          "weight": {
+            "Quality": {
+              "weight": 2
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Resultate, Qualität der Ergebnisse",
+          "weight": {
+            "Quality": {
+              "weight": 3
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Ergebnisse und deren Interpretation",
+          "weight": {
+            "Quality": {
+              "weight": 2
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Fachwissen",
+      "aggregatable": true,
+      "subCriteria": [
+        {
+          "name": "Fachliches Können",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Kreativität",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Dokumentation",
+      "aggregatable": true,
+      "subCriteria": [
+        {
+          "name": "Bericht",
+          "weight": {
+            "Quality": {
+              "weight": 2
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Präsentation",
+          "weight": {
+            "Quality": {
+              "weight": 2
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Poster, Flyer",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Sonstige Arbeitsdokumentation",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Verhalten",
+      "aggregatable": true,
+      "subCriteria": [
+        {
+          "name": "Engagement, Effizienz, Effektivität",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Selbstständigkeit, Information, Kommunikation",
+          "weight": {
+            "Quality": {
+              "weight": 2
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Sozialkompetenz",
+          "weight": {
+            "Quality": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Note",
+              "enabled": true
+            }
+          ]
+        }
+     ]
+    },
+
+    {
+      "name": "Profil",
+      "aggregatable": false,
+      "subCriteria": [
+        {
+          "name": "Jahrgang",
+          "weight": {
+            "Profile": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Jahr",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Ausprägung",
+          "weight": {
+            "Profile": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Anteil",
+              "enabled": true
+            }
+          ]
+        },
+
+        {
+          "name": "Typ",
+          "weight": {
+            "Profile": {
+              "weight": 1
+            }
+          },
+          "indicators": [
+            {
+              "name": "Arbeit",
+              "enabled": true
+            }
+          ]
+        }
+     ]
     }
+
   ]
 }
