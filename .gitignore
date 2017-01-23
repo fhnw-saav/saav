@@ -27,3 +27,6 @@ node_modules
 .ensime
 .ensime_cache
 /bin/
+
+# OS X
+.DS_Store
