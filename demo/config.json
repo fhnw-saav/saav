@@ -4,11 +4,11 @@
 
   "criteria": [
     {
-      "name": "Konzept",
+      "name": "Concept",
       "aggregatable": true,
       "subCriteria": [
         {
-          "name": "Erfassung der Aufgabe",
+          "name": "Assessment of problem",
           "weight": {
             "Quality": {
               "weight": 1
@@ -16,14 +16,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Stand der Technik, Literatur",
+          "name": "State of technology, literature",
           "weight": {
             "Quality": {
               "weight": 1
@@ -31,14 +31,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Planung",
+          "name": "Planning",
           "weight": {
             "Quality": {
               "weight": 1
@@ -46,7 +46,7 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
@@ -55,11 +55,11 @@
     },
 
     {
-      "name": "Praktische Arbeit",
+      "name": "Practical work",
       "aggregatable": true,
       "subCriteria": [
         {
-          "name": "Arbeitstechnik, Methodik, Systematik",
+          "name": "Technique, methodology",
           "weight": {
             "Quality": {
               "weight": 2
@@ -67,14 +67,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Resultate, Qualität der Ergebnisse",
+          "name": "Achievement of goals",
           "weight": {
             "Quality": {
               "weight": 3
@@ -82,14 +82,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Ergebnisse und deren Interpretation",
+          "name": "Usefulness of results",
           "weight": {
             "Quality": {
               "weight": 2
@@ -97,7 +97,7 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
@@ -106,11 +106,11 @@
     },
 
     {
-      "name": "Fachwissen",
+      "name": "Know-how",
       "aggregatable": true,
       "subCriteria": [
         {
-          "name": "Fachliches Können",
+          "name": "Technical skills",
           "weight": {
             "Quality": {
               "weight": 1
@@ -118,14 +118,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Kreativität",
+          "name": "Creativity",
           "weight": {
             "Quality": {
               "weight": 1
@@ -133,7 +133,7 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
@@ -142,11 +142,11 @@
     },
 
     {
-      "name": "Dokumentation",
+      "name": "Documentation",
       "aggregatable": true,
       "subCriteria": [
         {
-          "name": "Bericht",
+          "name": "Report",
           "weight": {
             "Quality": {
               "weight": 2
@@ -154,14 +154,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Präsentation",
+          "name": "Presentation",
           "weight": {
             "Quality": {
               "weight": 2
@@ -169,7 +169,7 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
@@ -184,14 +184,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Sonstige Arbeitsdokumentation",
+          "name": "Additional documentation",
           "weight": {
             "Quality": {
               "weight": 1
@@ -199,7 +199,7 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
@@ -208,11 +208,11 @@
     },
 
     {
-      "name": "Verhalten",
+      "name": "Performance",
       "aggregatable": true,
       "subCriteria": [
         {
-          "name": "Engagement, Effizienz, Effektivität",
+          "name": "Commitment, efficiency, effectiveness",
           "weight": {
             "Quality": {
               "weight": 1
@@ -220,14 +220,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Selbstständigkeit, Information, Kommunikation",
+          "name": "Self-reliance, information, communication",
           "weight": {
             "Quality": {
               "weight": 2
@@ -235,14 +235,14 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Sozialkompetenz",
+          "name": "Soft skills",
           "weight": {
             "Quality": {
               "weight": 1
@@ -250,7 +250,7 @@
           },
           "indicators": [
             {
-              "name": "Note",
+              "name": "Grade",
               "enabled": true
             }
           ]
@@ -259,11 +259,11 @@
     },
 
     {
-      "name": "Profil",
+      "name": "Profile",
       "aggregatable": false,
       "subCriteria": [
         {
-          "name": "Jahrgang",
+          "name": "Year",
           "weight": {
             "Profile": {
               "weight": 1
@@ -271,14 +271,14 @@
           },
           "indicators": [
             {
-              "name": "Jahr",
+              "name": "Year",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Ausprägung",
+          "name": "Characteristic",
           "weight": {
             "Profile": {
               "weight": 1
@@ -286,14 +286,14 @@
           },
           "indicators": [
             {
-              "name": "Anteil",
+              "name": "conceptual - mixed - technical",
               "enabled": true
             }
           ]
         },
 
         {
-          "name": "Typ",
+          "name": "Type of project",
           "weight": {
             "Profile": {
               "weight": 1
@@ -301,7 +301,7 @@
           },
           "indicators": [
             {
-              "name": "Arbeit",
+              "name": "student project - bachelor thesis",
               "enabled": true
             }
           ]
